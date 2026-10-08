@@ -1,0 +1,17 @@
+{
+  "name": "selah",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "^1.4.2"
+  },
+  "peerDependencies": {
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "@opentui/core": "0.5.16",
+    "@opentui/solid": "0.5.16",
+    "solid-js": "1.9.12"
+  }
+}
