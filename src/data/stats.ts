@@ -1,5 +1,5 @@
 import { BOOKS, TOTAL_CHAPTERS } from "./books"
-import { addDays, weekday, type DayKey } from "./dates"
+import { addDays, daysBetween, weekday, type DayKey } from "./dates"
 
 export interface DayTotals {
   chapters: number
@@ -45,21 +45,35 @@ export function longestStreak(days: Map<DayKey, DayTotals>, goal: Goal): number 
 
 /**
  * Share of days in the window that met the goal. The window ends today if today is already
- * met, otherwise yesterday, so an unfinished morning never drags the number down.
+ * met, otherwise yesterday, so an unfinished morning never drags the number down. It never
+ * reaches back before `since` (the first tracked day): nobody is inconsistent on days they
+ * were not using Selah yet.
  */
-export function consistency(days: Map<DayKey, DayTotals>, goal: Goal, today: DayKey, window: number): number {
+export function consistency(days: Map<DayKey, DayTotals>, goal: Goal, today: DayKey, window: number, since?: DayKey): number {
   const end = met(days.get(today), goal) ? today : addDays(today, -1)
+  const span = since ? Math.min(window, daysBetween(since, end) + 1) : window
+  if (span <= 0) return 0
   let hits = 0
-  for (let i = 0; i < window; i++) if (met(days.get(addDays(end, -i)), goal)) hits++
-  return hits / window
+  for (let i = 0; i < span; i++) if (met(days.get(addDays(end, -i)), goal)) hits++
+  return hits / span
 }
+
+/** Days from the first tracked day to today, inclusive. */
+export function trackedDays(days: Map<DayKey, DayTotals>, today: DayKey): number {
+  const first = [...days.keys()].sort()[0]
+  return first ? daysBetween(first, today) + 1 : 0
+}
+
+export const firstDay = (days: Map<DayKey, DayTotals>) => [...days.keys()].sort()[0]
 
 export interface Verdict {
   label: string
   tone: "success" | "primary" | "warning" | "error"
 }
 
-export function verdict(score: number): Verdict {
+/** A plain-words judgement. Under a week of history is too little to call anyone inconsistent. */
+export function verdict(score: number, tracked = Infinity): Verdict {
+  if (tracked < 7) return { label: "Just getting started", tone: score >= 0.85 ? "success" : "primary" }
   if (score >= 0.85) return { label: "Very consistent", tone: "success" }
   if (score >= 0.6) return { label: "Consistent", tone: "primary" }
   if (score >= 0.3) return { label: "Building the habit", tone: "warning" }

@@ -66,3 +66,20 @@ describe("formatRef", () => {
     }
   })
 })
+
+import { fuzzy, fuzzyFilter } from "../src/data/fuzzy"
+
+describe("fuzzy", () => {
+  test("prefers word starts and prefixes", () => {
+    const items = ["Toggle sidebar", "Search the Bible", "Switch theme", "Show progress"]
+    expect(fuzzyFilter("st", items, (x) => x)[0]?.item).toBe("Switch theme")
+    expect(fuzzyFilter("prog", items, (x) => x).map((x) => x.item)).toEqual(["Show progress"])
+    expect(fuzzy("xyz", "Search")).toBeNull()
+  })
+
+  test("preferring word starts never loses a contiguous match", () => {
+    // regression: "l" used to jump to "Luke" and strand the final "s"
+    expect(fuzzy("gospels", "The Gospels in 30 Days Matthew, Mark, Luke and John in a month.")).not.toBeNull()
+    expect(fuzzy("3 chapters", "3 chapters a day By chapters")).not.toBeNull()
+  })
+})

@@ -57,11 +57,22 @@ describe("consistency", () => {
     expect(consistency(days({ 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1 }), goal, today, 7)).toBe(1)
   })
 
+  test("the window never reaches back before tracking began", () => {
+    // day one, goal met: 1 of 1 tracked days, not 1 of 30
+    expect(consistency(days({ 0: 1 }), goal, today, 30, today)).toBe(1)
+    // started 4 days ago, read on 2 of the 4 completed days (today unmet)
+    expect(consistency(days({ 2: 1, 4: 1 }), goal, today, 30, addDays(today, -4))).toBeCloseTo(2 / 4)
+    // a long history is unaffected
+    expect(consistency(days({ 0: 1, 1: 1, 3: 1 }), goal, today, 7, "2020-01-01")).toBeCloseTo(3 / 7)
+  })
+
   test("verdicts", () => {
     expect(verdict(0.95).label).toBe("Very consistent")
     expect(verdict(0.7).label).toBe("Consistent")
     expect(verdict(0.4).label).toBe("Building the habit")
     expect(verdict(0.1).label).toBe("Inconsistent")
+    expect(verdict(0.1, 3).label).toBe("Just getting started")
+    expect(verdict(1, 1).label).toBe("Just getting started") // one perfect day is not a pattern
   })
 })
 
