@@ -111,7 +111,7 @@ if (command === "stats") {
       }),
     )
   } else {
-    console.log(`▲ ${streak} day streak (longest ${data.longestStreak})`)
+    console.log(`▲ ${streak} ${streak === 1 ? "day" : "days"} streak (longest ${data.longestStreak})`)
     console.log(`today: ${data.today.chapters} ${data.today.chapters === 1 ? "chapter" : "chapters"}, ${data.today.minutes} min${data.goalMet ? " · goal met" : ""}`)
     console.log(`${data.verdict}: ${data.consistency30}% of ${windowLabel}`)
     console.log(`Bible: ${data.bibleRead.chapters}/1189 chapters (${data.bibleRead.percent}%)`)

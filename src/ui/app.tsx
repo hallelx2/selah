@@ -25,6 +25,21 @@ function Root(props: { initial?: { route: Route; book?: number; chapter?: number
   const dims = useTerminalDimensions()
   const [ready, setReady] = createSignal(app.installed().length > 0)
 
+  // If the library exists but a default translation is missing (say, a CLI print installed
+  // only KJV), fetch the rest quietly instead of blocking on the setup screen.
+  onMount(async () => {
+    if (!ready()) return
+    for (const c of CATALOG.filter((c) => c.default && !app.deps.bible.hasTranslation(c.id))) {
+      try {
+        await importTranslation(app.deps.bible.db, c.id)
+        app.bump()
+        app.toast(`Installed ${c.id}`, c.name, "success")
+      } catch {
+        // offline: the translations dialog can retry later
+      }
+    }
+  })
+
   onMount(() => {
     const i = props.initial
     if (!i) return

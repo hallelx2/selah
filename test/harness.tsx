@@ -33,6 +33,8 @@ export interface Harness {
   copied: string[]
   quit: { called: boolean }
   destroy: () => void
+  /** The current frame with colours, for screenshots. */
+  spans: () => import("@opentui/core").CapturedFrame
   /** Every renderable in the tree, for leak checks. */
   renderables: () => unknown[]
 }
@@ -98,6 +100,7 @@ export async function harness(opts: {
     copied,
     quit,
     destroy: () => t.renderer.destroy(),
+    spans: () => t.captureSpans(),
     renderables: () => {
       const out: unknown[] = []
       const walk = (r: { getChildren(): unknown[] }) => {
