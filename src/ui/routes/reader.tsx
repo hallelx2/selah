@@ -12,6 +12,7 @@ import { plain, VerseText } from "../components/verse"
 import { openBookmarks, openBooks, openHelp, openNote, openPalette, openSearch, openTranslations } from "../dialogs"
 import { ease, mixColor } from "../motion"
 import { useApp } from "../state"
+import { StudyPane } from "../study"
 
 /** Job, Psalms, Proverbs, Ecclesiastes, Song of Solomon, Lamentations: set as verse, not prose. */
 const POETRY = new Set([18, 19, 20, 21, 22, 25])
@@ -219,6 +220,8 @@ export function Reader() {
   }
 
   app.useKeys((key) => {
+    // The study pane has the keyboard; it handles its own keys (and credits the activity).
+    if (app.studyFocused()) return false
     tracker.activity()
     const k = key.name
     const ctrl = key.ctrl
@@ -234,6 +237,17 @@ export function Reader() {
     const n = Number(count()) || 1
     const counted = count() ? Number(count()) : undefined
     if (count()) setCount("")
+    if (k === "tab" && !ctrl) {
+      app.setStudyOpen(true)
+      app.setStudyFocused(true)
+      return true
+    }
+    if (ctrl && k === "l") {
+      const open = !app.studyOpen()
+      app.setStudyOpen(open)
+      app.setStudyFocused(open)
+      return true
+    }
     if (ctrl && k === "p") return openPalette(app), true
     if (ctrl && k === "b") return app.setConfig("sidebar", !app.config.sidebar), true
     if (ctrl && k === "d") return move(Math.ceil(pageSize() / 2)), true
@@ -303,6 +317,14 @@ export function Reader() {
       case "z":
         app.setFocus(!focus())
         return true
+      case "-":
+      case "=": {
+        // Narrow or widen the reading column; persisted.
+        const next = Math.max(48, Math.min(160, app.config.measure + (k === "=" ? 8 : -8)))
+        app.setConfig("measure", next)
+        app.toast(`Reading width ${next} columns`, "- and = to adjust")
+        return true
+      }
       case "w":
         if (app.parallel()) {
           app.toast("Prose is off in parallel view", "Verses stay aligned side by side. T closes parallel.", "warning")
@@ -323,8 +345,15 @@ export function Reader() {
   })
 
   const sidebar = () => app.config.sidebar && dims().width >= 100 && !focus()
+  /** The study pane sits beside the text when there is room, and floats over it when not. */
+  const studySplit = () => app.studyOpen() && !focus() && dims().width >= 120
+  const studyOverlay = () => app.studyOpen() && !focus() && dims().width < 120
+  const studyWidth = () => Math.max(40, Math.min(app.config.studyWidth, dims().width - 40))
   const measure = () => {
-    const room = dims().width - (sidebar() ? 32 : 0) - 4
+    const room = dims().width - (sidebar() ? 32 : 0) - (studySplit() ? studyWidth() : 0) - 4
+    // At the study desk the text fills its side of the screen; on its own it keeps a book's
+    // measure, centred (- and = adjust it).
+    if (studySplit()) return room
     return app.parallel() ? Math.min(room, app.config.measure * 2 + 4) : Math.min(room, app.config.measure)
   }
 
@@ -526,6 +555,12 @@ export function Reader() {
             </box>
           </box>
         </scrollbox>
+        <Show when={studySplit()}>
+          <StudyPane />
+        </Show>
+        <Show when={studyOverlay()}>
+          <StudyPane overlay />
+        </Show>
       </box>
 
       <Show
@@ -554,6 +589,7 @@ export function Reader() {
                   { key: "?", label: "help" },
                   { key: "/", label: "search" },
                   { key: "m", label: "mark read" },
+                  { key: "tab", label: "study" },
                   { key: "z", label: "focus" },
                   { key: "w", label: prose() ? "verses" : "prose" },
                   { key: "h", label: "highlight" },

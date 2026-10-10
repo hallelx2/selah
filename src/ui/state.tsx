@@ -2,6 +2,7 @@ import type { KeyEvent, RGBA, TerminalColors } from "@opentui/core"
 import { batch, createContext, createMemo, createSignal, onCleanup, useContext, type JSX, type ParentProps } from "solid-js"
 import { createStore, produce } from "solid-js/store"
 import type { Bible } from "../data/bible"
+import type { Commentary } from "../data/commentary"
 import { bookById, nextChapter, prevChapter, type ChapterKey } from "../data/books"
 import type { Config } from "../data/config"
 import { dayKey, type DayKey } from "../data/dates"
@@ -19,6 +20,10 @@ export type Route = "home" | "reader" | "progress"
 export interface Deps {
   bible: Bible
   store: UserStore
+  /** Matthew Henry, in study.db. Absent only in tests that do not need it. */
+  commentary?: Commentary
+  /** Where downloaded study packs are cached. */
+  cacheDir?: string
   tracker: ReadingTracker
   config: Config
   saveConfig: (c: Config) => void
@@ -32,6 +37,8 @@ export interface Deps {
    * padding around the grid. Undefined resets it to the user's colour (OSC 111).
    */
   setTerminalBackground?: (color: RGBA | undefined) => void
+  /** Hands the app state to a test harness. */
+  onApp?: (app: App) => void
 }
 
 export interface DialogEntry {
@@ -52,6 +59,8 @@ export interface Toast {
 type KeyHandler = (key: KeyEvent) => boolean | void
 
 export const MILESTONES = [3, 7, 14, 30, 50, 100, 200, 365] as const
+
+export type StudyTab = "notes" | "commentary"
 
 export interface ActivePlan {
   id: string
@@ -78,7 +87,21 @@ function init(deps: Deps) {
   const [rev, setRev] = createSignal(0)
   const [plan, setPlanSignal] = createSignal<ActivePlan | undefined>(deps.store.get<ActivePlan | undefined>("plan", undefined))
   const [today, setToday] = createSignal(dayKey(now()))
-  const [focus, setFocus] = createSignal(false)
+  const [focus, setFocusSignal] = createSignal(false)
+  const setFocus = (v: boolean) => {
+    if (v) setStudyFocusedSignal(false)
+    setFocusSignal(v)
+  }
+  // The study desk: a pane beside the reading column, and which side has the keyboard.
+  const [studyOpen, setStudyOpen] = createSignal(false)
+  const [studyTab, setStudyTab] = createSignal<StudyTab>("notes")
+  const [studyFocused, setStudyFocusedSignal] = createSignal(false)
+  // Focus mode hides the pane, so the pane taking the keyboard always leaves focus mode
+  // (otherwise nothing would be listening and the keyboard would freeze).
+  const setStudyFocused = (v: boolean) => {
+    if (v) setFocusSignal(false)
+    setStudyFocusedSignal(v)
+  }
   const [celebration, setCelebration] = createSignal<{ streak: number; anim: Anim } | undefined>()
   // The last read recorded, so the reader can play its completion beam.
   const [lastRead, setLastRead] = createSignal<{ book: number; chapter: number; anim: Anim } | undefined>()
@@ -358,6 +381,12 @@ function init(deps: Deps) {
     activePlan,
     setPlan,
     markRead,
+    studyOpen,
+    setStudyOpen,
+    studyTab,
+    setStudyTab,
+    studyFocused,
+    setStudyFocused,
     motion,
     focus,
     setFocus,
@@ -379,6 +408,7 @@ const AppContext = createContext<App>()
 
 export function AppProvider(props: ParentProps<{ deps: Deps }>) {
   const app = init(props.deps)
+  props.deps.onApp?.(app)
   return <AppContext.Provider value={app}>{props.children}</AppContext.Provider>
 }
 

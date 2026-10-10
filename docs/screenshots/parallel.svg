@@ -279,26 +279,26 @@
 <rect x="508.8" y="740" width="96.6" height="20" fill="#181825" fill-opacity="1.00"/>
 <text x="508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2" y="755" fill="#9399b2" xml:space="preserve"> mark read</text>
 <rect x="604.8" y="740" width="19.8" height="20" fill="#181825" fill-opacity="1.00"/>
-<rect x="624.0" y="740" width="10.2" height="20" fill="#181825" fill-opacity="1.00"/>
-<text x="624.0" y="755" fill="#cdd6f4" xml:space="preserve">z</text>
-<rect x="633.6" y="740" width="58.2" height="20" fill="#181825" fill-opacity="1.00"/>
-<text x="633.6 643.2 652.8 662.4 672.0 681.6" y="755" fill="#9399b2" xml:space="preserve"> focus</text>
-<rect x="691.2" y="740" width="19.8" height="20" fill="#181825" fill-opacity="1.00"/>
-<rect x="710.4" y="740" width="10.2" height="20" fill="#181825" fill-opacity="1.00"/>
-<text x="710.4" y="755" fill="#cdd6f4" xml:space="preserve">w</text>
-<rect x="720.0" y="740" width="58.2" height="20" fill="#181825" fill-opacity="1.00"/>
-<text x="720.0 729.6 739.2 748.8 758.4 768.0" y="755" fill="#9399b2" xml:space="preserve"> prose</text>
-<rect x="777.6" y="740" width="19.8" height="20" fill="#181825" fill-opacity="1.00"/>
-<rect x="796.8" y="740" width="10.2" height="20" fill="#181825" fill-opacity="1.00"/>
-<text x="796.8" y="755" fill="#cdd6f4" xml:space="preserve">h</text>
-<rect x="806.4" y="740" width="96.6" height="20" fill="#181825" fill-opacity="1.00"/>
-<text x="806.4 816.0 825.6 835.2 844.8 854.4 864.0 873.6 883.2 892.8" y="755" fill="#9399b2" xml:space="preserve"> highlight</text>
-<rect x="902.4" y="740" width="19.8" height="20" fill="#181825" fill-opacity="1.00"/>
-<rect x="921.6" y="740" width="10.2" height="20" fill="#181825" fill-opacity="1.00"/>
-<text x="921.6" y="755" fill="#cdd6f4" xml:space="preserve">b</text>
-<rect x="931.2" y="740" width="87.0" height="20" fill="#181825" fill-opacity="1.00"/>
-<text x="931.2 940.8 950.4 960.0 969.6 979.2 988.8 998.4 1008.0" y="755" fill="#9399b2" xml:space="preserve"> bookmark</text>
-<rect x="1017.6" y="740" width="163.8" height="20" fill="#181825" fill-opacity="1.00"/>
+<rect x="624.0" y="740" width="29.4" height="20" fill="#181825" fill-opacity="1.00"/>
+<text x="624.0 633.6 643.2" y="755" fill="#cdd6f4" xml:space="preserve">tab</text>
+<rect x="652.8" y="740" width="58.2" height="20" fill="#181825" fill-opacity="1.00"/>
+<text x="652.8 662.4 672.0 681.6 691.2 700.8" y="755" fill="#9399b2" xml:space="preserve"> study</text>
+<rect x="710.4" y="740" width="19.8" height="20" fill="#181825" fill-opacity="1.00"/>
+<rect x="729.6" y="740" width="10.2" height="20" fill="#181825" fill-opacity="1.00"/>
+<text x="729.6" y="755" fill="#cdd6f4" xml:space="preserve">z</text>
+<rect x="739.2" y="740" width="58.2" height="20" fill="#181825" fill-opacity="1.00"/>
+<text x="739.2 748.8 758.4 768.0 777.6 787.2" y="755" fill="#9399b2" xml:space="preserve"> focus</text>
+<rect x="796.8" y="740" width="19.8" height="20" fill="#181825" fill-opacity="1.00"/>
+<rect x="816.0" y="740" width="10.2" height="20" fill="#181825" fill-opacity="1.00"/>
+<text x="816.0" y="755" fill="#cdd6f4" xml:space="preserve">w</text>
+<rect x="825.6" y="740" width="58.2" height="20" fill="#181825" fill-opacity="1.00"/>
+<text x="825.6 835.2 844.8 854.4 864.0 873.6" y="755" fill="#9399b2" xml:space="preserve"> prose</text>
+<rect x="883.2" y="740" width="19.8" height="20" fill="#181825" fill-opacity="1.00"/>
+<rect x="902.4" y="740" width="10.2" height="20" fill="#181825" fill-opacity="1.00"/>
+<text x="902.4" y="755" fill="#cdd6f4" xml:space="preserve">h</text>
+<rect x="912.0" y="740" width="96.6" height="20" fill="#181825" fill-opacity="1.00"/>
+<text x="912.0 921.6 931.2 940.8 950.4 960.0 969.6 979.2 988.8 998.4" y="755" fill="#9399b2" xml:space="preserve"> highlight</text>
+<rect x="1008.0" y="740" width="173.4" height="20" fill="#181825" fill-opacity="1.00"/>
 <rect x="1180.8" y="740" width="39.0" height="20" fill="#181825" fill-opacity="1.00"/>
 <text x="1180.8 1190.4 1200.0 1209.6" y="755" fill="#f9e2af" xml:space="preserve"> 12</text>
 <rect x="1219.2" y="740" width="135.0" height="20" fill="#181825" fill-opacity="1.00"/>

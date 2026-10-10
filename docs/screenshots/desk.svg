@@ -1,0 +1,719 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1872" height="996" viewBox="0 0 1872 996">
+<rect width="100%" height="100%" rx="12" fill="#141414"/>
+<circle cx="24" cy="20" r="6" fill="#ff5f57"/><circle cx="44" cy="20" r="6" fill="#febc2e"/><circle cx="64" cy="20" r="6" fill="#28c840"/>
+<g transform="translate(24 44)" font-family="JetBrainsMono Nerd Font, JetBrains Mono, monospace" font-size="16">
+<rect x="0.0" y="0" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="9.6" y="0" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="9.6 19.2" y="15" fill="#fab283" xml:space="preserve"> </text>
+<rect x="28.8" y="0" width="58.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="28.8 38.4 48.0 57.6 67.2 76.8" y="15" fill="#eeeeee" xml:space="preserve">John 3</text>
+<rect x="86.4" y="0" width="58.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="86.4 96.0 105.6 115.2 124.8 134.4" y="15" fill="#808080" xml:space="preserve"> · KJV</text>
+<rect x="144.0" y="0" width="1152.6" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="0" width="106.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0" y="15" fill="#808080" xml:space="preserve">verse 16/36</text>
+<rect x="1401.6" y="0" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1420.8" y="0" width="87.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6" y="15" fill="#fab283" xml:space="preserve">━━━━━━━━━</text>
+<rect x="1507.2" y="0" width="106.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2" y="15" fill="#3c3c3c" xml:space="preserve">───────────</text>
+<rect x="1612.8" y="0" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1632.0" y="0" width="96.6" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4" y="15" fill="#808080" xml:space="preserve"> reading </text>
+<rect x="1728.0" y="0" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1728.0 1737.6" y="15" fill="#eeeeee" xml:space="preserve">0s</text>
+<rect x="1747.2" y="0" width="67.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1747.2 1756.8 1766.4 1776.0 1785.6 1795.2 1804.8" y="15" fill="#808080" xml:space="preserve"> of 30s</text>
+<rect x="1814.4" y="0" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="20" width="1824.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="0.0 9.6 19.2 28.8 38.4 48.0 57.6 67.2 76.8 86.4 96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8 806.4 816.0 825.6 835.2 844.8 854.4 864.0 873.6 883.2 892.8 902.4 912.0 921.6 931.2 940.8 950.4 960.0 969.6 979.2 988.8 998.4 1008.0 1017.6 1027.2 1036.8 1046.4 1056.0 1065.6 1075.2 1084.8 1094.4 1104.0 1113.6 1123.2 1132.8 1142.4 1152.0 1161.6 1171.2 1180.8 1190.4 1200.0 1209.6 1219.2 1228.8 1238.4 1248.0 1257.6 1267.2 1276.8 1286.4 1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6 1795.2 1804.8 1814.4" y="35" fill="#3c3c3c" xml:space="preserve">──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</text>
+<rect x="0.0" y="40" width="96.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="40" width="586.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0" y="55" fill="#eeeeee" xml:space="preserve">whither it goeth: so is every one that is born of the Spirit.</text>
+<rect x="681.6" y="40" width="567.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="40" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="55" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="40" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1267.2" y="40" width="67.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1267.2 1276.8 1286.4 1296.0 1305.6 1315.2 1324.8" y="55" fill="#808080" xml:space="preserve"> Notes </text>
+<rect x="1334.4" y="40" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1344.0" y="40" width="115.8" height="20" fill="#1e1e1e" fill-opacity="1.00"/>
+<text x="1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6" y="55" fill="#fab283" font-weight="bold" xml:space="preserve"> Commentary </text>
+<rect x="1459.2" y="40" width="259.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1718.4" y="40" width="96.6" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6 1795.2 1804.8" y="55" fill="#808080" xml:space="preserve">tab reader</text>
+<rect x="1814.4" y="40" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="60" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="60" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="75" fill="#808080" xml:space="preserve">  9</text>
+<rect x="67.2" y="60" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="60" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="60" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="60" width="595.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6" y="75" fill="#eeeeee" xml:space="preserve">Nicodemus answered and said unto him, How can these things be?</text>
+<rect x="691.2" y="60" width="557.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="60" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="75" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="60" width="567.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="80" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="80" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="95" fill="#808080" xml:space="preserve"> 10</text>
+<rect x="67.2" y="80" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="80" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="80" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="80" width="883.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8 806.4 816.0 825.6 835.2 844.8 854.4 864.0 873.6 883.2 892.8 902.4 912.0 921.6 931.2 940.8 950.4 960.0 969.6" y="95" fill="#eeeeee" xml:space="preserve">Jesus answered and said unto him, Art thou a master of Israel, and knowest not these things?</text>
+<rect x="979.2" y="80" width="269.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="80" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="95" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="80" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1276.8" y="80" width="115.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1276.8 1286.4 1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4" y="95" fill="#808080" xml:space="preserve">On John 3:16</text>
+<rect x="1392.0" y="80" width="432.6" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="100" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="100" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="115" fill="#808080" xml:space="preserve"> 11</text>
+<rect x="67.2" y="100" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="100" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="100" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="100" width="1085.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8 806.4 816.0 825.6 835.2 844.8 854.4 864.0 873.6 883.2 892.8 902.4 912.0 921.6 931.2 940.8 950.4 960.0 969.6 979.2 988.8 998.4 1008.0 1017.6 1027.2 1036.8 1046.4 1056.0 1065.6 1075.2 1084.8 1094.4 1104.0 1113.6 1123.2 1132.8 1142.4 1152.0 1161.6 1171.2" y="115" fill="#eeeeee" xml:space="preserve">Verily, verily, I say unto thee, We speak that we do know, and testify that we have seen; and ye receive not our </text>
+<rect x="1180.8" y="100" width="67.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="100" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="115" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="100" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1276.8" y="100" width="317.4" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1276.8 1286.4 1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0" y="115" fill="#eeeeee" font-weight="bold" xml:space="preserve">Christ's Interview with Nicodemus</text>
+<rect x="1593.6" y="100" width="115.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2" y="115" fill="#808080" font-weight="bold" xml:space="preserve">  ·  v. 1–21</text>
+<rect x="1708.8" y="100" width="115.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="120" width="96.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="120" width="77.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2" y="135" fill="#eeeeee" xml:space="preserve">witness.</text>
+<rect x="172.8" y="120" width="1075.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="120" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="135" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="120" width="567.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="140" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="140" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="155" fill="#808080" xml:space="preserve"> 12</text>
+<rect x="67.2" y="140" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="140" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="140" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="140" width="1056.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8 806.4 816.0 825.6 835.2 844.8 854.4 864.0 873.6 883.2 892.8 902.4 912.0 921.6 931.2 940.8 950.4 960.0 969.6 979.2 988.8 998.4 1008.0 1017.6 1027.2 1036.8 1046.4 1056.0 1065.6 1075.2 1084.8 1094.4 1104.0 1113.6 1123.2 1132.8 1142.4" y="155" fill="#eeeeee" xml:space="preserve">If I have told you earthly things, and ye believe not, how shall ye believe, if I tell you of heavenly things?</text>
+<rect x="1152.0" y="140" width="96.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="140" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="155" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="140" width="39.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="140" width="471.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8" y="155" fill="#c7c7c7" xml:space="preserve">is, and heaven is the habitation of his holiness.</text>
+<rect x="1766.4" y="140" width="58.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="160" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="160" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="175" fill="#808080" xml:space="preserve"> 13</text>
+<rect x="67.2" y="160" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="160" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="160" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="160" width="1085.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8 806.4 816.0 825.6 835.2 844.8 854.4 864.0 873.6 883.2 892.8 902.4 912.0 921.6 931.2 940.8 950.4 960.0 969.6 979.2 988.8 998.4 1008.0 1017.6 1027.2 1036.8 1046.4 1056.0 1065.6 1075.2 1084.8 1094.4 1104.0 1113.6 1123.2 1132.8 1142.4 1152.0 1161.6 1171.2" y="175" fill="#eeeeee" xml:space="preserve">And no man hath ascended up to heaven, but he that came down from heaven, even the Son of man which is in heaven.</text>
+<rect x="1180.8" y="160" width="67.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="160" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="175" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="160" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1276.8" y="160" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1276.8" y="175" fill="#fab283" xml:space="preserve">┃</text>
+<rect x="1286.4" y="160" width="538.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="180" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="180" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="195" fill="#808080" xml:space="preserve"> 14</text>
+<rect x="67.2" y="180" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="180" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="180" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="180" width="912.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8 806.4 816.0 825.6 835.2 844.8 854.4 864.0 873.6 883.2 892.8 902.4 912.0 921.6 931.2 940.8 950.4 960.0 969.6 979.2 988.8 998.4" y="195" fill="#eeeeee" xml:space="preserve">And as Moses lifted up the serpent in the wilderness, even so must the Son of man be lifted up:</text>
+<rect x="1008.0" y="180" width="240.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="180" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="195" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="180" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1276.8" y="180" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1276.8" y="195" fill="#fab283" xml:space="preserve">┃</text>
+<rect x="1286.4" y="180" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="180" width="509.4" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6 1795.2" y="195" fill="#eeeeee" xml:space="preserve">3. Christ here discourses of the great design of his </text>
+<rect x="1804.8" y="180" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="200" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="200" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="215" fill="#808080" xml:space="preserve"> 15</text>
+<rect x="67.2" y="200" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="200" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="200" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="200" width="701.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2" y="215" fill="#eeeeee" xml:space="preserve">That whosoever believeth in him should not perish, but have eternal life.</text>
+<rect x="796.8" y="200" width="451.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="200" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="215" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="200" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1276.8" y="200" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1276.8" y="215" fill="#fab283" xml:space="preserve">┃</text>
+<rect x="1286.4" y="200" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="200" width="519.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6 1795.2 1804.8" y="215" fill="#eeeeee" xml:space="preserve">own coming into the world, and the happiness of those </text>
+<rect x="1814.4" y="200" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="220" width="19.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="19.2" y="220" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="19.2" y="235" fill="#fab283" xml:space="preserve">┃</text>
+<rect x="28.8" y="220" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="38.4" y="220" width="29.4" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="235" fill="#fab283" font-weight="bold" xml:space="preserve"> 16</text>
+<rect x="67.2" y="220" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="76.8" y="220" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="86.4" y="220" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="96.0" y="220" width="1104.6" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8 806.4 816.0 825.6 835.2 844.8 854.4 864.0 873.6 883.2 892.8 902.4 912.0 921.6 931.2 940.8 950.4 960.0 969.6 979.2 988.8 998.4 1008.0 1017.6 1027.2 1036.8 1046.4 1056.0 1065.6 1075.2 1084.8 1094.4 1104.0 1113.6 1123.2 1132.8 1142.4 1152.0 1161.6 1171.2 1180.8 1190.4" y="235" fill="#eeeeee" xml:space="preserve">For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, </text>
+<rect x="1200.0" y="220" width="29.4" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1228.8" y="220" width="19.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="220" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="235" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="220" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1276.8" y="220" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1276.8" y="235" fill="#fab283" xml:space="preserve">┃</text>
+<rect x="1286.4" y="220" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="220" width="490.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0" y="235" fill="#eeeeee" xml:space="preserve">that believe in him, Joh 3:14-18. Here we have the </text>
+<rect x="1785.6" y="220" width="39.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="240" width="19.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="19.2" y="240" width="77.4" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="96.0" y="240" width="250.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0" y="255" fill="#eeeeee" xml:space="preserve">but have everlasting life.</text>
+<rect x="345.6" y="240" width="883.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1228.8" y="240" width="19.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="240" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="255" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="240" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1276.8" y="240" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1276.8" y="255" fill="#fab283" xml:space="preserve">┃</text>
+<rect x="1286.4" y="240" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="240" width="519.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6 1795.2 1804.8" y="255" fill="#eeeeee" xml:space="preserve">very marrow and quintessence of the whole gospel, that</text>
+<rect x="1814.4" y="240" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="260" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="260" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="275" fill="#808080" xml:space="preserve"> 17</text>
+<rect x="67.2" y="260" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="260" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="260" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="260" width="1037.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8 806.4 816.0 825.6 835.2 844.8 854.4 864.0 873.6 883.2 892.8 902.4 912.0 921.6 931.2 940.8 950.4 960.0 969.6 979.2 988.8 998.4 1008.0 1017.6 1027.2 1036.8 1046.4 1056.0 1065.6 1075.2 1084.8 1094.4 1104.0 1113.6 1123.2" y="275" fill="#eeeeee" xml:space="preserve">For God sent not his Son into the world to condemn the world; but that the world through him might be saved.</text>
+<rect x="1132.8" y="260" width="115.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="260" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="275" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="260" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1276.8" y="260" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1276.8" y="275" fill="#fab283" xml:space="preserve">┃</text>
+<rect x="1286.4" y="260" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="260" width="519.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6 1795.2 1804.8" y="275" fill="#eeeeee" xml:space="preserve">faithful saying (1Ti 1:15), that Jesus Christ came to </text>
+<rect x="1814.4" y="260" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="280" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="280" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="295" fill="#808080" xml:space="preserve"> 18</text>
+<rect x="67.2" y="280" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="280" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="280" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="280" width="1066.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8 806.4 816.0 825.6 835.2 844.8 854.4 864.0 873.6 883.2 892.8 902.4 912.0 921.6 931.2 940.8 950.4 960.0 969.6 979.2 988.8 998.4 1008.0 1017.6 1027.2 1036.8 1046.4 1056.0 1065.6 1075.2 1084.8 1094.4 1104.0 1113.6 1123.2 1132.8 1142.4 1152.0" y="295" fill="#eeeeee" xml:space="preserve">He that believeth on him is not condemned: but he that believeth not is condemned already, because he hath not </text>
+<rect x="1161.6" y="280" width="87.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="280" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="295" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="280" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1276.8" y="280" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1276.8" y="295" fill="#fab283" xml:space="preserve">┃</text>
+<rect x="1286.4" y="280" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="280" width="509.4" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6 1795.2" y="295" fill="#eeeeee" xml:space="preserve">seek and to save the children of men from death, and </text>
+<rect x="1804.8" y="280" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="300" width="96.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="300" width="509.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2" y="315" fill="#eeeeee" xml:space="preserve">believed in the name of the only begotten Son of God.</text>
+<rect x="604.8" y="300" width="643.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="300" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="315" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="300" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1276.8" y="300" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1276.8" y="315" fill="#fab283" xml:space="preserve">┃</text>
+<rect x="1286.4" y="300" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="300" width="519.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6 1795.2 1804.8" y="315" fill="#eeeeee" xml:space="preserve">recover them to life. Now sinners are dead men upon a </text>
+<rect x="1814.4" y="300" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="320" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="320" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="335" fill="#808080" xml:space="preserve"> 19</text>
+<rect x="67.2" y="320" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="320" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="320" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="320" width="1104.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8 806.4 816.0 825.6 835.2 844.8 854.4 864.0 873.6 883.2 892.8 902.4 912.0 921.6 931.2 940.8 950.4 960.0 969.6 979.2 988.8 998.4 1008.0 1017.6 1027.2 1036.8 1046.4 1056.0 1065.6 1075.2 1084.8 1094.4 1104.0 1113.6 1123.2 1132.8 1142.4 1152.0 1161.6 1171.2 1180.8 1190.4" y="335" fill="#eeeeee" xml:space="preserve">And this is the condemnation, that light is come into the world, and men loved darkness rather than light, because </text>
+<rect x="1200.0" y="320" width="48.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="320" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="335" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="320" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1276.8" y="320" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1276.8" y="335" fill="#fab283" xml:space="preserve">┃</text>
+<rect x="1286.4" y="320" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="320" width="451.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6" y="335" fill="#eeeeee" xml:space="preserve">twofold account:— (1.) As one that is mortally </text>
+<rect x="1747.2" y="320" width="77.4" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="340" width="96.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="340" width="211.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6" y="355" fill="#eeeeee" xml:space="preserve">their deeds were evil.</text>
+<rect x="307.2" y="340" width="941.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="340" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="355" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="340" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1276.8" y="340" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1276.8" y="355" fill="#fab283" xml:space="preserve">┃</text>
+<rect x="1286.4" y="340" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="340" width="509.4" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6 1795.2" y="355" fill="#eeeeee" xml:space="preserve">wounded, or sick of an incurable disease, is said to </text>
+<rect x="1804.8" y="340" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="360" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="360" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="375" fill="#808080" xml:space="preserve"> 20</text>
+<rect x="67.2" y="360" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="360" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="360" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="360" width="1066.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8 806.4 816.0 825.6 835.2 844.8 854.4 864.0 873.6 883.2 892.8 902.4 912.0 921.6 931.2 940.8 950.4 960.0 969.6 979.2 988.8 998.4 1008.0 1017.6 1027.2 1036.8 1046.4 1056.0 1065.6 1075.2 1084.8 1094.4 1104.0 1113.6 1123.2 1132.8 1142.4 1152.0" y="375" fill="#eeeeee" xml:space="preserve">For every one that doeth evil hateth the light, neither cometh to the light, lest his deeds should be reproved.</text>
+<rect x="1161.6" y="360" width="87.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="360" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="375" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="360" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1276.8" y="360" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1276.8" y="375" fill="#fab283" xml:space="preserve">┃</text>
+<rect x="1286.4" y="360" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="360" width="519.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6 1795.2 1804.8" y="375" fill="#eeeeee" xml:space="preserve">be a dead man, for he is dying; and so Christ came to </text>
+<rect x="1814.4" y="360" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="380" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="380" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="395" fill="#808080" xml:space="preserve"> 21</text>
+<rect x="67.2" y="380" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="380" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="380" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="380" width="1066.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8 806.4 816.0 825.6 835.2 844.8 854.4 864.0 873.6 883.2 892.8 902.4 912.0 921.6 931.2 940.8 950.4 960.0 969.6 979.2 988.8 998.4 1008.0 1017.6 1027.2 1036.8 1046.4 1056.0 1065.6 1075.2 1084.8 1094.4 1104.0 1113.6 1123.2 1132.8 1142.4 1152.0" y="395" fill="#eeeeee" xml:space="preserve">But he that doeth truth cometh to the light, that his deeds may be made manifest, that they are wrought in God.</text>
+<rect x="1161.6" y="380" width="87.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="380" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="395" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="380" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1276.8" y="380" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1276.8" y="395" fill="#fab283" xml:space="preserve">┃</text>
+<rect x="1286.4" y="380" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="380" width="509.4" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6 1795.2" y="395" fill="#eeeeee" xml:space="preserve">save us, by healing us, as the brazen serpent healed </text>
+<rect x="1804.8" y="380" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="400" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="400" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="415" fill="#808080" xml:space="preserve"> 22</text>
+<rect x="67.2" y="400" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="400" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="400" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="400" width="1123.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8 806.4 816.0 825.6 835.2 844.8 854.4 864.0 873.6 883.2 892.8 902.4 912.0 921.6 931.2 940.8 950.4 960.0 969.6 979.2 988.8 998.4 1008.0 1017.6 1027.2 1036.8 1046.4 1056.0 1065.6 1075.2 1084.8 1094.4 1104.0 1113.6 1123.2 1132.8 1142.4 1152.0 1161.6 1171.2 1180.8 1190.4 1200.0 1209.6" y="415" fill="#eeeeee" xml:space="preserve">After these things came Jesus and his disciples into the land of Judea; and there he tarried with them, and baptized.</text>
+<rect x="1219.2" y="400" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="400" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="415" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="400" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1276.8" y="400" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1276.8" y="415" fill="#fab283" xml:space="preserve">┃</text>
+<rect x="1286.4" y="400" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="400" width="471.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8" y="415" fill="#eeeeee" xml:space="preserve">the Israelites, Joh 3:14,15. (2.) As one that is </text>
+<rect x="1766.4" y="400" width="58.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="420" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="420" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="435" fill="#808080" xml:space="preserve"> 23</text>
+<rect x="67.2" y="420" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="420" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="420" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="420" width="1066.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8 806.4 816.0 825.6 835.2 844.8 854.4 864.0 873.6 883.2 892.8 902.4 912.0 921.6 931.2 940.8 950.4 960.0 969.6 979.2 988.8 998.4 1008.0 1017.6 1027.2 1036.8 1046.4 1056.0 1065.6 1075.2 1084.8 1094.4 1104.0 1113.6 1123.2 1132.8 1142.4 1152.0" y="435" fill="#eeeeee" xml:space="preserve">And John also was baptizing in Ænon near to Salim, because there was much water there: and they came, and were </text>
+<rect x="1161.6" y="420" width="87.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="420" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="435" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="420" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1276.8" y="420" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1276.8" y="435" fill="#fab283" xml:space="preserve">┃</text>
+<rect x="1286.4" y="420" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="420" width="519.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6 1795.2 1804.8" y="435" fill="#eeeeee" xml:space="preserve">justly condemned to die for an unpardonable crime is a</text>
+<rect x="1814.4" y="420" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="440" width="96.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="440" width="87.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8" y="455" fill="#eeeeee" xml:space="preserve">baptized.</text>
+<rect x="182.4" y="440" width="1066.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="440" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="455" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="440" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1276.8" y="440" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1276.8" y="455" fill="#fab283" xml:space="preserve">┃</text>
+<rect x="1286.4" y="440" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="440" width="519.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6 1795.2 1804.8" y="455" fill="#eeeeee" xml:space="preserve">dead man, he is dead in law; and, in reference to this</text>
+<rect x="1814.4" y="440" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="460" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="460" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="475" fill="#808080" xml:space="preserve"> 24</text>
+<rect x="67.2" y="460" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="460" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="460" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="460" width="365.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2" y="475" fill="#eeeeee" xml:space="preserve">For John was not yet cast into prison.</text>
+<rect x="460.8" y="460" width="787.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="460" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="475" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="460" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1276.8" y="460" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1276.8" y="475" fill="#fab283" xml:space="preserve">┃</text>
+<rect x="1286.4" y="460" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="460" width="519.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6 1795.2 1804.8" y="475" fill="#eeeeee" xml:space="preserve">part of our danger, Christ came to save as a prince or</text>
+<rect x="1814.4" y="460" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="480" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="480" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="495" fill="#808080" xml:space="preserve"> 25</text>
+<rect x="67.2" y="480" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="480" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="480" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="480" width="864.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8 806.4 816.0 825.6 835.2 844.8 854.4 864.0 873.6 883.2 892.8 902.4 912.0 921.6 931.2 940.8 950.4" y="495" fill="#eeeeee" xml:space="preserve">Then there arose a question between some of John’s disciples and the Jews about purifying.</text>
+<rect x="960.0" y="480" width="288.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="480" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="495" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="480" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1276.8" y="480" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1276.8" y="495" fill="#fab283" xml:space="preserve">┃</text>
+<rect x="1286.4" y="480" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="480" width="480.6" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4" y="495" fill="#eeeeee" xml:space="preserve">judge, publishing an act of indemnity, or general </text>
+<rect x="1776.0" y="480" width="48.6" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="500" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="500" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="515" fill="#808080" xml:space="preserve"> 26</text>
+<rect x="67.2" y="500" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="500" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="500" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="500" width="1123.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8 806.4 816.0 825.6 835.2 844.8 854.4 864.0 873.6 883.2 892.8 902.4 912.0 921.6 931.2 940.8 950.4 960.0 969.6 979.2 988.8 998.4 1008.0 1017.6 1027.2 1036.8 1046.4 1056.0 1065.6 1075.2 1084.8 1094.4 1104.0 1113.6 1123.2 1132.8 1142.4 1152.0 1161.6 1171.2 1180.8 1190.4 1200.0 1209.6" y="515" fill="#eeeeee" xml:space="preserve">And they came unto John, and said unto him, Rabbi, he that was with thee beyond Jordan, to whom thou barest witness, </text>
+<rect x="1219.2" y="500" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="500" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="515" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="500" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1276.8" y="500" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1276.8" y="515" fill="#fab283" xml:space="preserve">┃</text>
+<rect x="1286.4" y="500" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="500" width="499.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6" y="515" fill="#eeeeee" xml:space="preserve">pardon, under certain provisos; this saving here is </text>
+<rect x="1795.2" y="500" width="29.4" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="520" width="96.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="520" width="499.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6" y="535" fill="#eeeeee" xml:space="preserve">behold, the same baptizeth, and all men come to him.</text>
+<rect x="595.2" y="520" width="653.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="520" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="535" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="520" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1276.8" y="520" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1276.8" y="535" fill="#fab283" xml:space="preserve">┃</text>
+<rect x="1286.4" y="520" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="520" width="336.6" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4" y="535" fill="#eeeeee" xml:space="preserve">opposed to condemning, Joh 3:16-18.</text>
+<rect x="1632.0" y="520" width="192.6" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="540" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="540" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="555" fill="#808080" xml:space="preserve"> 27</text>
+<rect x="67.2" y="540" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="540" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="540" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="540" width="826.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8 806.4 816.0 825.6 835.2 844.8 854.4 864.0 873.6 883.2 892.8 902.4 912.0" y="555" fill="#eeeeee" xml:space="preserve">John answered and said, A man can receive nothing, except it be given him from heaven.</text>
+<rect x="921.6" y="540" width="327.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="540" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="555" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="540" width="567.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="560" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="560" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="575" fill="#808080" xml:space="preserve"> 28</text>
+<rect x="67.2" y="560" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="560" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="560" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="560" width="912.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8 806.4 816.0 825.6 835.2 844.8 854.4 864.0 873.6 883.2 892.8 902.4 912.0 921.6 931.2 940.8 950.4 960.0 969.6 979.2 988.8 998.4" y="575" fill="#eeeeee" xml:space="preserve">Ye yourselves bear me witness, that I said, I am not the Christ, but that I am sent before him.</text>
+<rect x="1008.0" y="560" width="240.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="560" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="575" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="560" width="39.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="560" width="499.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6" y="575" fill="#c7c7c7" xml:space="preserve">[1.] Jesus Christ came to save us by healing us, as </text>
+<rect x="1795.2" y="560" width="29.4" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="580" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="580" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="595" fill="#808080" xml:space="preserve"> 29</text>
+<rect x="67.2" y="580" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="580" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="580" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="580" width="1123.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8 806.4 816.0 825.6 835.2 844.8 854.4 864.0 873.6 883.2 892.8 902.4 912.0 921.6 931.2 940.8 950.4 960.0 969.6 979.2 988.8 998.4 1008.0 1017.6 1027.2 1036.8 1046.4 1056.0 1065.6 1075.2 1084.8 1094.4 1104.0 1113.6 1123.2 1132.8 1142.4 1152.0 1161.6 1171.2 1180.8 1190.4 1200.0 1209.6" y="595" fill="#eeeeee" xml:space="preserve">He that hath the bride is the bridegroom: but the friend of the bridegroom, which standeth and heareth him, rejoiceth</text>
+<rect x="1219.2" y="580" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="580" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="595" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="580" width="39.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="580" width="480.6" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4" y="595" fill="#c7c7c7" xml:space="preserve">the children of Israel that were stung with fiery </text>
+<rect x="1776.0" y="580" width="48.6" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="600" width="96.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="600" width="749.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8 806.4 816.0 825.6 835.2" y="615" fill="#eeeeee" xml:space="preserve">greatly because of the bridegroom’s voice: this my joy therefore is fulfilled.</text>
+<rect x="844.8" y="600" width="403.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="600" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="615" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="600" width="39.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="600" width="490.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0" y="615" fill="#c7c7c7" xml:space="preserve">serpents were cured and lived by looking up to the </text>
+<rect x="1785.6" y="600" width="39.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="620" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="620" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="635" fill="#808080" xml:space="preserve"> 30</text>
+<rect x="67.2" y="620" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="620" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="620" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="620" width="365.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2" y="635" fill="#eeeeee" xml:space="preserve">He must increase, but I must decrease.</text>
+<rect x="460.8" y="620" width="787.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="620" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="635" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="620" width="39.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="620" width="519.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6 1795.2 1804.8" y="635" fill="#c7c7c7" xml:space="preserve">brazen serpent; we have the story of it, Nu 21:6-9. It</text>
+<rect x="1814.4" y="620" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="640" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="640" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="655" fill="#808080" xml:space="preserve"> 31</text>
+<rect x="67.2" y="640" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="640" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="640" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="640" width="1123.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8 806.4 816.0 825.6 835.2 844.8 854.4 864.0 873.6 883.2 892.8 902.4 912.0 921.6 931.2 940.8 950.4 960.0 969.6 979.2 988.8 998.4 1008.0 1017.6 1027.2 1036.8 1046.4 1056.0 1065.6 1075.2 1084.8 1094.4 1104.0 1113.6 1123.2 1132.8 1142.4 1152.0 1161.6 1171.2 1180.8 1190.4 1200.0 1209.6" y="655" fill="#eeeeee" xml:space="preserve">He that cometh from above is above all: he that is of the earth is earthly, and speaketh of the earth: he that cometh</text>
+<rect x="1219.2" y="640" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="640" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="655" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="640" width="39.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="640" width="509.4" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6 1795.2" y="655" fill="#c7c7c7" xml:space="preserve">was the last miracle that passed through the hand of </text>
+<rect x="1804.8" y="640" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="660" width="96.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="660" width="240.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4" y="675" fill="#eeeeee" xml:space="preserve">from heaven is above all.</text>
+<rect x="336.0" y="660" width="912.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="660" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="675" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="660" width="39.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="660" width="519.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6 1795.2 1804.8" y="675" fill="#c7c7c7" xml:space="preserve">Moses before his death. Now in this type of Christ we </text>
+<rect x="1814.4" y="660" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="680" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="680" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="695" fill="#808080" xml:space="preserve"> 32</text>
+<rect x="67.2" y="680" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="680" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="680" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="680" width="845.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8 806.4 816.0 825.6 835.2 844.8 854.4 864.0 873.6 883.2 892.8 902.4 912.0 921.6 931.2" y="695" fill="#eeeeee" xml:space="preserve">And what he hath seen and heard, that he testifieth; and no man receiveth his testimony.</text>
+<rect x="940.8" y="680" width="307.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="680" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="695" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="680" width="39.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="680" width="115.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6" y="695" fill="#c7c7c7" xml:space="preserve">may observe,</text>
+<rect x="1411.2" y="680" width="413.4" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="700" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="700" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="715" fill="#808080" xml:space="preserve"> 33</text>
+<rect x="67.2" y="700" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="700" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="700" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="700" width="711.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8" y="715" fill="#eeeeee" xml:space="preserve">He that hath received his testimony hath set to his seal that God is true.</text>
+<rect x="806.4" y="700" width="442.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="700" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="715" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="700" width="567.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="720" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="720" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="735" fill="#808080" xml:space="preserve"> 34</text>
+<rect x="67.2" y="720" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="720" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="720" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="720" width="989.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8 806.4 816.0 825.6 835.2 844.8 854.4 864.0 873.6 883.2 892.8 902.4 912.0 921.6 931.2 940.8 950.4 960.0 969.6 979.2 988.8 998.4 1008.0 1017.6 1027.2 1036.8 1046.4 1056.0 1065.6 1075.2" y="735" fill="#eeeeee" xml:space="preserve">For he whom God hath sent speaketh the words of God: for God giveth not the Spirit by measure unto him.</text>
+<rect x="1084.8" y="720" width="163.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="720" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="735" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="720" width="39.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="720" width="519.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6 1795.2 1804.8" y="735" fill="#c7c7c7" xml:space="preserve">First, The deadly and destructive nature of sin, which</text>
+<rect x="1814.4" y="720" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="740" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="740" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="755" fill="#808080" xml:space="preserve"> 35</text>
+<rect x="67.2" y="740" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="740" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="740" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="740" width="643.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6" y="755" fill="#eeeeee" xml:space="preserve">The Father loveth the Son, and hath given all things into his hand.</text>
+<rect x="739.2" y="740" width="509.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="740" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="755" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="740" width="39.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="740" width="519.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6 1795.2 1804.8" y="755" fill="#c7c7c7" xml:space="preserve">is implied here. The guilt of sin is like the pain of </text>
+<rect x="1814.4" y="740" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="760" width="39.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="38.4" y="760" width="29.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="38.4 48.0 57.6" y="775" fill="#808080" xml:space="preserve"> 36</text>
+<rect x="67.2" y="760" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="76.8" y="760" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="760" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="760" width="1095.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2 364.8 374.4 384.0 393.6 403.2 412.8 422.4 432.0 441.6 451.2 460.8 470.4 480.0 489.6 499.2 508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2 604.8 614.4 624.0 633.6 643.2 652.8 662.4 672.0 681.6 691.2 700.8 710.4 720.0 729.6 739.2 748.8 758.4 768.0 777.6 787.2 796.8 806.4 816.0 825.6 835.2 844.8 854.4 864.0 873.6 883.2 892.8 902.4 912.0 921.6 931.2 940.8 950.4 960.0 969.6 979.2 988.8 998.4 1008.0 1017.6 1027.2 1036.8 1046.4 1056.0 1065.6 1075.2 1084.8 1094.4 1104.0 1113.6 1123.2 1132.8 1142.4 1152.0 1161.6 1171.2 1180.8" y="775" fill="#eeeeee" xml:space="preserve">He that believeth on the Son hath everlasting life: and he that believeth not the Son shall not see life; but the </text>
+<rect x="1190.4" y="760" width="58.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="760" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="775" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="760" width="39.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="760" width="519.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6 1795.2 1804.8" y="775" fill="#c7c7c7" xml:space="preserve">the biting of a fiery serpent; the power of corruption</text>
+<rect x="1814.4" y="760" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="780" width="96.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="96.0" y="780" width="269.4" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2 124.8 134.4 144.0 153.6 163.2 172.8 182.4 192.0 201.6 211.2 220.8 230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6 307.2 316.8 326.4 336.0 345.6 355.2" y="795" fill="#eeeeee" xml:space="preserve">wrath of God abideth on him.</text>
+<rect x="364.8" y="780" width="883.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="780" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="795" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="780" width="39.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="780" width="509.4" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6 1795.2" y="795" fill="#c7c7c7" xml:space="preserve">is like the venom diffused thereby. The devil is the </text>
+<rect x="1804.8" y="780" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="800" width="1248.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="800" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="815" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="800" width="39.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="800" width="519.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6 1795.2 1804.8" y="815" fill="#c7c7c7" xml:space="preserve">old serpent, subtle at first (Ge 3:1), but ever since </text>
+<rect x="1814.4" y="800" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="820" width="1248.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="820" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="835" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="820" width="39.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="820" width="509.4" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6 1795.2" y="835" fill="#c7c7c7" xml:space="preserve">fiery, and his temptations fiery darts, his assaults </text>
+<rect x="1804.8" y="820" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="840" width="87.0" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="86.4" y="840" width="48.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="86.4 96.0 105.6 115.2 124.8" y="855" fill="#808080" xml:space="preserve">Next </text>
+<rect x="134.4" y="840" width="58.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="134.4 144.0 153.6 163.2 172.8 182.4" y="855" fill="#eeeeee" xml:space="preserve">John 4</text>
+<rect x="192.0" y="840" width="67.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="192.0 201.6 211.2 220.8 230.4 240.0 249.6" y="855" fill="#808080" xml:space="preserve"> press </text>
+<rect x="259.2" y="840" width="10.2" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<text x="259.2" y="855" fill="#eeeeee" xml:space="preserve">n</text>
+<rect x="268.8" y="840" width="979.8" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="840" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="855" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="840" width="39.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="840" width="490.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0" y="855" fill="#c7c7c7" xml:space="preserve">terrifying, his victories destroying. Ask awakened </text>
+<rect x="1785.6" y="840" width="39.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="860" width="1248.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="860" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="875" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="860" width="39.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="860" width="499.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6" y="875" fill="#c7c7c7" xml:space="preserve">consciences, ask damned sinners, and they will tell </text>
+<rect x="1795.2" y="860" width="29.4" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="880" width="1248.6" height="20" fill="#0a0a0a" fill-opacity="1.00"/>
+<rect x="1248.0" y="880" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1248.0" y="895" fill="#fab283" xml:space="preserve">│</text>
+<rect x="1257.6" y="880" width="39.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1296.0" y="880" width="509.4" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1296.0 1305.6 1315.2 1324.8 1334.4 1344.0 1353.6 1363.2 1372.8 1382.4 1392.0 1401.6 1411.2 1420.8 1430.4 1440.0 1449.6 1459.2 1468.8 1478.4 1488.0 1497.6 1507.2 1516.8 1526.4 1536.0 1545.6 1555.2 1564.8 1574.4 1584.0 1593.6 1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0 1737.6 1747.2 1756.8 1766.4 1776.0 1785.6 1795.2" y="895" fill="#c7c7c7" xml:space="preserve">you, how charming soever the allurements of sin are, </text>
+<rect x="1804.8" y="880" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="0.0" y="900" width="77.4" height="20" fill="#fab283" fill-opacity="1.00"/>
+<text x="0.0 9.6 19.2 28.8 38.4 48.0 57.6 67.2" y="915" fill="#040404" font-weight="bold" xml:space="preserve">  READ </text>
+<rect x="76.8" y="900" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="96.0" y="900" width="29.4" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="96.0 105.6 115.2" y="915" fill="#eeeeee" xml:space="preserve">j/k</text>
+<rect x="124.8" y="900" width="58.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="124.8 134.4 144.0 153.6 163.2 172.8" y="915" fill="#808080" xml:space="preserve"> verse</text>
+<rect x="182.4" y="900" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="201.6" y="900" width="29.4" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="201.6 211.2 220.8" y="915" fill="#eeeeee" xml:space="preserve">n/p</text>
+<rect x="230.4" y="900" width="77.4" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="230.4 240.0 249.6 259.2 268.8 278.4 288.0 297.6" y="915" fill="#808080" xml:space="preserve"> chapter</text>
+<rect x="307.2" y="900" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="326.4" y="900" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="326.4" y="915" fill="#eeeeee" xml:space="preserve">?</text>
+<rect x="336.0" y="900" width="48.6" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="336.0 345.6 355.2 364.8 374.4" y="915" fill="#808080" xml:space="preserve"> help</text>
+<rect x="384.0" y="900" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="403.2" y="900" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="403.2" y="915" fill="#eeeeee" xml:space="preserve">/</text>
+<rect x="412.8" y="900" width="67.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="412.8 422.4 432.0 441.6 451.2 460.8 470.4" y="915" fill="#808080" xml:space="preserve"> search</text>
+<rect x="480.0" y="900" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="499.2" y="900" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="499.2" y="915" fill="#eeeeee" xml:space="preserve">m</text>
+<rect x="508.8" y="900" width="96.6" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2" y="915" fill="#808080" xml:space="preserve"> mark read</text>
+<rect x="604.8" y="900" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="624.0" y="900" width="29.4" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="624.0 633.6 643.2" y="915" fill="#eeeeee" xml:space="preserve">tab</text>
+<rect x="652.8" y="900" width="58.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="652.8 662.4 672.0 681.6 691.2 700.8" y="915" fill="#808080" xml:space="preserve"> study</text>
+<rect x="710.4" y="900" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="729.6" y="900" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="729.6" y="915" fill="#eeeeee" xml:space="preserve">z</text>
+<rect x="739.2" y="900" width="58.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="739.2 748.8 758.4 768.0 777.6 787.2" y="915" fill="#808080" xml:space="preserve"> focus</text>
+<rect x="796.8" y="900" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="816.0" y="900" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="816.0" y="915" fill="#eeeeee" xml:space="preserve">w</text>
+<rect x="825.6" y="900" width="58.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="825.6 835.2 844.8 854.4 864.0 873.6" y="915" fill="#808080" xml:space="preserve"> prose</text>
+<rect x="883.2" y="900" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="902.4" y="900" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="902.4" y="915" fill="#eeeeee" xml:space="preserve">h</text>
+<rect x="912.0" y="900" width="96.6" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="912.0 921.6 931.2 940.8 950.4 960.0 969.6 979.2 988.8 998.4" y="915" fill="#808080" xml:space="preserve"> highlight</text>
+<rect x="1008.0" y="900" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1027.2" y="900" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1027.2" y="915" fill="#eeeeee" xml:space="preserve">b</text>
+<rect x="1036.8" y="900" width="87.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1036.8 1046.4 1056.0 1065.6 1075.2 1084.8 1094.4 1104.0 1113.6" y="915" fill="#808080" xml:space="preserve"> bookmark</text>
+<rect x="1123.2" y="900" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1142.4" y="900" width="58.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1142.4 1152.0 1161.6 1171.2 1180.8 1190.4" y="915" fill="#eeeeee" xml:space="preserve">ctrl+p</text>
+<rect x="1200.0" y="900" width="87.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1200.0 1209.6 1219.2 1228.8 1238.4 1248.0 1257.6 1267.2 1276.8" y="915" fill="#808080" xml:space="preserve"> commands</text>
+<rect x="1286.4" y="900" width="279.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="1564.8" y="900" width="39.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1564.8 1574.4 1584.0 1593.6" y="915" fill="#f5a742" xml:space="preserve"> 12</text>
+<rect x="1603.2" y="900" width="135.0" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1603.2 1612.8 1622.4 1632.0 1641.6 1651.2 1660.8 1670.4 1680.0 1689.6 1699.2 1708.8 1718.4 1728.0" y="915" fill="#808080" xml:space="preserve"> days · today </text>
+<rect x="1737.6" y="900" width="29.4" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1737.6 1747.2 1756.8" y="915" fill="#7fd88f" xml:space="preserve">1/1</text>
+<rect x="1766.4" y="900" width="29.4" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1766.4 1776.0 1785.6" y="915" fill="#808080" xml:space="preserve"> ch</text>
+<rect x="1795.2" y="900" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="1795.2 1804.8" y="915" fill="#7fd88f" xml:space="preserve"> ✓</text>
+<rect x="1814.4" y="900" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
+</g></svg>

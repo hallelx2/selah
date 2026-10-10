@@ -287,16 +287,11 @@
 <rect x="508.8" y="740" width="96.6" height="20" fill="#141414" fill-opacity="1.00"/>
 <text x="508.8 518.4 528.0 537.6 547.2 556.8 566.4 576.0 585.6 595.2" y="755" fill="#808080" xml:space="preserve"> mark read</text>
 <rect x="604.8" y="740" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
-<rect x="624.0" y="740" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
-<text x="624.0" y="755" fill="#eeeeee" xml:space="preserve">z</text>
-<rect x="633.6" y="740" width="58.2" height="20" fill="#141414" fill-opacity="1.00"/>
-<text x="633.6 643.2 652.8 662.4 672.0 681.6" y="755" fill="#808080" xml:space="preserve"> focus</text>
-<rect x="691.2" y="740" width="19.8" height="20" fill="#141414" fill-opacity="1.00"/>
-<rect x="710.4" y="740" width="10.2" height="20" fill="#141414" fill-opacity="1.00"/>
-<text x="710.4" y="755" fill="#eeeeee" xml:space="preserve">w</text>
-<rect x="720.0" y="740" width="58.2" height="20" fill="#141414" fill-opacity="1.00"/>
-<text x="720.0 729.6 739.2 748.8 758.4 768.0" y="755" fill="#808080" xml:space="preserve"> prose</text>
-<rect x="777.6" y="740" width="115.8" height="20" fill="#141414" fill-opacity="1.00"/>
+<rect x="624.0" y="740" width="29.4" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="624.0 633.6 643.2" y="755" fill="#eeeeee" xml:space="preserve">tab</text>
+<rect x="652.8" y="740" width="58.2" height="20" fill="#141414" fill-opacity="1.00"/>
+<text x="652.8 662.4 672.0 681.6 691.2 700.8" y="755" fill="#808080" xml:space="preserve"> study</text>
+<rect x="710.4" y="740" width="183.0" height="20" fill="#141414" fill-opacity="1.00"/>
 <rect x="892.8" y="740" width="39.0" height="20" fill="#141414" fill-opacity="1.00"/>
 <text x="892.8 902.4 912.0 921.6" y="755" fill="#f5a742" xml:space="preserve"> 12</text>
 <rect x="931.2" y="740" width="135.0" height="20" fill="#141414" fill-opacity="1.00"/>

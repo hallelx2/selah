@@ -53,6 +53,14 @@ CREATE TABLE IF NOT EXISTS highlights (
   PRIMARY KEY (book, chapter, verse)
 ) WITHOUT ROWID;
 
+CREATE TABLE IF NOT EXISTS journal (
+  book INTEGER NOT NULL,
+  chapter INTEGER NOT NULL,
+  body TEXT NOT NULL,
+  updated_at INTEGER NOT NULL,
+  PRIMARY KEY (book, chapter)
+) WITHOUT ROWID;
+
 CREATE TABLE IF NOT EXISTS notes (
   book INTEGER NOT NULL,
   chapter INTEGER NOT NULL,
@@ -339,6 +347,53 @@ export class UserStore {
       )
       .all()
       .map((r) => ({ book: r.book, chapter: r.chapter, verse: r.verse, body: r.body, createdAt: r.created_at, updatedAt: r.updated_at }))
+  }
+
+  // chapter journal ------------------------------------------------------------
+
+  journal(book: number, chapter: number): string {
+    return (
+      this.db
+        .query<{ body: string }, [number, number]>(`SELECT body FROM journal WHERE book = ? AND chapter = ?`)
+        .get(book, chapter)?.body ?? ""
+    )
+  }
+
+  saveJournal(book: number, chapter: number, body: string, at = Date.now()) {
+    if (!body.trim()) {
+      this.db.run(`DELETE FROM journal WHERE book = ? AND chapter = ?`, [book, chapter])
+      return
+    }
+    this.db.run(
+      `INSERT INTO journal (book, chapter, body, updated_at) VALUES (?, ?, ?, ?)
+       ON CONFLICT (book, chapter) DO UPDATE SET body = excluded.body, updated_at = excluded.updated_at`,
+      [book, chapter, body, at],
+    )
+  }
+
+  journals(): { book: number; chapter: number; body: string; updatedAt: number }[] {
+    return this.db
+      .query<{ book: number; chapter: number; body: string; updated_at: number }, []>(`SELECT * FROM journal ORDER BY book, chapter`)
+      .all()
+      .map((r) => ({ book: r.book, chapter: r.chapter, body: r.body, updatedAt: r.updated_at }))
+  }
+
+  /** Every note and journal entry as one Markdown document, grouped by book. */
+  exportMarkdown(bookName: (id: number) => string): string {
+    const items = [
+      ...this.journals().map((j) => ({ book: j.book, chapter: j.chapter, verse: 0, body: j.body })),
+      ...this.notes().map((n) => ({ book: n.book, chapter: n.chapter, verse: n.verse, body: n.body })),
+    ].sort((a, b) => a.book - b.book || a.chapter - b.chapter || a.verse - b.verse)
+    const out: string[] = ["# Selah notes", ""]
+    let lastBook = 0
+    for (const it of items) {
+      if (it.book !== lastBook) {
+        out.push(`## ${bookName(it.book)}`, "")
+        lastBook = it.book
+      }
+      out.push(it.verse ? `### ${bookName(it.book)} ${it.chapter}:${it.verse}` : `### ${bookName(it.book)} ${it.chapter} (journal)`, "", it.body.trim(), "")
+    }
+    return out.join("\n")
   }
 
   // position -----------------------------------------------------------------
