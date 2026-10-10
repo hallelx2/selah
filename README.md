@@ -33,19 +33,28 @@ A Bible for the terminal, built on the same TUI stack as [opencode](https://gith
 
 ## Install
 
-Requires [Bun](https://bun.sh) 1.4 or later to build.
-
 ```sh
-git clone <this repo> selah && cd selah
-bun install
-bun run build                       # dist/selah, one self-contained executable
-install -Dm755 dist/selah ~/.local/bin/selah
+curl -fsSL https://raw.githubusercontent.com/hallelx2/selah/main/install.sh | sh
 ```
 
-Or run from source with `bun src/index.tsx`.
+The installer picks the build for your system (Linux x64 or arm64, glibc or musl; macOS Apple
+silicon or Intel), checks its SHA-256 against the release, and puts `selah` in `~/.local/bin`.
+Set `SELAH_INSTALL_DIR` to install elsewhere, or `SELAH_VERSION=v0.1.0` to pin a release.
+Binaries are also on the [releases page](https://github.com/hallelx2/selah/releases).
 
 The first launch downloads the King James Version and the Berean Standard Bible (about 8 MB each).
 After that, Selah needs no network.
+
+### From source
+
+Requires [Bun](https://bun.sh) 1.4 or later.
+
+```sh
+git clone https://github.com/hallelx2/selah && cd selah
+bun install
+bun src/index.tsx              # run it
+bun run build                  # or compile dist/selah for this machine
+```
 
 ## Use
 
@@ -114,5 +123,12 @@ bun run typecheck
 bun scripts/screenshots.tsx   # regenerate docs/screenshots from real frames
 ```
 
-The design rules every screen follows are in [docs/DESIGN.md](docs/DESIGN.md). Themes in
-`src/theme/assets` are opencode's, used under its MIT license.
+`bun scripts/build.ts --release` cross-compiles every release target and writes `SHA256SUMS`;
+it needs every platform's OpenTUI core installed first (`bun install --os='*' --cpu='*'`).
+
+The design rules every screen follows are in [docs/DESIGN.md](docs/DESIGN.md).
+
+## License
+
+MIT. Themes in `src/theme/assets` are opencode's, used under its MIT license
+([LICENSE.opencode](src/theme/assets/LICENSE.opencode)). The Bible texts are in the public domain.

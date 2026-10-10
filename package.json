@@ -13,7 +13,8 @@
     "test": "bun test",
     "typecheck": "tsc --noEmit",
     "build": "bun scripts/build.ts",
-    "themes": "bun scripts/gen-themes.ts"
+    "themes": "bun scripts/gen-themes.ts",
+    "release": "bun scripts/build.ts --release"
   },
   "dependencies": {
     "@opentui/core": "0.5.16",
@@ -23,5 +24,10 @@
   "devDependencies": {
     "@types/bun": "^1.4.2",
     "typescript": "^7.0.2"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hallelx2/selah"
   }
 }
