@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
-import { createCliRenderer } from "@opentui/core"
+import { createCliRenderer, type RGBA } from "@opentui/core"
+import { writeSync } from "node:fs"
 import { render } from "@opentui/solid"
 import pkg from "../package.json"
 import { Bible } from "./data/bible"
@@ -159,11 +160,32 @@ if (process.env.SELAH_DEBUG_LOG) {
 const palette = process.env.SELAH_NO_PALETTE ? undefined : await renderer.getPalette({ timeout: 300 } as never).catch(() => undefined)
 const tracker = new ReadingTracker(store)
 
+const paint = !process.env.SELAH_NO_PAINT
+const toHex = (x: number) => Math.round(x * 255).toString(16).padStart(2, "0")
+/** Through the renderer's own writer, so the escape is ordered with frames, never inside one. */
+const writeOut = (s: string) => (renderer as unknown as { writeOut(s: string): void }).writeOut(s)
+function setTerminalBackground(color: RGBA | undefined) {
+  if (!paint) return
+  if (!color) return renderer.resetTerminalBgColor()
+  painted = true
+  writeOut(`\x1b]11;rgb:${toHex(color.r)}/${toHex(color.g)}/${toHex(color.b)}\x1b\\`)
+}
+
+let painted = false
+// Give the terminal its own background back however Selah ends (quit, a signal or a crash).
+// Written synchronously: the renderer's writer is asynchronous and process.exit would drop a
+// queued reset, leaving the terminal tinted after Selah closes.
+process.on("exit", () => {
+  if (painted) writeSync(1, "\x1b]111\x1b\\")
+})
+
 function quit() {
   tracker.close()
   renderer.destroy()
   process.exit(0)
 }
+process.on("SIGINT", quit)
+process.on("SIGHUP", quit)
 process.on("SIGTERM", quit)
 
 await render(
@@ -179,6 +201,7 @@ await render(
         terminalMode: renderer.themeMode,
         quit,
         copy: (text) => renderer.copyToClipboardOSC52(text),
+        setTerminalBackground,
       }}
       initial={
         ref ? { route: "reader", book: ref.book, chapter: ref.chapter, verse: ref.verseStart } : undefined

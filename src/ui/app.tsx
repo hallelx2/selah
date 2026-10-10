@@ -60,7 +60,11 @@ function Root(props: { initial?: { route: Route; book?: number; chapter?: number
   })
 
   createEffect(() => {
-    renderer.setBackgroundColor(app.theme().background)
+    const bg = app.theme().background
+    renderer.setBackgroundColor(bg)
+    // Fill the terminal's padding too, so Selah reaches the window's edges. A transparent
+    // theme (system) means "use the terminal's own", so leave it alone.
+    app.deps.setTerminalBackground?.(bg.a > 0 ? bg : undefined)
   })
 
   useKeyboard((key) => {
