@@ -188,7 +188,7 @@ selah install scenes          # Doré's 100 engravings
 | `16 enter` | jump to verse 16 | `v` `y` | select / copy | `ctrl+p` | commands |
 | `o` | go to book | `t` `T` | translation / parallel | `?` | all keys |
 | `z` | focus mode | `w` | prose / verse layout | | |
-| `/` | search | `ctrl+b` | sidebar | `q` | quit |
+| `/` | search | `ctrl+b` | sidebar (j/k, enter, esc) | `q` | quit |
 | `i` | Doré's engraving | | | | |
 
 ### Your streak in waybar

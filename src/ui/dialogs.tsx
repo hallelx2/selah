@@ -778,7 +778,7 @@ const KEYS: [string, [string, string][]][] = [
       ["a", "note on this verse"],
       ["v  y", "select verses / copy"],
       ["t  T", "translation / parallel view"],
-      ["ctrl+b", "sidebar"],
+      ["ctrl+b", "sidebar: j/k books, enter chapters"],
       ["tab  ctrl+l", "study pane / toggle"],
       ["-  =", "narrow / widen text"],
       ["z", "focus mode"],

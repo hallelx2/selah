@@ -252,7 +252,22 @@ export function Reader() {
       return true
     }
     if (ctrl && k === "p") return openPalette(app), true
-    if (ctrl && k === "b") return app.setConfig("sidebar", !app.config.sidebar), true
+    if (ctrl && k === "b") {
+      // closed: open it with the keyboard in it; open: take the keyboard; in it: close it.
+      // Where it cannot be drawn (too narrow, focus mode) it is a plain on/off switch.
+      if (!sidebar()) {
+        const on = !app.config.sidebar
+        app.setConfig("sidebar", on)
+        if (on && focus()) app.toast("Sidebar on", "it shows when you leave focus mode (z)")
+        else if (on && dims().width < SIDEBAR_MIN) app.toast(`The sidebar needs ${SIDEBAR_MIN} columns`, "o opens the books and chapters at any width")
+        else if (on) setSidebarFocused(true)
+        else app.toast("Sidebar off")
+      } else if (sidebarFocused()) {
+        setSidebarFocused(false)
+        app.setConfig("sidebar", false)
+      } else setSidebarFocused(true)
+      return true
+    }
     if (ctrl && k === "d") return move(Math.ceil(pageSize() / 2)), true
     if (ctrl && k === "u") return move(-Math.ceil(pageSize() / 2)), true
     if (ctrl) return false
@@ -352,7 +367,10 @@ export function Reader() {
     return false
   })
 
-  const sidebar = () => app.config.sidebar && dims().width >= 100 && !focus()
+  const sidebar = () => app.config.sidebar && dims().width >= SIDEBAR_MIN && !focus()
+  const [sidebarFocused, setSidebarFocused] = createSignal(false)
+  // the keyboard cannot stay in a sidebar that is not drawn
+  createEffect(() => sidebarFocused() && (!sidebar() || app.studyFocused()) && setSidebarFocused(false))
   /** The study pane sits beside the text when there is room, and floats over it when not. */
   const studySplit = () => app.studyOpen() && !focus() && dims().width >= 120
   const studyOverlay = () => app.studyOpen() && !focus() && dims().width < 120
@@ -429,7 +447,7 @@ export function Reader() {
 
       <box flexDirection="row" flexGrow={1}>
         <Show when={sidebar()}>
-          <Sidebar />
+          <Sidebar focused={sidebarFocused()} setFocused={setSidebarFocused} />
         </Show>
         <scrollbox
           ref={(r: ScrollBoxRenderable) => (scroll = r)}
@@ -590,10 +608,17 @@ export function Reader() {
         }
       >
         <Footer
-          mode={anchor() !== undefined ? "SELECT" : count() ? `:${count()}` : prose() ? "PROSE" : "READ"}
-          icon={anchor() !== undefined ? "copy" : "book"}
+          mode={sidebarFocused() ? "BOOKS" : anchor() !== undefined ? "SELECT" : count() ? `:${count()}` : prose() ? "PROSE" : "READ"}
+          icon={sidebarFocused() ? "library" : anchor() !== undefined ? "copy" : "book"}
           hints={
-            anchor() !== undefined
+            sidebarFocused()
+              ? [
+                  { key: "j/k", label: "move" },
+                  { key: "enter", label: "chapters / open" },
+                  { key: "esc", label: "back" },
+                  { key: "ctrl+b", label: "close" },
+                ]
+              : anchor() !== undefined
               ? [
                   { key: "j/k", label: "extend" },
                   { key: "y", label: "copy" },
@@ -731,10 +756,73 @@ function ChapterEnd() {
 }
 
 /** Books and the chapter grid of the open book, with read status. */
-function Sidebar() {
+/** The sidebar is drawn only from this width. */
+export const SIDEBAR_MIN = 100
+/** Chapters per row in the sidebar's grid (28 columns, 4 each). */
+const GRID = 7
+
+/**
+ * Books with their progress, and a chapter grid. With the keyboard in it (ctrl+b): j/k move
+ * through the books, enter shows a book's chapters, h/j/k/l move in the grid, enter opens one,
+ * esc steps back out.
+ */
+function Sidebar(props: { focused: boolean; setFocused: (v: boolean) => void }) {
   const app = useApp()
   const t = () => app.theme()
-  const book = createMemo(() => bookById(app.position().book))
+  const [mode, setMode] = createSignal<"books" | "chapters">("books")
+  const [cursorBook, setCursorBook] = createSignal(app.position().book)
+  const [cursorChapter, setCursorChapter] = createSignal(app.position().chapter)
+  // the grid shows the book being browsed, else the one open
+  const book = createMemo(() => bookById(props.focused && mode() === "chapters" ? cursorBook() : app.position().book))
+  createEffect(
+    on(
+      () => props.focused,
+      (f) => {
+        if (!f) return
+        setMode("books")
+        setCursorBook(app.position().book)
+        setCursorChapter(app.position().chapter)
+      },
+    ),
+  )
+  // With the keyboard here, other keys do nothing rather than act on the text behind; only
+  // quitting, help and search still work from the sidebar.
+  const swallow = (key: { name: string; sequence: string }) => !(key.name === "q" || key.sequence === "?" || key.sequence === "/")
+  const scrollTo = (id: number) => setTimeout(() => scroll && !scroll.isDestroyed && scroll.scrollChildIntoView(`sb-${id}`), 0)
+  app.useKeys((key) => {
+    if (!props.focused || key.ctrl || key.meta) return false
+    const k = key.sequence === "G" ? "G" : key.name
+    if (mode() === "books") {
+      const move = (to: number) => (setCursorBook(Math.max(1, Math.min(BOOKS.length, to))), scrollTo(cursorBook()), true)
+      if (k === "j" || k === "down") return move(cursorBook() + 1)
+      if (k === "k" || k === "up") return move(cursorBook() - 1)
+      if (k === "pagedown" || k === "space") return move(cursorBook() + 10)
+      if (k === "pageup") return move(cursorBook() - 10)
+      if (k === "g" || k === "home") return move(1)
+      if (k === "G" || k === "end") return move(BOOKS.length)
+      if (k === "return" || k === "l" || k === "right") {
+        setCursorChapter(cursorBook() === app.position().book ? app.position().chapter : 1)
+        return setMode("chapters"), true
+      }
+      if (k === "escape" || k === "tab") return props.setFocused(false), true
+      return swallow(key)
+    }
+    const last = bookById(cursorBook()).chapters
+    const move = (to: number) => (setCursorChapter(Math.max(1, Math.min(last, to))), true)
+    if (k === "l" || k === "right") return move(cursorChapter() + 1)
+    if (k === "h" || k === "left") return move(cursorChapter() - 1)
+    if (k === "j" || k === "down") return move(cursorChapter() + GRID)
+    if (k === "k" || k === "up") return move(cursorChapter() - GRID)
+    if (k === "g" || k === "home") return move(1)
+    if (k === "G" || k === "end") return move(last)
+    if (k === "return") {
+      app.openChapter({ book: cursorBook(), chapter: cursorChapter() })
+      return props.setFocused(false), true
+    }
+    if (k === "escape" || k === "backspace") return setMode("books"), true
+    if (k === "tab") return props.setFocused(false), true
+    return swallow(key)
+  })
   const chapters = createMemo(() => Array.from({ length: book().chapters }, (_, i) => i + 1))
   const readSet = createMemo(() => new Set(app.reads().map((r) => `${r.book}:${r.chapter}`)))
   const perBook = createMemo(() => new Map(app.progress().books.map((b) => [b.book, b])))
@@ -758,13 +846,15 @@ function Sidebar() {
         <box flexDirection="row" flexWrap="wrap" paddingTop={1} width={28}>
           <For each={chapters()}>
             {(c) => {
-              const current = () => c === app.position().chapter
+              const current = () => book().id === app.position().book && c === app.position().chapter
+              const cursor = () => props.focused && mode() === "chapters" && c === cursorChapter()
               const read = () => readSet().has(`${book().id}:${c}`)
               return (
                 <text
                   width={4}
-                  fg={current() ? t().onPrimary : read() ? t().success : t().textMuted}
-                  bg={current() ? t().primary : TRANSPARENT}
+                  fg={cursor() ? t().onPrimary : current() ? t().onPrimary : read() ? t().success : t().textMuted}
+                  bg={cursor() ? t().accent : current() ? t().primary : TRANSPARENT}
+                  attributes={cursor() ? TextAttributes.BOLD : 0}
                   onMouseUp={() => app.openChapter({ book: book().id, chapter: c })}
                   selectable={false}
                 >
@@ -784,6 +874,7 @@ function Sidebar() {
         <For each={BOOKS}>
           {(b) => {
             const current = () => b.id === app.position().book
+            const cursor = () => props.focused && b.id === cursorBook()
             const p = () => perBook().get(b.id)!
             return (
               <box
@@ -793,10 +884,11 @@ function Sidebar() {
                 paddingLeft={1}
                 paddingRight={2}
                 {...LeftBar}
-                borderColor={current() ? t().primary : TRANSPARENT}
+                borderColor={cursor() ? t().accent : current() ? t().primary : TRANSPARENT}
+                backgroundColor={cursor() ? t().backgroundElement : TRANSPARENT}
                 onMouseUp={() => app.openChapter({ book: b.id, chapter: 1 })}
               >
-                <text fg={current() ? t().text : t().textMuted} wrapMode="none">
+                <text fg={cursor() || current() ? t().text : t().textMuted} attributes={cursor() ? TextAttributes.BOLD : 0} wrapMode="none">
                   {fit(b.name, 17)}
                 </text>
                 <LineBar fraction={p().fraction} width={8} color={p().fraction === 1 ? t().success : t().primary} />
