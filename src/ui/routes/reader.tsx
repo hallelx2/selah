@@ -253,15 +253,19 @@ export function Reader() {
     }
     if (ctrl && k === "p") return openPalette(app), true
     if (ctrl && k === "b") {
-      // closed: open it with the keyboard in it; open: take the keyboard; in it: close it
-      if (sidebar() && sidebarFocused()) {
+      // closed: open it with the keyboard in it; open: take the keyboard; in it: close it.
+      // Where it cannot be drawn (too narrow, focus mode) it is a plain on/off switch.
+      if (!sidebar()) {
+        const on = !app.config.sidebar
+        app.setConfig("sidebar", on)
+        if (on && focus()) app.toast("Sidebar on", "it shows when you leave focus mode (z)")
+        else if (on && dims().width < SIDEBAR_MIN) app.toast(`The sidebar needs ${SIDEBAR_MIN} columns`, "o opens the books and chapters at any width")
+        else if (on) setSidebarFocused(true)
+        else app.toast("Sidebar off")
+      } else if (sidebarFocused()) {
         setSidebarFocused(false)
         app.setConfig("sidebar", false)
-      } else {
-        if (!app.config.sidebar) app.setConfig("sidebar", true)
-        if (dims().width < SIDEBAR_MIN) app.toast(`The sidebar needs ${SIDEBAR_MIN} columns`, "o opens the books and chapters at any width")
-        else setSidebarFocused(true)
-      }
+      } else setSidebarFocused(true)
       return true
     }
     if (ctrl && k === "d") return move(Math.ceil(pageSize() / 2)), true
@@ -366,7 +370,7 @@ export function Reader() {
   const sidebar = () => app.config.sidebar && dims().width >= SIDEBAR_MIN && !focus()
   const [sidebarFocused, setSidebarFocused] = createSignal(false)
   // the keyboard cannot stay in a sidebar that is not drawn
-  createEffect(() => (!sidebar() || app.studyFocused()) && setSidebarFocused(false))
+  createEffect(() => sidebarFocused() && (!sidebar() || app.studyFocused()) && setSidebarFocused(false))
   /** The study pane sits beside the text when there is room, and floats over it when not. */
   const studySplit = () => app.studyOpen() && !focus() && dims().width >= 120
   const studyOverlay = () => app.studyOpen() && !focus() && dims().width < 120
@@ -781,6 +785,9 @@ function Sidebar(props: { focused: boolean; setFocused: (v: boolean) => void }) 
       },
     ),
   )
+  // With the keyboard here, other keys do nothing rather than act on the text behind; only
+  // quitting, help and search still work from the sidebar.
+  const swallow = (key: { name: string; sequence: string }) => !(key.name === "q" || key.sequence === "?" || key.sequence === "/")
   const scrollTo = (id: number) => setTimeout(() => scroll && !scroll.isDestroyed && scroll.scrollChildIntoView(`sb-${id}`), 0)
   app.useKeys((key) => {
     if (!props.focused || key.ctrl || key.meta) return false
@@ -798,7 +805,7 @@ function Sidebar(props: { focused: boolean; setFocused: (v: boolean) => void }) 
         return setMode("chapters"), true
       }
       if (k === "escape" || k === "tab") return props.setFocused(false), true
-      return false
+      return swallow(key)
     }
     const last = bookById(cursorBook()).chapters
     const move = (to: number) => (setCursorChapter(Math.max(1, Math.min(last, to))), true)
@@ -814,7 +821,7 @@ function Sidebar(props: { focused: boolean; setFocused: (v: boolean) => void }) 
     }
     if (k === "escape" || k === "backspace") return setMode("books"), true
     if (k === "tab") return props.setFocused(false), true
-    return false
+    return swallow(key)
   })
   const chapters = createMemo(() => Array.from({ length: book().chapters }, (_, i) => i + 1))
   const readSet = createMemo(() => new Set(app.reads().map((r) => `${r.book}:${r.chapter}`)))
