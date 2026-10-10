@@ -181,9 +181,14 @@ export function AskTab(props: { register: (r: { key: (k: KeyEvent) => boolean; c
 
   // Find the reader's agents once.
   void (async () => {
-    const choice = app.deps.agents ? await app.deps.agents() : undefined
-    if (choice) setAgent(pickAgent(choice, app.config.agent))
-    setDetected(true)
+    try {
+      const choice = app.deps.agents ? await app.deps.agents() : undefined
+      if (choice) setAgent(pickAgent(choice, app.config.agent))
+    } catch (err) {
+      app.toast("Could not start Ask", err instanceof Error ? err.message : String(err), "error")
+    } finally {
+      setDetected(true)
+    }
   })()
 
   // Each chapter has its own conversation.

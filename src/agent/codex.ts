@@ -65,6 +65,11 @@ export function codexHome(env: Record<string, string | undefined> = {}): string 
     join(home, "config.toml"),
     [
       "# Written by Selah for Ask. Only Selah's tools; the reader's own Codex config is untouched.",
+      // The read-only sandbox still lets a shell read any file the reader can. Ask needs none of
+      // Codex's own tools, so they are off; web search stays.
+      "[features]",
+      ...CODEX_TOOLS_OFF.map((f) => `${f} = false`),
+      "",
       "[mcp_servers.selah]",
       `command = ${toml(mcp.command)}`,
       `args = [${mcp.args.map(toml).join(", ")}]`,
@@ -74,6 +79,25 @@ export function codexHome(env: Record<string, string | undefined> = {}): string 
   )
   return home
 }
+
+/** Codex features that reach the machine (shell, files, images, browsers, plugins, sub-agents); names as of codex-cli 0.153.4. */
+export const CODEX_TOOLS_OFF = [
+  "shell_tool",
+  "unified_exec",
+  "shell_snapshot",
+  "view_image",
+  "image_generation",
+  "browser_use",
+  "browser_use_external",
+  "computer_use",
+  "in_app_browser",
+  "in_app_local_automation",
+  "apps",
+  "plugins",
+  "multi_agent",
+  "hooks",
+  "skill_mcp_dependency_install",
+]
 
 /** Every variable `src/data/paths.ts` reads. */
 const PATH_VARS = ["SELAH_HOME", "SELAH_SOURCES", "XDG_DATA_HOME", "XDG_CONFIG_HOME", "XDG_CACHE_HOME"]

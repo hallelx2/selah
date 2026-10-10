@@ -52,7 +52,7 @@ export async function harness(opts: {
   store?: UserStore
   bible?: Bible
   /** Agents for the Ask tab; none by default. */
-  agents?: import("../src/agent").AgentProvider[]
+  agents?: import("../src/agent").AgentProvider[] | (() => Promise<never>)
 } = {}): Promise<Harness> {
   const bible = opts.bible ?? (await fixtureBible())
   const commentary = await fixtureCommentary()
@@ -81,7 +81,7 @@ export async function harness(opts: {
           quit: () => (quit.called = true),
           copy: (text) => (copied.push(text), true),
           onApp: (a) => (appRef = a),
-          agents: async () => ({ available: opts.agents ?? [], found: {} }),
+          agents: typeof opts.agents === "function" ? opts.agents : async () => ({ available: (opts.agents as import("../src/agent").AgentProvider[] | undefined) ?? [], found: {} }),
           setTerminalBackground: (c) =>
             painted.push(c ? `#${[c.r, c.g, c.b].map((x) => Math.round(x * 255).toString(16).padStart(2, "0")).join("")}` : "reset"),
         }}

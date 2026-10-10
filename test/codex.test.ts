@@ -89,3 +89,9 @@ describe("codex provider", () => {
     expect(readFileSync(link, "utf8")).toBe('{"own":true}')
   })
 })
+
+test("Codex's own machine tools are off in Selah's Codex home", () => {
+  const toml = readFileSync(join(codexHome(), "config.toml"), "utf8")
+  expect(toml).toContain("[features]\nshell_tool = false\n")
+  for (const f of ["unified_exec", "view_image", "browser_use", "computer_use", "plugins", "multi_agent"]) expect(toml).toContain(`\n${f} = false\n`)
+})
