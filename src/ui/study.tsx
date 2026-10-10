@@ -5,12 +5,15 @@ import { bookById } from "../data/books"
 import { COMMENTARY_ATTRIBUTION, installCommentary } from "../data/commentary"
 import { formatRef } from "../data/ref"
 import { Bar, Hints, LeftBar, TRANSPARENT } from "./components/primitives"
+import { AskTab } from "./ask"
+import { Inline } from "./components/inline"
 import { mixColor } from "./motion"
 import { useApp, type StudyTab } from "./state"
 
 const TABS: { id: StudyTab; label: string; key: string }[] = [
   { id: "notes", label: "Notes", key: "1" },
   { id: "commentary", label: "Commentary", key: "2" },
+  { id: "ask", label: "Ask", key: "4" },
 ]
 
 /**
@@ -31,6 +34,13 @@ export function StudyPane(props: { overlay?: boolean }) {
   app.useKeys((key) => {
     if (!focused()) return false
     app.deps.tracker.activity()
+    // A tab with a text input (Ask) takes every key except moving focus away and its ctrl chords.
+    if (captures?.()) {
+      if (paneKeyEvent?.(key)) return true
+      if (key.name === "tab" || (key.name === "escape" && !key.ctrl)) return app.setStudyFocused(false), true
+      if (key.ctrl && key.name === "l") return app.setStudyOpen(false), app.setStudyFocused(false), true
+      return !key.ctrl
+    }
     if (editing()) {
       // While typing, only escape and ctrl chords are ours; every other key belongs to the textarea.
       if (key.name === "escape") return setEditing(undefined), true
@@ -50,6 +60,8 @@ export function StudyPane(props: { overlay?: boolean }) {
     return paneKey?.(key.name, key.sequence) ?? false
   })
   let paneKey: ((name: string, sequence: string) => boolean) | undefined
+  let paneKeyEvent: ((key: import("@opentui/core").KeyEvent) => boolean) | undefined
+  let captures: (() => boolean) | undefined
 
   return (
     <box
@@ -90,10 +102,19 @@ export function StudyPane(props: { overlay?: boolean }) {
       </box>
       <box flexGrow={1} flexDirection="column" paddingLeft={2} paddingRight={1} paddingTop={1}>
         <Show when={app.studyTab() === "notes"}>
-          <NotesTab editing={editing()} setEditing={setEditing} register={(fn) => (paneKey = fn)} />
+          <NotesTab editing={editing()} setEditing={setEditing} register={(fn) => ((paneKey = fn), (captures = undefined), (paneKeyEvent = undefined))} />
         </Show>
         <Show when={app.studyTab() === "commentary"}>
-          <CommentaryTab register={(fn) => (paneKey = fn)} />
+          <CommentaryTab register={(fn) => ((paneKey = fn), (captures = undefined), (paneKeyEvent = undefined))} />
+        </Show>
+        <Show when={app.studyTab() === "ask"}>
+          <AskTab
+            register={(r) => {
+              paneKey = undefined
+              paneKeyEvent = r.key
+              captures = r.captures
+            }}
+          />
         </Show>
       </box>
     </box>
@@ -279,24 +300,6 @@ function Editor(props: {
 }
 
 // commentary ---------------------------------------------------------------------------
-
-/** *italic* and **bold** from Henry's Markdown, nothing more. */
-function Inline(props: { text: string; fg: RGBA }) {
-  const parts = () => props.text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).filter(Boolean)
-  return (
-    <For each={parts()}>
-      {(p) =>
-        p.startsWith("**") ? (
-          <span style={{ fg: props.fg, attributes: TextAttributes.BOLD }}>{p.slice(2, -2)}</span>
-        ) : p.startsWith("*") ? (
-          <span style={{ fg: props.fg, attributes: TextAttributes.ITALIC }}>{p.slice(1, -1)}</span>
-        ) : (
-          <span style={{ fg: props.fg }}>{p}</span>
-        )
-      }
-    </For>
-  )
-}
 
 function CommentaryTab(props: { register: (fn: (name: string, sequence: string) => boolean) => void }) {
   const app = useApp()

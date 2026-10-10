@@ -1,7 +1,6 @@
 #!/usr/bin/env bun
-import { createCliRenderer, type RGBA } from "@opentui/core"
+import type { RGBA } from "@opentui/core"
 import { writeSync } from "node:fs"
-import { render } from "@opentui/solid"
 import pkg from "../package.json"
 import { Bible } from "./data/bible"
 import { loadConfig, saveConfig } from "./data/config"
@@ -18,8 +17,6 @@ import { bookProgress, consistency, currentStreak, firstDay, longestStreak, trac
 import { ReadingTracker } from "./data/tracker"
 import { CATALOG } from "./data/translations"
 import { UserStore } from "./data/user"
-import { App } from "./ui/app"
-import { plain } from "./ui/components/verse"
 
 const HELP = `selah ${pkg.version}  a Bible for the terminal
 
@@ -32,6 +29,7 @@ Usage
   selah install <id>        download a translation     ${CATALOG.map((c) => c.id).join(", ")}
   selah install commentary  Matthew Henry's Commentary on the Whole Bible
   selah notes export [file] all notes and journals as Markdown
+  selah mcp                 serve Selah's tools to Claude Code, Codex or any MCP client
   selah translations        list translations
 
 Options
@@ -41,6 +39,9 @@ Options
   -v, --version             show the version
 
 Data lives in $XDG_DATA_HOME/selah, settings in $XDG_CONFIG_HOME/selah/config.json.`
+
+/** Verse text without KJV brackets or search marks, for plain-text output. */
+const plain = (text: string) => text.replace(/[[\]\u0001\u0002]/g, "")
 
 const cli = parseCli(process.argv.slice(2), { tty: !!process.stdout.isTTY })
 const action = cli.action
@@ -88,6 +89,13 @@ if (action.kind === "install") {
     await ensureTranslation(id)
   }
   process.exit(0)
+}
+
+if (action.kind === "mcp") {
+  // stdout is the protocol channel: nothing else may write to it.
+  const { runMcpServer } = await import("./mcp")
+  await runMcpServer({ bible, commentary, store, translation: () => config.translation }, pkg.version)
+  await new Promise(() => {})
 }
 
 if (action.kind === "notes-export") {
@@ -166,10 +174,16 @@ if (action.kind === "print") {
 // An explicit -t must be readable in the app: fetch it now rather than open an empty reader.
 // (A configured translation that is missing falls back to an installed one inside the app.)
 if (translationFlag && bible.translations().length) await ensureTranslation(translationFlag)
-const ref = action.ref
+const ref = action.kind === "tui" ? action.ref : undefined
 
 // the app ---------------------------------------------------------------------------------
 
+// The UI is loaded only when it is needed, so the CLI paths above start fast.
+const [{ createCliRenderer }, { render }, { App }] = await Promise.all([
+  import("@opentui/core"),
+  import("@opentui/solid"),
+  import("./ui/app"),
+])
 const renderer = await createCliRenderer({ exitOnCtrlC: false, useMouse: true, targetFps: 60 })
 renderer.setTerminalTitle("Selah")
 if (process.env.SELAH_DEBUG_LOG) {
@@ -221,6 +235,7 @@ await render(
         store,
         commentary,
         cacheDir: paths.sources,
+        agents: async () => (await import("./agent")).detectAgents({ bible, commentary, store, translation: () => config.translation }),
         tracker,
         config,
         saveConfig: (c) => saveConfig({ ...c, translation: translationFlag && c.translation === translationFlag ? loadConfig().translation : c.translation }),

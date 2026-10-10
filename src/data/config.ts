@@ -23,6 +23,8 @@ export interface Config {
   prose: boolean
   /** Width of the study pane in columns. */
   studyWidth: number
+  /** Which local agent answers in the Ask tab: the first one found, or a specific one. */
+  agent: "auto" | "claude" | "codex"
 }
 
 export const DEFAULT_CONFIG: Config = {
@@ -37,6 +39,7 @@ export const DEFAULT_CONFIG: Config = {
   motion: "full",
   prose: false,
   studyWidth: 60,
+  agent: "auto",
 }
 
 export function loadConfig(file = paths.configFile): Config {

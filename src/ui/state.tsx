@@ -24,6 +24,8 @@ export interface Deps {
   commentary?: Commentary
   /** Where downloaded study packs are cached. */
   cacheDir?: string
+  /** Finds the reader's local agents (Claude Code, Codex) for the Ask tab. */
+  agents?: () => Promise<import("../agent").AgentChoice>
   tracker: ReadingTracker
   config: Config
   saveConfig: (c: Config) => void
@@ -60,7 +62,7 @@ type KeyHandler = (key: KeyEvent) => boolean | void
 
 export const MILESTONES = [3, 7, 14, 30, 50, 100, 200, 365] as const
 
-export type StudyTab = "notes" | "commentary"
+export type StudyTab = "notes" | "commentary" | "ask"
 
 export interface ActivePlan {
   id: string
