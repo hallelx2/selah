@@ -3,7 +3,7 @@
 A Bible for the terminal, built on the same TUI stack as [opencode](https://github.com/anomalyco/opencode)
 (OpenTUI and Solid on Bun), with a reading tracker that tells you honestly whether you are consistent.
 
-![Home](docs/screenshots/home.png)
+![A beam of light crossing the logo](docs/screenshots/beam.gif)
 
 ## What it does
 
@@ -22,10 +22,22 @@ A Bible for the terminal, built on the same TUI stack as [opencode](https://gith
   30 Days, Psalms and Proverbs in a Month. Portions are balanced by word count, and Selah tells you
   how far ahead or behind you are and when you will finish at your current pace.
 - **Matches your rice.** opencode's 33 themes with live preview, plus `system`, which uses your
-  terminal's own palette.
+  terminal's own palette. Nerd Font icons when your font has them, simple symbols when it does not.
+- **Moves like light, not like a slot machine.** A beam crosses the logo, each chapter surfaces
+  onto the page, a hairline meter fills with real reading time and flashes when the chapter
+  counts, and streak milestones bloom in rings of light, once each. Nothing animates while idle,
+  and `motion: "reduced"` turns it all off.
+- **Reads like a book.** Drop-cap chapter numbers, a prose layout with superscript verse numbers
+  (`w`), and a focus mode (`z`) that dims everything but the verse you are on.
 - **Works offline.** Translations download once into a local SQLite database with full-text search.
 
-![Progress](docs/screenshots/progress.png)
+![Reading Psalm 23 to the end: the meter fills, the read counts, a 7-day milestone](docs/screenshots/milestone.gif)
+
+![Progress](docs/screenshots/progress.gif)
+
+![Focus mode](docs/screenshots/focus.png)
+
+![Prose layout](docs/screenshots/prose.png)
 
 ![Reader](docs/screenshots/reader.png)
 
@@ -76,6 +88,7 @@ selah install ASV YLT NHEB    # more translations
 | `space` | page down | `a` | note on verse | `ctrl+o` | today's reading |
 | `16 enter` | jump to verse 16 | `v` `y` | select / copy | `ctrl+p` | commands |
 | `o` | go to book | `t` `T` | translation / parallel | `?` | all keys |
+| `z` | focus mode | `w` | prose / verse layout | | |
 | `/` | search | `ctrl+b` | sidebar | `q` | quit |
 
 ### Your streak in waybar
@@ -110,7 +123,8 @@ All are public domain, taken from [scrollmapper/bible_databases](https://github.
 - `$XDG_DATA_HOME/selah/bible.db`: the texts and their search index.
 - `$XDG_DATA_HOME/selah/user.db`: your reading sessions, reads, highlights, bookmarks and notes.
   It is separate from the texts, so adding or removing a translation never touches it.
-- `$XDG_CONFIG_HOME/selah/config.json`: theme, mode, translation, daily goal. Safe to edit by hand.
+- `$XDG_CONFIG_HOME/selah/config.json`: theme, mode, translation, daily goal, `icons`
+  (`nerd`, `unicode` or `none`), `motion` (`full` or `reduced`) and `prose`. Safe to edit by hand.
 
 `SELAH_HOME` puts all three under one directory. `SELAH_NO_PALETTE=1` skips the terminal palette
 query for terminals that mishandle it. `SELAH_DEBUG_LOG=<file>` writes errors to a file.
@@ -121,6 +135,7 @@ query for terminals that mishandle it. `SELAH_DEBUG_LOG=<file>` writes errors to
 bun test               # data, tracker, stats, plans, themes and rendered UI frames
 bun run typecheck
 bun scripts/screenshots.tsx   # regenerate docs/screenshots from real frames
+bun scripts/gifs.tsx          # record the GIFs frame by frame on a manual clock
 ```
 
 `bun scripts/build.ts --release` cross-compiles every release target and writes `SHA256SUMS`;

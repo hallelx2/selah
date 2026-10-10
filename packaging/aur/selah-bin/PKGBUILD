@@ -1,0 +1,23 @@
+# Maintainer: hallelx2 <halleluyaholudele@gmail.com>
+pkgname=selah-bin
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="A Bible for the terminal, with an honest reading tracker: streaks, consistency heatmap, reading plans"
+arch=('x86_64' 'aarch64')
+url="https://github.com/hallelx2/selah"
+license=('MIT')
+provides=('selah')
+conflicts=('selah')
+# A Bun-compiled executable carries its app after the ELF sections; stripping destroys it.
+options=('!strip' '!debug')
+source=("LICENSE-$pkgver::https://raw.githubusercontent.com/hallelx2/selah/v$pkgver/LICENSE")
+source_x86_64=("selah-$pkgver-x86_64::https://github.com/hallelx2/selah/releases/download/v$pkgver/selah-linux-x64")
+source_aarch64=("selah-$pkgver-aarch64::https://github.com/hallelx2/selah/releases/download/v$pkgver/selah-linux-arm64")
+sha256sums=('9e37de5278988bdf453acf1055de228e19f2ed4e892cd3bc9b0af1b7491b9b5b')
+sha256sums_x86_64=('33badfe456c01e3861dc17cc21cd866bd3439e440225415726d8769bda613328')
+sha256sums_aarch64=('95cf15d9ae72cf2c0fbc3677f36baaa64c39a417fc0a4e35ec8b34c4836bf2c0')
+
+package() {
+  install -Dm755 "selah-$pkgver-$CARCH" "$pkgdir/usr/bin/selah"
+  install -Dm644 "LICENSE-$pkgver" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

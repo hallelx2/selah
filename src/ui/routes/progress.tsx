@@ -1,16 +1,29 @@
 import { TextAttributes, type RGBA, type ScrollBoxRenderable } from "@opentui/core"
 import { useTerminalDimensions } from "@opentui/solid"
-import { createMemo, For, Show, type JSX } from "solid-js"
+import { createContext, createMemo, For, Show, useContext, type JSX } from "solid-js"
 import { BOOKS } from "../../data/books"
 import { addDays, daysBetween, monthName, parseDay, prettyDay } from "../../data/dates"
 import { consistency, formatMinutes, heatmap, lastDays, met, verdict } from "../../data/stats"
 import { Bar, Footer, LeftBar, LineBar, ROUNDED, fit } from "../components/primitives"
 import { openGoal, openPalette, openPlans } from "../dialogs"
+import { ease } from "../motion"
 import { useApp } from "../state"
+
+/**
+ * 0 → 1 as the screen opens: numbers count up, bars fill and the heatmap is drawn column by
+ * column. Under reduced motion it is 1 from the start.
+ */
+const Intro = createContext<() => number>(() => 1)
+const useIntro = () => useContext(Intro)
+
+/** Counts an integer up with the intro. */
+const countUp = (n: number, p: number) => String(Math.round(n * p))
 import { portionLabel } from "./home"
 
 export function Progress() {
   const app = useApp()
+  const opening = app.motion.start(900)
+  const intro = () => app.motion.progress(opening, ease.outExpo)
   const dims = useTerminalDimensions()
   const t = () => app.theme()
   let scroll: ScrollBoxRenderable | undefined
@@ -79,9 +92,11 @@ export function Progress() {
   })
 
   return (
+    <Intro.Provider value={intro}>
     <box flexDirection="column" flexGrow={1}>
       <box flexDirection="row" height={1} flexShrink={0} backgroundColor={t().backgroundPanel} justifyContent="space-between" paddingLeft={1} paddingRight={1}>
         <text wrapMode="none">
+          <span style={{ fg: t().primary }}>{app.ip("stats")}</span>
           <span style={{ fg: t().text, attributes: TextAttributes.BOLD }}>Progress</span>
           <span style={{ fg: t().textMuted }}>
             {"  ·  "}goal {goal().amount} {goal().kind === "chapters" ? (goal().amount === 1 ? "chapter" : "chapters") : "minutes"} a day
@@ -109,12 +124,12 @@ export function Progress() {
 
           {/* stat cards */}
           <box flexDirection="row" gap={1}>
-            <Stat label="Current streak" value={`${app.streak()}`} unit={app.streak() === 1 ? "day" : "days"} color={app.streak() ? t().warning : t().textMuted} note={app.streak() && !met(app.totals().get(app.today()), goal()) ? "read today to keep it" : app.streak() ? "goal met today" : "starts with today"} />
-            <Stat label="Longest streak" value={`${app.longest()}`} unit={app.longest() === 1 ? "day" : "days"} color={t().text} note={app.longest() && app.streak() === app.longest() ? "this is it" : " "} />
-            <Stat label="This week" value={`${weekChapters()}`} unit="ch" color={t().text} note={`${formatMinutes(weekMinutes())} · ${Math.round(c7() * Math.min(7, Math.max(1, app.tracked())))}/${Math.min(7, Math.max(1, app.tracked()))} days`} />
-            <Stat label="Consistency" value={`${Math.round(c30() * 100)}`} unit="%" color={toneColor(v().tone)} note={`${app.tracked() < 365 ? "all time" : "year"} ${Math.round(c365() * 100)}%`} />
-            <Stat label="Bible read" value={(app.progress().total.fraction * 100).toFixed(1)} unit="%" color={t().primary} note={`${app.progress().total.read} of 1189 ch`} />
-            <Stat label="Time reading" value={formatMinutes(app.deps.store.totalActiveMs() / 60_000)} unit="" color={t().text} note={`${daysWithReading()} ${daysWithReading() === 1 ? "day" : "days"}`} />
+            <Stat icon="streak" label="Current streak" value={countUp(app.streak(), intro())} unit={app.streak() === 1 ? "day" : "days"} color={app.streak() ? t().warning : t().textMuted} note={app.streak() && !met(app.totals().get(app.today()), goal()) ? "read today to keep it" : app.streak() ? "goal met today" : "starts with today"} />
+            <Stat icon="trophy" label="Longest streak" value={countUp(app.longest(), intro())} unit={app.longest() === 1 ? "day" : "days"} color={t().text} note={app.longest() && app.streak() === app.longest() ? "this is it" : " "} />
+            <Stat icon="plan" label="This week" value={countUp(weekChapters(), intro())} unit="ch" color={t().text} note={`${formatMinutes(weekMinutes())} · ${Math.round(c7() * Math.min(7, Math.max(1, app.tracked())))}/${Math.min(7, Math.max(1, app.tracked()))} days`} />
+            <Stat icon="goal" label="Consistency" value={countUp(c30() * 100, intro())} unit="%" color={toneColor(v().tone)} note={`${app.tracked() < 365 ? "all time" : "year"} ${Math.round(c365() * 100)}%`} />
+            <Stat icon="book" label="Bible read" value={(app.progress().total.fraction * 100 * intro()).toFixed(1)} unit="%" color={t().primary} note={`${app.progress().total.read} of 1189 ch`} />
+            <Stat icon="clock" label="Time reading" value={formatMinutes(app.deps.store.totalActiveMs() / 60_000)} unit="" color={t().text} note={`${daysWithReading()} ${daysWithReading() === 1 ? "day" : "days"}`} />
           </box>
 
           <Card title="Consistency" right={<Legend />}>
@@ -139,6 +154,7 @@ export function Progress() {
       </scrollbox>
       <Footer
         mode="STATS"
+        icon="stats"
         hints={[
           { key: "j/k", label: "scroll" },
           { key: "e", label: "edit goal" },
@@ -147,6 +163,7 @@ export function Progress() {
         ]}
       />
     </box>
+    </Intro.Provider>
   )
 }
 
@@ -177,12 +194,13 @@ function Card(props: { title: string; right?: JSX.Element; children: JSX.Element
   )
 }
 
-function Stat(props: { label: string; value: string; unit: string; color: RGBA; note: string }) {
+function Stat(props: { icon: import("../icons").IconName; label: string; value: string; unit: string; color: RGBA; note: string }) {
   const app = useApp()
   const t = () => app.theme()
   return (
     <box flexGrow={1} flexBasis={0} backgroundColor={t().backgroundPanel} paddingLeft={2} paddingRight={1} paddingTop={1} paddingBottom={1} flexDirection="column">
       <text fg={t().textMuted} wrapMode="none">
+        <span style={{ fg: props.color }}>{app.ip(props.icon)}</span>
         {props.label}
       </text>
       <text wrapMode="none">
@@ -212,6 +230,7 @@ const DAY_LABELS = ["   ", "Mon", "   ", "Wed", "   ", "Fri", "   "]
 /** GitHub's contribution grid: one column per week, one row per weekday, today in the last column. */
 function Heatmap(props: { width: number }) {
   const app = useApp()
+  const intro = useIntro()
   const t = () => app.theme()
   const weeks = () => Math.max(8, Math.min(53, Math.floor((props.width - 5) / 2)))
   const grid = createMemo(() => heatmap(app.totals(), app.config.goal, app.today(), weeks()))
@@ -239,9 +258,11 @@ function Heatmap(props: { width: number }) {
           <text wrapMode="none">
             <span style={{ fg: t().textMuted }}>{DAY_LABELS[d] + " "}</span>
             <For each={grid().weeks}>
-              {(col) => {
+              {(col, w) => {
                 const cell = col[d]
                 if (!cell) return <span>{"  "}</span>
+                // Drawn left to right as the screen opens, like ink filling a ledger.
+                if (w() / grid().weeks.length > intro()) return <span style={{ fg: t().heat[0] }}>{"· "}</span>
                 const isToday = cell.day === app.today()
                 return <span style={{ fg: isToday && cell.level === 0 ? t().primary : t().heat[cell.level] }}>{isToday && cell.level === 0 ? "□ " : "■ "}</span>
               }}
@@ -258,6 +279,7 @@ const EIGHTHS = " ▁▂▃▄▅▆▇█"
 /** Vertical bars for the last 30 days, with the goal drawn as a dotted line. */
 function Bars(props: { width: number }) {
   const app = useApp()
+  const intro = useIntro()
   const t = () => app.theme()
   const HEIGHT = 6
   const days = createMemo(() => lastDays(app.totals(), app.today(), Math.max(7, Math.min(30, Math.floor(props.width / 2)))))
@@ -271,7 +293,7 @@ function Bars(props: { width: number }) {
           <text wrapMode="none">
             <For each={days()}>
               {(d) => {
-                const eighths = Math.round((valueOf(d) / scale()) * HEIGHT * 8)
+                const eighths = Math.round((valueOf(d) / scale()) * HEIGHT * 8 * intro())
                 const fromBottom = HEIGHT - 1 - row
                 const fill = Math.max(0, Math.min(8, eighths - fromBottom * 8))
                 const ok = met(d, app.config.goal)
@@ -297,6 +319,7 @@ function Bars(props: { width: number }) {
 
 function Rhythm(props: { counts: number[] }) {
   const app = useApp()
+  const intro = useIntro()
   const t = () => app.theme()
   const max = () => Math.max(1, ...props.counts)
   const names = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
@@ -308,7 +331,7 @@ function Rhythm(props: { counts: number[] }) {
             <text fg={t().textMuted} wrapMode="none" width={4}>
               {names[d]}
             </text>
-            <Bar fraction={props.counts[d]! / max()} width={14} color={props.counts[d] === max() ? t().success : t().primary} />
+            <Bar fraction={(props.counts[d]! / max()) * intro()} width={14} color={props.counts[d] === max() ? t().success : t().primary} />
             <text fg={t().textMuted} wrapMode="none">
               {` ${props.counts[d]}/12`}
             </text>
@@ -321,6 +344,7 @@ function Rhythm(props: { counts: number[] }) {
 
 function PlanCard() {
   const app = useApp()
+  const intro = useIntro()
   const t = () => app.theme()
   const plan = () => app.activePlan()
   return (
@@ -335,7 +359,7 @@ function PlanCard() {
               </span>
             </text>
             <box flexDirection="row" gap={1} paddingTop={1}>
-              <Bar fraction={p().status.fraction} width={40} color={t().primary} />
+              <Bar fraction={p().status.fraction * intro()} width={40} color={t().primary} />
               <text fg={t().text} wrapMode="none">
                 {(p().status.fraction * 100).toFixed(1)}%
               </text>
@@ -376,6 +400,7 @@ function PlanCard() {
 
 function BookGrid(props: { width: number }) {
   const app = useApp()
+  const intro = useIntro()
   const t = () => app.theme()
   const colWidth = 26
   const cols = () => Math.max(1, Math.floor(props.width / colWidth))
@@ -401,7 +426,7 @@ function BookGrid(props: { width: number }) {
                     <text width={8} wrapMode="none" fg={p().fraction === 1 ? t().success : p().read ? t().text : t().textMuted}>
                       {fit(b.short, 7)}
                     </text>
-                    <LineBar fraction={p().fraction} width={10} color={p().fraction === 1 ? t().success : t().primary} />
+                    <LineBar fraction={p().fraction * intro()} width={10} color={p().fraction === 1 ? t().success : t().primary} />
                     <text wrapMode="none" fg={t().textMuted}>
                       {fit(` ${p().read}/${p().total}`, 7, "right")}
                     </text>

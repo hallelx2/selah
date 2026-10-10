@@ -147,7 +147,7 @@ describe("progress", () => {
     h = await harness({ store: seededStore(), width: 130, height: 70, initial: { route: "progress" } })
     const f = h.frame()
     expect(f).toContain("Very consistent")
-    expect(f).toMatch(/Current streak\s+Longest streak/)
+    expect(f).toMatch(/Current streak\s+\S\s+Longest streak/)
     expect(f).toContain("12 days")
     expect(f).toMatch(/Mon ■/)
     expect(f).toContain("New Testament in 90 Days")

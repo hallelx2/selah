@@ -19,7 +19,7 @@ describe("1. a translation that is not installed", () => {
   test("the app falls back to an installed one instead of opening an empty reader", async () => {
     h = await harness({ config: { translation: "ASV" }, initial: { route: "reader", book: 43, chapter: 3 } })
     expect(h.frame()).toContain("John 3 · KJV")
-    expect(h.frame()).toContain("For God so loved the world")
+    expect(h.frame()).toContain("There was a man of the Pharisees")
     // and nothing can be recorded from an empty chapter
     for (let i = 0; i < 3; i++) {
       h.advance(1_000)

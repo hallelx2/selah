@@ -3,7 +3,9 @@ import { useKeyboard, useRenderer, useTerminalDimensions } from "@opentui/solid"
 import { createEffect, createSignal, Match, onMount, Show, Switch } from "solid-js"
 import { importTranslation } from "../data/importer"
 import { CATALOG } from "../data/translations"
+import { CelebrationLayer } from "./components/celebration"
 import { DialogLayer, ToastLayer } from "./components/dialog"
+import { openIcons } from "./dialogs"
 import { Logo } from "./components/logo"
 import { Bar } from "./components/primitives"
 import { Home } from "./routes/home"
@@ -38,6 +40,11 @@ function Root(props: { initial?: { route: Route; book?: number; chapter?: number
         // offline: the translations dialog can retry later
       }
     }
+  })
+
+  // Ask once whether Nerd Font glyphs render: there is no way to detect the font.
+  onMount(() => {
+    if (ready() && app.config.icons === undefined) setTimeout(() => openIcons(app, true), 50)
   })
 
   onMount(() => {
@@ -78,6 +85,7 @@ function Root(props: { initial?: { route: Route; book?: number; chapter?: number
       </Show>
       <DialogLayer />
       <ToastLayer />
+      <CelebrationLayer />
     </box>
   )
 }

@@ -39,6 +39,13 @@ export function openPalette(app: App) {
       { title: "Reading plan", category: "Tracking", run: () => openPlans(app) },
       { title: "Daily goal", category: "Tracking", run: () => openGoal(app) },
       { title: "Theme", category: "Appearance", run: () => openThemes(app) },
+      { title: `Icons: ${app.icons()}`, category: "Appearance", run: () => openIcons(app) },
+      {
+        title: `Motion: ${app.config.motion}`,
+        category: "Appearance",
+        hint: "full / reduced",
+        run: () => app.setConfig("motion", app.config.motion === "full" ? "reduced" : "full"),
+      },
       {
         title: `Mode: ${app.config.mode}`,
         category: "Appearance",
@@ -59,6 +66,8 @@ export function openPalette(app: App) {
         { title: "Mark chapter read", category: "Reader", hint: "m", run: () => app.markRead() },
         { title: app.parallel() ? "Close parallel view" : "Parallel translation", category: "Reader", hint: "T", run: () => app.toggleParallel() },
         { title: "Note on this verse", category: "Reader", hint: "a", run: () => openNote(app, { ...app.position() }) },
+        { title: app.focus() ? "Leave focus mode" : "Focus mode", category: "Reader", hint: "z", run: () => app.setFocus(!app.focus()) },
+        { title: app.config.prose ? "One verse per line" : "Prose: flowing paragraphs", category: "Reader", hint: "w", run: () => app.setConfig("prose", !app.config.prose) },
       )
     }
     return list
@@ -663,6 +672,37 @@ function NoteDialog(props: { app: App; verse: VerseKey }) {
   )
 }
 
+// icons ----------------------------------------------------------------------------------
+
+/**
+ * Nerd Font glyphs cannot be detected, only seen. Show one and let the reader say whether it
+ * renders. `first` marks the one-time question on first launch.
+ */
+export function openIcons(app: App, first = false) {
+  app.openDialog(() => (
+    <SelectDialog
+      title={first ? "One question" : "Icons"}
+      placeholder="Do you see a book here →  ?"
+      initial={app.config.icons ?? "nerd"}
+      header={
+        <text fg={app.theme().textMuted} wrapMode="word" paddingTop={1}>
+          Selah can draw Nerd Font icons ({"\uf02d \uf06d \uf02e \uf073"}). If those look like a book, a flame, a bookmark and a calendar, choose Nerd Font. If they look like boxes or question marks, choose simple symbols.
+        </text>
+      }
+      items={[
+        { id: "nerd", title: "Nerd Font icons", description: "\uf02d \uf06d \uf02e \uf073 \uf00c", value: "nerd" as const, current: app.config.icons === "nerd" },
+        { id: "unicode", title: "Simple symbols", description: "▤ ▲ ◆ ▦ ✓", value: "unicode" as const, current: app.config.icons === "unicode" },
+        { id: "none", title: "No icons", description: "text only", value: "none" as const, current: app.config.icons === "none" },
+      ]}
+      onSelect={(item) => {
+        app.setConfig("icons", item.value)
+        app.closeDialog()
+        app.toast(`${app.ip("check")}Icons: ${item.title}`, "Change any time from ctrl+p")
+      }}
+    />
+  ))
+}
+
 // help -----------------------------------------------------------------------------------
 
 const KEYS: [string, [string, string][]][] = [
@@ -688,6 +728,8 @@ const KEYS: [string, [string, string][]][] = [
       ["v  y", "select verses / copy"],
       ["t  T", "translation / parallel view"],
       ["ctrl+b", "sidebar"],
+      ["z", "focus mode"],
+      ["w", "prose / verse layout"],
     ],
   ],
   [

@@ -11,6 +11,8 @@ import { bookProgress, consistency, currentStreak, firstDay, longestStreak, met,
 import type { ReadingTracker } from "../data/tracker"
 import type { UserStore } from "../data/user"
 import { resolveTheme, systemTheme, themeJson, type Theme } from "../theme"
+import { icon as iconOf, iconPrefix, type IconName } from "./icons"
+import { createMotion, prefersReducedMotion, type Anim } from "./motion"
 
 export type Route = "home" | "reader" | "progress"
 
@@ -38,9 +40,13 @@ export interface Toast {
   message: string
   detail?: string
   tone: "info" | "success" | "warning" | "error"
+  enter: Anim
+  leave?: Anim
 }
 
 type KeyHandler = (key: KeyEvent) => boolean | void
+
+export const MILESTONES = [3, 7, 14, 30, 50, 100, 200, 365] as const
 
 export interface ActivePlan {
   id: string
@@ -67,6 +73,11 @@ function init(deps: Deps) {
   const [rev, setRev] = createSignal(0)
   const [plan, setPlanSignal] = createSignal<ActivePlan | undefined>(deps.store.get<ActivePlan | undefined>("plan", undefined))
   const [today, setToday] = createSignal(dayKey(now()))
+  const [focus, setFocus] = createSignal(false)
+  const [celebration, setCelebration] = createSignal<{ streak: number; anim: Anim } | undefined>()
+  // The last read recorded, so the reader can play its completion beam.
+  const [lastRead, setLastRead] = createSignal<{ book: number; chapter: number; anim: Anim } | undefined>()
+  const motion = createMotion({ now, reduced: () => prefersReducedMotion(config) })
 
   // The date can roll over while the app is open; stats and plans follow it.
   const dayTimer = setInterval(() => {
@@ -78,6 +89,8 @@ function init(deps: Deps) {
   const bump = () => setRev((n) => n + 1)
   const offRead = deps.tracker.onRead((e) => {
     bump()
+    setLastRead({ book: e.book, chapter: e.chapter, anim: motion.start(1100) })
+    checkMilestone()
     const totals = deps.store.dayTotals()
     const goal = config.goal
     const name = formatRef({ book: e.book, chapter: e.chapter })
@@ -90,6 +103,22 @@ function init(deps: Deps) {
     }
   })
   onCleanup(offRead)
+
+  // milestones -------------------------------------------------------------------
+
+  /** Streak lengths worth a celebration, each shown once per reader. */
+  function checkMilestone() {
+    const streak = currentStreak(deps.store.dayTotals(), config.goal, today())
+    const shown = new Set(deps.store.get<number[]>("milestones", []))
+    const hit = [...MILESTONES].reverse().find((m) => streak >= m && !shown.has(m))
+    if (!hit) return
+    shown.add(hit)
+    // Lower milestones passed on the way count as seen too, so a long streak does not replay them.
+    for (const m of MILESTONES) if (m <= hit) shown.add(m)
+    deps.store.set("milestones", [...shown].sort((a, b) => a - b))
+    if (motion.reduced()) toast(`${hit} day streak`, "A milestone. Keep going.", "success")
+    else setCelebration({ streak: hit, anim: motion.start(2200) })
+  }
 
   // theme ----------------------------------------------------------------------
 
@@ -158,8 +187,9 @@ function init(deps: Deps) {
   let toastSeq = 0
   function toast(message: string, detail?: string, tone: Toast["tone"] = "info") {
     const id = ++toastSeq
-    setToasts((t) => [...t.slice(-2), { id, message, detail, tone }])
-    setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 3200)
+    setToasts((t) => [...t.slice(-2), { id, message, detail, tone, enter: motion.start(280) }])
+    setTimeout(() => setToasts((t) => t.map((x) => (x.id === id ? { ...x, leave: motion.start(260) } : x))), 2950)
+    setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 3250)
   }
 
   // reading ----------------------------------------------------------------------
@@ -312,6 +342,14 @@ function init(deps: Deps) {
     activePlan,
     setPlan,
     markRead,
+    motion,
+    focus,
+    setFocus,
+    celebration,
+    lastRead,
+    icons: () => config.icons ?? "unicode",
+    i: (name: IconName) => iconOf(name, config.icons ?? "unicode"),
+    ip: (name: IconName) => iconPrefix(name, config.icons ?? "unicode"),
     readDay,
     toggleParallel,
     bookName: (id: number) => bookById(id).name,
