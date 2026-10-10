@@ -1,6 +1,6 @@
 import { TextAttributes } from "@opentui/core"
 import { useKeyboard, useRenderer, useTerminalDimensions } from "@opentui/solid"
-import { createEffect, createSignal, Match, onMount, Show, Switch } from "solid-js"
+import { createEffect, createSignal, Match, onCleanup, onMount, Show, Switch } from "solid-js"
 import { importTranslation } from "../data/importer"
 import { CATALOG } from "../data/translations"
 import { CelebrationLayer } from "./components/celebration"
@@ -48,7 +48,8 @@ function Root(props: { initial?: { route: Route; book?: number; chapter?: number
   createEffect(() => {
     if (!ready() || asked || app.config.icons !== undefined) return
     asked = true
-    setTimeout(() => openIcons(app, true), 50)
+    const id = setTimeout(() => openIcons(app, true), 50)
+    onCleanup(() => clearTimeout(id))
   })
 
   onMount(() => {

@@ -34,7 +34,8 @@ export function Logo(props: { beam?: boolean }) {
     })
   })
 
-  const solid = () => (t().background.a === 0 ? RGBA.fromHex("#000000") : t().background)
+  // A transparent background means the terminal's own; mix shadows toward the right extreme.
+  const solid = () => (t().background.a === 0 ? RGBA.fromHex(t().mode === "light" ? "#ffffff" : "#000000") : t().background)
   const base = (x: number) => mixColor(t().primary, t().accent, x / (WIDTH - 1))
   /** 0..1: how much of the beam falls on column x right now. */
   const light = (x: number) => {

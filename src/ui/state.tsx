@@ -185,11 +185,22 @@ function init(deps: Deps) {
   // toasts -----------------------------------------------------------------------
 
   let toastSeq = 0
+  const toastTimers = new Set<ReturnType<typeof setTimeout>>()
+  const later = (ms: number, fn: () => void) => {
+    const id = setTimeout(() => {
+      toastTimers.delete(id)
+      fn()
+    }, ms)
+    toastTimers.add(id)
+  }
+  onCleanup(() => {
+    for (const id of toastTimers) clearTimeout(id)
+  })
   function toast(message: string, detail?: string, tone: Toast["tone"] = "info") {
     const id = ++toastSeq
     setToasts((t) => [...t.slice(-2), { id, message, detail, tone, enter: motion.start(280) }])
-    setTimeout(() => setToasts((t) => t.map((x) => (x.id === id ? { ...x, leave: motion.start(260) } : x))), 2950)
-    setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 3250)
+    later(2950, () => setToasts((t) => t.map((x) => (x.id === id ? { ...x, leave: motion.start(260) } : x))))
+    later(3250, () => setToasts((t) => t.filter((x) => x.id !== id)))
   }
 
   // reading ----------------------------------------------------------------------

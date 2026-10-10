@@ -46,12 +46,20 @@ describe("3. first launch", () => {
   test("asks the icon question once the library is set up", async () => {
     const file = join(tmpdir(), `selah-first-icons-${process.pid}.db`)
     rmSync(file, { force: true })
-    h = await harness({ bible: new Bible(openBibleDb(file)), config: { icons: undefined } })
-    for (let i = 0; i < 100 && !h.frame().includes("One question"); i++) {
-      await wait(100)
-      await h.settle()
+    const db = openBibleDb(file)
+    try {
+      h = await harness({ bible: new Bible(db), config: { icons: undefined } })
+      for (let i = 0; i < 100 && !h.frame().includes("One question"); i++) {
+        await wait(100)
+        await h.settle()
+      }
+      expect(h.frame()).toContain("One question")
+    } finally {
+      h?.destroy()
+      h = undefined
+      db.close()
+      for (const f of [file, `${file}-wal`, `${file}-shm`]) rmSync(f, { force: true })
     }
-    expect(h.frame()).toContain("One question")
   }, 30_000)
 })
 

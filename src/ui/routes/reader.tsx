@@ -163,16 +163,23 @@ export function Reader() {
    * chapter or a layout switch), the scroll waits and runs when the content is laid out.
    */
   let pending: boolean | undefined
+  let retries = 0
   function scrollToCursorSoon(open = false) {
     pending = (pending ?? false) || open
+    retries = 12
     setTimeout(runPending, 0)
   }
+  /**
+   * Runs on a timer and on every layout change of the content. The layout hook covers the
+   * test renderer and big relayouts; the bounded frame retries cover a paragraph that settles
+   * without the outer box changing size.
+   */
   function runPending() {
     if (pending === undefined) return
     if (scrollToCursor(pending)) {
       pending = undefined
       checkEnd()
-    }
+    } else if (retries-- > 0) setTimeout(runPending, 16)
   }
 
   createEffect(
