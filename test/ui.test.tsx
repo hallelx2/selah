@@ -11,9 +11,11 @@ import { buildPlan, PLANS } from "../src/data/plans"
 import { portionLabel } from "../src/ui/routes/home"
 
 let h: Harness | undefined
+const afterCleanup: (() => void)[] = []
 afterEach(() => {
   h?.destroy()
   h = undefined
+  for (const fn of afterCleanup.splice(0)) fn()
 })
 
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
@@ -147,7 +149,7 @@ describe("progress", () => {
     h = await harness({ store: seededStore(), width: 130, height: 70, initial: { route: "progress" } })
     const f = h.frame()
     expect(f).toContain("Very consistent")
-    expect(f).toMatch(/Current streak\s+Longest streak/)
+    expect(f).toMatch(/Current streak\s+\S\s+Longest streak/)
     expect(f).toContain("12 days")
     expect(f).toMatch(/Mon ■/)
     expect(f).toContain("New Testament in 90 Days")
@@ -229,7 +231,12 @@ describe("first run", () => {
     // regression: an eager memo cached the empty pre-import word map, so every chapter needed 1s
     const file = join(tmpdir(), `selah-first-run-${process.pid}.db`)
     rmSync(file, { force: true })
-    const empty = new Bible(openBibleDb(file))
+    const db = openBibleDb(file)
+    const empty = new Bible(db)
+    afterCleanup.push(() => {
+      db.close()
+      for (const f of [file, `${file}-wal`, `${file}-shm`]) rmSync(f, { force: true })
+    })
     h = await harness({ bible: empty })
     expect(h.frame()).toContain("Setting up your library")
     for (let i = 0; i < 100 && !h.frame().includes("verse of the day"); i++) {

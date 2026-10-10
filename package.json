@@ -1,6 +1,6 @@
 {
   "name": "selah",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A Bible for the terminal, with an honest reading tracker",
   "type": "module",
   "private": true,

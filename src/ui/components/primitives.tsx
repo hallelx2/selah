@@ -1,6 +1,8 @@
 import { RGBA, TextAttributes } from "@opentui/core"
 import { useTerminalDimensions } from "@opentui/solid"
-import { For, Show, type JSX } from "solid-js"
+import { createEffect, createSignal, For, onCleanup, Show, type JSX } from "solid-js"
+import { mixColor, type Anim } from "../motion"
+import type { IconName } from "../icons"
 import { useApp } from "../state"
 
 const EMPTY = {
@@ -90,13 +92,14 @@ export function Hints(props: { hints: Hint[] }) {
 }
 
 /** The bottom band of every screen: a mode chip, context hints, and the reading status. */
-export function Footer(props: { mode: string; hints: Hint[]; right?: JSX.Element; reserve?: number }) {
+export function Footer(props: { mode: string; icon?: IconName; hints: Hint[]; right?: JSX.Element; reserve?: number }) {
   const app = useApp()
   const t = () => app.theme()
   const dims = useTerminalDimensions()
   // Show as many hints as fit beside the chip and the status; never let them collide.
+  const chip = () => ` ${props.icon ? app.ip(props.icon) : ""}${props.mode} `
   const fitting = () => {
-    let room = dims().width - (props.mode.length + 2) - (props.reserve ?? 34) - 2
+    let room = dims().width - (chip().length + 2) - (props.reserve ?? 34) - 2
     const out: Hint[] = []
     for (const h of props.hints) {
       const w = h.key.length + h.label.length + 3
@@ -110,7 +113,7 @@ export function Footer(props: { mode: string; hints: Hint[]; right?: JSX.Element
     <box flexDirection="row" height={1} flexShrink={0} backgroundColor={t().backgroundPanel} justifyContent="space-between">
       <box flexDirection="row" gap={2}>
         <text wrapMode="none" selectable={false} bg={t().primary} fg={t().onPrimary} attributes={TextAttributes.BOLD}>
-          {` ${props.mode} `}
+          {chip()}
         </text>
         <Hints hints={fitting()} />
       </box>
@@ -130,9 +133,31 @@ export function StreakStatus() {
   const goal = () => app.config.goal
   const doneToday = () => (goal().kind === "chapters" ? app.todayTotals().chapters : Math.floor(app.todayTotals().minutes))
   const met = () => doneToday() >= goal().amount
+  // A live streak not yet kept today takes one slow breath every 20s: a nudge, never an
+  // alarm. Each breath is a motion-clock animation, so between breaths nothing renders.
+  const nudging = () => app.streak() > 0 && !met() && !app.motion.reduced()
+  const [breath, setBreath] = createSignal<Anim | undefined>()
+  createEffect(() => {
+    if (!nudging()) return
+    const inhale = () => setBreath(app.motion.start(2_400))
+    const first = setTimeout(inhale, 1_500)
+    const every = setInterval(inhale, 20_000)
+    onCleanup(() => {
+      clearTimeout(first)
+      clearInterval(every)
+    })
+  })
+  const streakColor = () => {
+    if (app.streak() === 0) return t().textMuted
+    const b = breath()
+    if (!nudging() || !b || app.motion.done(b)) return t().warning
+    return mixColor(t().warning, t().backgroundPanel, 0.55 * Math.sin(Math.PI * app.motion.progress(b)))
+  }
   return (
     <text wrapMode="none" selectable={false}>
-      <span style={{ fg: app.streak() > 0 ? t().warning : t().textMuted }}>▲ {app.streak()}</span>
+      <span style={{ fg: streakColor() }}>
+        {app.i("streak")} {app.streak()}
+      </span>
       <span style={{ fg: t().textMuted }}>{app.streak() === 1 ? " day" : " days"}  ·  today </span>
       <span style={{ fg: met() ? t().success : t().text }}>
         {doneToday()}/{goal().amount}

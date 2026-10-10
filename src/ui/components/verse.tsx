@@ -1,4 +1,5 @@
-import { TextAttributes, type RGBA } from "@opentui/core"
+import { RGBA, TextAttributes } from "@opentui/core"
+import { mixColor } from "../motion"
 import { For } from "solid-js"
 import { useApp } from "../state"
 
@@ -29,15 +30,22 @@ export function segments(text: string): { text: string; italic: boolean; match: 
   return out
 }
 
-export function VerseText(props: { text: string; fg?: RGBA; matchColor?: RGBA }) {
+/**
+ * `fade` (0..1) draws the text that far from the background toward its own colour: used for
+ * chapter fade-ins, the verse of the day reveal, and dimming outside the focused verse.
+ */
+export function VerseText(props: { text: string; fg?: RGBA; bg?: RGBA; matchColor?: RGBA; fade?: number }) {
   const app = useApp()
   const t = () => app.theme()
+  const bg = () => (t().background.a === 0 ? (t().mode === "dark" ? RGBA.fromHex("#000000") : RGBA.fromHex("#ffffff")) : t().background)
+  const f = (c: RGBA) => (props.fade === undefined || props.fade >= 1 ? c : mixColor(bg(), c, props.fade))
   return (
     <For each={segments(props.text)}>
       {(seg) => (
         <span
           style={{
-            fg: seg.match ? (props.matchColor ?? t().primary) : seg.italic ? t().textMuted : (props.fg ?? t().text),
+            fg: f(seg.match ? (props.matchColor ?? t().primary) : seg.italic ? t().textMuted : (props.fg ?? t().text)),
+            bg: props.bg,
             attributes: (seg.italic ? TextAttributes.ITALIC : 0) | (seg.match ? TextAttributes.BOLD : 0),
           }}
         >

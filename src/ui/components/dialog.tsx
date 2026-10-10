@@ -1,6 +1,7 @@
-import { TextAttributes, type InputRenderable, type KeyEvent, type ScrollBoxRenderable } from "@opentui/core"
+import { RGBA, TextAttributes, type InputRenderable, type KeyEvent, type ScrollBoxRenderable } from "@opentui/core"
 import { useTerminalDimensions } from "@opentui/solid"
-import { createEffect, createMemo, createSignal, For, Show, type JSX } from "solid-js"
+import { createEffect, createMemo, createSignal, For, on, Show, type JSX } from "solid-js"
+import { ease, mixColor } from "../motion"
 import { fuzzyFilter, type FuzzyMatch } from "../../data/fuzzy"
 import { useApp } from "../state"
 import { Hints, TRANSPARENT, type Hint } from "./primitives"
@@ -11,6 +12,11 @@ const WIDTHS = { medium: 60, large: 88, xlarge: 116 }
 export function DialogLayer() {
   const app = useApp()
   const dims = useTerminalDimensions()
+  // Opening: the backdrop dims in and the panel rises two rows into place. Input is never
+  // gated on this; keys reach the dialog from the first frame.
+  const [opening, setOpening] = createSignal(app.motion.start(0))
+  createEffect(on(() => app.dialogs.length > 0, (open) => open && setOpening(app.motion.start(170))))
+  const p = () => app.motion.progress(opening(), ease.outCubic)
   return (
     <Show when={app.dialogs.length > 0}>
       <box
@@ -21,8 +27,8 @@ export function DialogLayer() {
         height={dims().height}
         zIndex={3000}
         alignItems="center"
-        paddingTop={Math.max(1, Math.floor(dims().height / 6))}
-        backgroundColor={app.theme().backdrop}
+        paddingTop={Math.max(1, Math.floor(dims().height / 6)) + Math.round((1 - p()) * 2)}
+        backgroundColor={RGBA.fromInts(0, 0, 0, Math.round(150 * p()))}
         onMouseUp={() => app.closeDialog()}
       >
         <box
@@ -275,23 +281,32 @@ export function ToastLayer() {
   return (
     <box position="absolute" right={2} top={2} zIndex={4000} flexDirection="column" gap={1} width={Math.min(52, dims().width - 4)}>
       <For each={app.toasts()}>
-        {(toast) => (
+        {(toast) => {
+          const enter = () => app.motion.progress(toast.enter, ease.outCubic)
+          const leave = () => (toast.leave ? app.motion.progress(toast.leave, ease.inOutSine) : 0)
+          const shift = () => Math.round((1 - enter()) * 28 + leave() * 28)
+          const page = () => app.theme().backgroundElement
+          const f = (c: RGBA) => mixColor(page(), c, enter() * (1 - leave()))
+          return (
           <box
+            position="relative"
+            left={shift()}
             border={["left"]}
             customBorderChars={{ topLeft: "", bottomLeft: "", vertical: "┃", topRight: "", bottomRight: "", horizontal: " ", bottomT: "", topT: "", cross: "", leftT: "", rightT: "" }}
-            borderColor={color(toast.tone)}
+            borderColor={f(color(toast.tone))}
             backgroundColor={app.theme().backgroundElement}
             paddingLeft={2}
             paddingRight={2}
           >
-            <text fg={app.theme().text} attributes={TextAttributes.BOLD}>
+            <text fg={f(app.theme().text)} attributes={TextAttributes.BOLD}>
               {toast.message}
             </text>
             <Show when={toast.detail}>
-              <text fg={app.theme().textMuted}>{toast.detail}</text>
+              <text fg={f(app.theme().textMuted)}>{toast.detail}</text>
             </Show>
           </box>
-        )}
+          )
+        }}
       </For>
     </box>
   )

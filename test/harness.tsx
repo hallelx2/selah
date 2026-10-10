@@ -53,7 +53,9 @@ export async function harness(opts: {
   let now = (opts.start ?? new Date(2026, 9, 8, 7, 0, 0)).getTime()
   const clock = () => now
   const tracker = new ReadingTracker(store, clock)
-  let config: Config = { ...DEFAULT_CONFIG, ...opts.config }
+  // Frames are compared as text, so tests default to reduced motion and plain icons;
+  // animation tests opt back in with config: { motion: "full" }.
+  let config: Config = { ...DEFAULT_CONFIG, motion: "reduced", icons: "unicode", ...opts.config }
   const copied: string[] = []
   const quit = { called: false }
   const t = await testRender(

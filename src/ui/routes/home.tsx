@@ -7,6 +7,7 @@ import { Bar, Footer, LeftBar, fit } from "../components/primitives"
 import { Logo } from "../components/logo"
 import { VerseText } from "../components/verse"
 import { openPalette, openPlans, openSearch, openTranslations } from "../dialogs"
+import { ease } from "../motion"
 import { useApp } from "../state"
 
 const PLACEHOLDERS = ["john 3:16", "psalm 23", "romans 8", '"living water"', "love in:1jn", "faith in:nt"]
@@ -19,6 +20,9 @@ export function Home() {
   let input: InputRenderable | undefined
 
   const votd = createMemo(() => app.deps.bible.verseOfTheDay(app.translation(), new Date(app.now())))
+  // The verse of the day surfaces gently, like ink coming up on the page.
+  const reveal = app.motion.start(900, 150)
+  const fade = () => app.motion.progress(reveal, ease.outCubic)
   const placeholder = PLACEHOLDERS[Math.floor(app.now() / 86_400_000) % PLACEHOLDERS.length]
   const recent = createMemo(() => {
     app.rev()
@@ -90,11 +94,11 @@ export function Home() {
         <box width={width()} flexDirection="column" paddingTop={1} flexShrink={0}>
           <box {...LeftBar} borderColor={t().accent} paddingLeft={2} paddingRight={2} backgroundColor={t().backgroundPanel} flexDirection="column" paddingTop={1} paddingBottom={1}>
             <text wrapMode="word">
-              <VerseText text={votd().text} />
+              <VerseText text={votd().text} fade={fade()} />
             </text>
             <box flexDirection="row" justifyContent="space-between" paddingTop={1}>
               <text fg={t().accent} wrapMode="none">
-                verse of the day
+                {app.ip("quote")}verse of the day
               </text>
               <text fg={t().textMuted} wrapMode="none">
                 {formatRef(votd().ref)} · {app.translation()}
@@ -138,10 +142,12 @@ export function Home() {
           <box flexGrow={1} flexBasis={0} backgroundColor={t().backgroundPanel} paddingLeft={2} paddingRight={2} paddingTop={1} paddingBottom={1} flexDirection="column">
             <box flexDirection="row" justifyContent="space-between">
               <text fg={t().text} attributes={TextAttributes.BOLD}>
-                Today
+                {app.ip("goal")}Today
               </text>
               <text wrapMode="none">
-                <span style={{ fg: app.streak() > 0 ? t().warning : t().textMuted }}>▲ {app.streak()}</span>
+                <span style={{ fg: app.streak() > 0 ? t().warning : t().textMuted }}>
+                  {app.i("streak")} {app.streak()}
+                </span>
                 <span style={{ fg: t().textMuted }}> day streak</span>
               </text>
             </box>
@@ -180,7 +186,7 @@ export function Home() {
           </box>
           <box flexGrow={1} flexBasis={0} backgroundColor={t().backgroundPanel} paddingLeft={2} paddingRight={2} paddingTop={1} paddingBottom={1} flexDirection="column">
             <text fg={t().text} attributes={TextAttributes.BOLD}>
-              Continue
+              {app.ip("history")}Continue
             </text>
             <box paddingTop={1} flexDirection="column">
               <Show when={recent().length} fallback={<text fg={t().textMuted}>Nothing read yet. Press enter to begin.</text>}>
@@ -204,6 +210,7 @@ export function Home() {
       </box>
       <Footer
         mode="HOME"
+        icon="home"
         hints={[
           { key: "enter", label: "open" },
           { key: "ctrl+p", label: "commands" },

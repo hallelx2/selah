@@ -15,6 +15,12 @@ export interface Config {
   verseNumbers: boolean
   /** Maximum width of the reading column. */
   measure: number
+  /** "reduced" turns every animation into its final frame. */
+  motion: "full" | "reduced"
+  /** Unset until the reader has said whether Nerd Font glyphs render. */
+  icons?: "nerd" | "unicode" | "none"
+  /** Flowing paragraphs with superscript verse numbers, instead of one verse per line. */
+  prose: boolean
 }
 
 export const DEFAULT_CONFIG: Config = {
@@ -26,6 +32,8 @@ export const DEFAULT_CONFIG: Config = {
   sidebar: false,
   verseNumbers: true,
   measure: 76,
+  motion: "full",
+  prose: false,
 }
 
 export function loadConfig(file = paths.configFile): Config {
