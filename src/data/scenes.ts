@@ -49,36 +49,65 @@ export function scenesInstalled(dir: string): boolean {
 
 export type ScenesProgress = (e: { done: number; total: number; bytes: number }) => void
 
+/** The install in flight, shared: a second caller (another scene view) joins it. */
+let inflight: { dir: string; promise: Promise<{ downloaded: number; total: number }>; listeners: Set<ScenesProgress> } | undefined
+
 /**
  * Downloads the plates that are missing or wrong, four at a time, verifying each against its
  * pinned SHA-256 before it is kept. Plates already on disk at their pinned size are not fetched.
+ * Only one install runs at a time; a call while one is running joins it. The first failure
+ * stops the others, and no progress is reported once the install has settled.
  */
-export async function installScenes(dir: string, onProgress?: ScenesProgress, fetcher: typeof fetch = fetch): Promise<{ downloaded: number; total: number }> {
-  mkdirSync(dir, { recursive: true })
-  const todo = PLATES.filter((p) => {
-    const f = sceneFile(dir, p)
-    return !existsSync(f) || statSync(f).size !== p.image.bytes
-  })
-  let done = PLATES.length - todo.length
-  let bytes = PLATES.filter((p) => !todo.includes(p)).reduce((n, p) => n + p.image.bytes, 0)
-  onProgress?.({ done, total: PLATES.length, bytes })
-  const queue = [...todo]
-  const worker = async () => {
-    for (let p = queue.shift(); p; p = queue.shift()) {
-      const res = await fetcher(`${SCENES_SOURCE}${p.image.file}`)
-      if (!res.ok) throw new Error(`Download of plate ${p.id} failed: HTTP ${res.status}`)
-      const data = new Uint8Array(await res.arrayBuffer())
-      const sha = createHash("sha256").update(data).digest("hex")
-      if (data.length !== p.image.bytes || sha !== p.image.sha256) throw new Error(`Plate ${p.id} did not match its pinned checksum`)
-      const file = sceneFile(dir, p)
-      const tmp = `${file}.${process.pid}.part`
-      await Bun.write(tmp, data)
-      renameSync(tmp, file)
-      done++
-      bytes += data.length
-      onProgress?.({ done, total: PLATES.length, bytes })
-    }
+export function installScenes(dir: string, onProgress?: ScenesProgress, fetcher: typeof fetch = fetch): Promise<{ downloaded: number; total: number }> {
+  if (inflight && inflight.dir === dir) {
+    if (onProgress) inflight.listeners.add(onProgress)
+    return inflight.promise
   }
-  await Promise.all([worker(), worker(), worker(), worker()])
-  return { downloaded: todo.length, total: PLATES.length }
+  const listeners = new Set<ScenesProgress>(onProgress ? [onProgress] : [])
+  let settled = false
+  const report = (e: { done: number; total: number; bytes: number }) => {
+    if (!settled) for (const l of listeners) l(e)
+  }
+  const run = async () => {
+    mkdirSync(dir, { recursive: true })
+    const todo = PLATES.filter((p) => {
+      const f = sceneFile(dir, p)
+      return !existsSync(f) || statSync(f).size !== p.image.bytes
+    })
+    let done = PLATES.length - todo.length
+    let bytes = PLATES.filter((p) => !todo.includes(p)).reduce((n, p) => n + p.image.bytes, 0)
+    report({ done, total: PLATES.length, bytes })
+    const queue = [...todo]
+    let failed = false
+    const worker = async () => {
+      for (let p = queue.shift(); p && !failed; p = queue.shift()) {
+        try {
+          const res = await fetcher(`${SCENES_SOURCE}${p.image.file}`)
+          if (!res.ok) throw new Error(`Download of plate ${p.id} failed: HTTP ${res.status}`)
+          const data = new Uint8Array(await res.arrayBuffer())
+          const sha = createHash("sha256").update(data).digest("hex")
+          if (data.length !== p.image.bytes || sha !== p.image.sha256) throw new Error(`Plate ${p.id} did not match its pinned checksum`)
+          if (failed) return
+          const file = sceneFile(dir, p)
+          const tmp = `${file}.${process.pid}.${Math.random().toString(36).slice(2)}.part`
+          await Bun.write(tmp, data)
+          renameSync(tmp, file)
+          done++
+          bytes += data.length
+          report({ done, total: PLATES.length, bytes })
+        } catch (e) {
+          failed = true
+          throw e
+        }
+      }
+    }
+    await Promise.all([worker(), worker(), worker(), worker()])
+    return { downloaded: todo.length, total: PLATES.length }
+  }
+  const promise = run().finally(() => {
+    settled = true
+    if (inflight?.promise === promise) inflight = undefined
+  })
+  inflight = { dir, promise, listeners }
+  return promise
 }

@@ -116,6 +116,42 @@ describe("install", () => {
     expect(createHash("sha256").update(readFileSync(sceneFile(dir, p))).digest("hex")).toBe(p.image.sha256)
   })
 
+  test("two installs at once share one: every plate is fetched once", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "selah-scenes-"))
+    const calls: string[] = []
+    const a: number[] = []
+    const b: number[] = []
+    const [ra, rb] = await Promise.all([installScenes(dir, (e) => a.push(e.done), serve(calls)), installScenes(dir, (e) => b.push(e.done), serve(calls))])
+    expect(ra).toEqual(rb)
+    expect(calls).toHaveLength(100)
+    expect(new Set(calls).size).toBe(100)
+    expect(a.at(-1)).toBe(100)
+    expect(b.at(-1)).toBe(100) // the joiner hears the progress too
+    expect(scenesInstalled(dir)).toBe(true)
+  })
+
+  test("the first failure stops the install, reports nothing after, and a retry finishes it", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "selah-scenes-"))
+    const calls: string[] = []
+    const ok = serve(calls)
+    let failing = true
+    const flaky = (async (url: string) => {
+      if (failing && String(url).endsWith("005.jpg")) return new Response("busy", { status: 503 })
+      await new Promise((r) => setTimeout(r, 5)) // the other workers are mid-download when it fails
+      return ok(url as never)
+    }) as unknown as typeof fetch
+    const seen: number[] = []
+    await expect(installScenes(dir, (e) => seen.push(e.done), flaky)).rejects.toThrow("Download of plate 005 failed: HTTP 503")
+    const after = seen.length
+    await new Promise((r) => setTimeout(r, 60))
+    expect(seen.length).toBe(after) // nothing reported once it has failed
+    expect(calls.length).toBeLessThan(20) // the others stopped instead of fetching the rest
+    failing = false
+    const r = await installScenes(dir, undefined, flaky)
+    expect(r.total).toBe(100)
+    expect(scenesInstalled(dir)).toBe(true)
+  })
+
   test("a plate that does not match its checksum is refused", async () => {
     const dir = mkdtempSync(join(tmpdir(), "selah-scenes-"))
     await expect(installScenes(dir, undefined, serve([], "042.jpg"))).rejects.toThrow("Plate 042 did not match its pinned checksum")

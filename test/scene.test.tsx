@@ -127,6 +127,34 @@ describe("scenes in the reader", () => {
     expect(h.frame()).toContain("Death on the Pale Horse  ·  Revelation 6:7–8")
   })
 
+  test("a failed install says why and can be retried with i", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "selah-scenes-ui-"))
+    let failing = true
+    const local = (async (url: string) => {
+      const file = String(url).split("/").at(-1)!
+      if (failing && file === "010.jpg") return new Response("busy", { status: 503 })
+      await wait(2)
+      return new Response(readFileSync(join(import.meta.dir, "..", ".selah-test-sources", "dore-8710", file)))
+    }) as unknown as typeof fetch
+    h = await openScene({ scenesDir: dir, fetch: local })
+    await h.press("i")
+    for (let i = 0; i < 60 && !h.frame().includes("HTTP 503"); i++) {
+      await wait(50)
+      await h.settle()
+    }
+    await wait(100) // the other downloads wind down
+    await h.settle()
+    expect(h.frame()).toContain("Download of plate 010 failed: HTTP 503")
+    expect(h.frame()).toContain("press i to install") // not a frozen bar
+    failing = false
+    await h.press("i")
+    for (let i = 0; i < 100 && !h.frame().includes("Then cometh he"); i++) {
+      await wait(100)
+      await h.settle()
+    }
+    expect(h.frame()).toContain("Then cometh he to a city of Samaria")
+  }, 60_000)
+
   test("not installed: it offers the download and installs with i", async () => {
     const dir = mkdtempSync(join(tmpdir(), "selah-scenes-ui-"))
     const local = (async (url: string) =>

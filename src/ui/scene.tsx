@@ -235,20 +235,25 @@ function Scene(props: { plate: Plate }) {
     return { zoom: 1 + 0.12 * k, panX: 0.5 + (ax - 0.5) * k, panY: 0.5 + (ay - 0.5) * k }
   })
 
+  let attempt = 0
   async function install() {
     if (progress() !== undefined || !app.deps.scenesDir) return
+    const mine = ++attempt
     setError(undefined)
     setProgress(0)
     try {
-      await installScenes(dir(), (e) => setProgress(e.bytes / SCENES_BYTES), app.deps.fetch)
+      // progress from an attempt that has ended (failed, or this view closed) is ignored
+      await installScenes(dir(), (e) => mine === attempt && setProgress(e.bytes / SCENES_BYTES), app.deps.fetch)
       setInstalled(true)
       app.toast(`${app.ip("star")}Doré's engravings installed`, `${PLATES.length} plates, offline`)
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
     } finally {
+      if (mine === attempt) attempt++
       setProgress(undefined)
     }
   }
+  onCleanup(() => attempt++)
 
   const go = (d: number) => app.openScene(PLATES[(index() + d + PLATES.length) % PLATES.length]!)
   const read = () => {
