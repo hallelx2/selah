@@ -103,6 +103,19 @@ export class ReadingTracker {
     this.record(c, "manual")
   }
 
+  /** Removes the open chapter's read for its session day, so it can be read (or marked) again. */
+  unmarkRead() {
+    const c = this.current
+    if (!c) return
+    this.store.unrecordRead(c.book, c.chapter, c.day)
+    c.recorded = false
+  }
+
+  /** The day reads in the open session are credited to: the day the session started. */
+  get day(): DayKey | undefined {
+    return this.current?.day
+  }
+
   /** Active milliseconds on the open chapter so far. */
   get activeMs() {
     return this.current?.activeMs ?? 0

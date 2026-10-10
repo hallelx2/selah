@@ -50,6 +50,12 @@ export interface ActivePlan {
 function init(deps: Deps) {
   const now = deps.now ?? Date.now
   const [config, setConfigStore] = createStore<Config>(structuredClone(deps.config))
+  // A configured translation that is not installed (removed, or a typo in config.json) would
+  // open an empty reader. Read from an installed one instead, without rewriting the config.
+  {
+    const installedIds = deps.bible.translations().map((t) => t.id)
+    if (installedIds.length && !installedIds.includes(config.translation)) setConfigStore("translation", installedIds[0]!)
+  }
   const [route, setRoute] = createSignal<Route>("home")
   const [position, setPosition] = createSignal<{ book: number; chapter: number; verse: number }>(
     deps.store.position() ?? { book: 43, chapter: 1, verse: 1 },
@@ -119,6 +125,9 @@ function init(deps: Deps) {
     })
   }
   function dispatch(key: KeyEvent) {
+    // Pick up a date rollover on the first key press after midnight, not up to 30s later.
+    const d = dayKey(now())
+    if (d !== today()) setToday(d)
     for (let i = handlers.length - 1; i >= 0; i--) {
       const h = handlers[i]!
       if (h.fn(key) === true) return true
@@ -231,15 +240,33 @@ function init(deps: Deps) {
     setPlanSignal(value)
   }
 
+  /** The day a read of the open chapter is credited to: its session's start day, as the tracker does. */
+  const readDay = () => deps.tracker.day ?? today()
+
   function markRead() {
     const p = position()
-    if (deps.store.readOn(p.book, p.chapter, today())) {
-      deps.store.unrecordRead(p.book, p.chapter, today())
+    const day = readDay()
+    if (deps.store.readOn(p.book, p.chapter, day)) {
+      deps.tracker.unmarkRead()
+      deps.store.unrecordRead(p.book, p.chapter, day)
       bump()
-      toast(`${formatRef(p)} unmarked`, "Removed from today's reading", "warning")
+      toast(`${formatRef(p)} unmarked`, "Removed from that day's reading", "warning")
       return
     }
     deps.tracker.markRead()
+  }
+
+  /** T and the palette share these checks: never show a translation beside itself or a missing one. */
+  function toggleParallel() {
+    if (!parallel()) {
+      const ok = (id: string) => id !== translation() && deps.bible.hasTranslation(id)
+      if (!ok(config.parallel)) {
+        const other = installed().find((x) => ok(x.id))
+        if (!other) return toast("Install a second translation first", "Press t to manage translations", "warning")
+        setConfig("parallel", other.id)
+      }
+    }
+    setParallel(!parallel())
   }
 
   return {
@@ -285,6 +312,8 @@ function init(deps: Deps) {
     activePlan,
     setPlan,
     markRead,
+    readDay,
+    toggleParallel,
     bookName: (id: number) => bookById(id).name,
     now,
   }

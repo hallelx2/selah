@@ -57,7 +57,7 @@ export function openPalette(app: App) {
         { title: "Next chapter", category: "Reader", hint: "n", run: () => app.next() },
         { title: "Previous chapter", category: "Reader", hint: "p", run: () => app.prev() },
         { title: "Mark chapter read", category: "Reader", hint: "m", run: () => app.markRead() },
-        { title: app.parallel() ? "Close parallel view" : "Parallel translation", category: "Reader", hint: "T", run: () => app.setParallel(!app.parallel()) },
+        { title: app.parallel() ? "Close parallel view" : "Parallel translation", category: "Reader", hint: "T", run: () => app.toggleParallel() },
         { title: "Note on this verse", category: "Reader", hint: "a", run: () => openNote(app, { ...app.position() }) },
       )
     }
@@ -273,6 +273,9 @@ function ChapterGrid(props: { app: App; book: number }) {
   const b = bookById(props.book)
   const COLS = 10
   const [sel, setSel] = createSignal(app.position().book === b.id ? app.position().chapter : 1)
+  // Digits build a number in their own buffer ("1", "2" → 12); a pause starts a new number.
+  let typed = ""
+  let typedAt = 0
   const reads = createMemo(() => new Set(app.reads().filter((r) => r.book === b.id).map((r) => r.chapter)))
   const today = createMemo(() => new Set(app.reads().filter((r) => r.book === b.id && r.day === app.today()).map((r) => r.chapter)))
   const open = (c: number) => {
@@ -289,8 +292,11 @@ function ChapterGrid(props: { app: App; book: number }) {
       if (key.name === "down" || key.name === "j") return setSel((c) => clamp(c + COLS)), true
       if (key.name === "return") return open(sel()), true
       if (/^[0-9]$/.test(key.name)) {
-        const n = Number(`${sel()}${key.name}`)
-        setSel(clamp(n <= b.chapters ? n : Number(key.name) || 1))
+        const now = Date.now()
+        typed = now - typedAt < 1000 ? typed + key.name : key.name
+        typedAt = now
+        if (Number(typed) > b.chapters) typed = key.name
+        setSel(clamp(Number(typed) || 1))
         return true
       }
       return false

@@ -54,6 +54,8 @@ function Root(props: { initial?: { route: Route; book?: number; chapter?: number
   useKeyboard((key) => {
     if (key.ctrl && key.name === "c") {
       if (app.dialogs.length) return app.closeDialog()
+      // Credit the reading up to this key press, exactly as q does.
+      app.deps.tracker.activity()
       return app.deps.quit()
     }
     app.dispatch(key)

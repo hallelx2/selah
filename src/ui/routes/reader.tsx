@@ -3,6 +3,7 @@ import { useTerminalDimensions } from "@opentui/solid"
 import { createEffect, createMemo, createSignal, For, on, onCleanup, Show } from "solid-js"
 import { bookById, BOOKS } from "../../data/books"
 import { formatRef } from "../../data/ref"
+import { prettyDay } from "../../data/dates"
 import { formatMinutes } from "../../data/stats"
 import { minimumReadMs } from "../../data/tracker"
 import { Footer, LeftBar, LineBar, TRANSPARENT, fit } from "../components/primitives"
@@ -47,6 +48,8 @@ export function Reader() {
   // Track reading per chapter (and per translation switch, which keeps the same session).
   createEffect(
     on([chapterKey, app.translation], () => {
+      // Never track a chapter with no text: there is nothing to read, so nothing to credit.
+      if (!verses().length) return tracker.close()
       const words = app.words().get(chapterKey()) ?? 0
       tracker.open({ book: pos().book, chapter: pos().chapter, translation: app.translation(), words })
       setAnchor(undefined)
@@ -136,7 +139,8 @@ export function Reader() {
       return true
     }
     const n = Number(count()) || 1
-    if (count() && k !== "g") setCount("")
+    const counted = count() ? Number(count()) : undefined
+    if (count()) setCount("")
     if (ctrl && k === "p") return openPalette(app), true
     if (ctrl && k === "b") return app.setConfig("sidebar", !app.config.sidebar), true
     if (ctrl && k === "d") return move(Math.ceil(pageSize() / 2)), true
@@ -156,12 +160,11 @@ export function Reader() {
         return move(-pageSize()), true
       case "g":
       case "home":
-        app.setVerse(count() ? Math.min(lastVerse(), Number(count())) : 1)
-        setCount("")
-        return true
+        return app.setVerse(counted ? Math.min(lastVerse(), counted) : 1), true
       case "G":
       case "end":
-        return app.setVerse(lastVerse()), true
+        // vim: 5G goes to line 5, G alone to the end
+        return app.setVerse(counted ? Math.min(lastVerse(), counted) : lastVerse()), true
       case "n":
       case "l":
       case "right":
@@ -191,13 +194,7 @@ export function Reader() {
       case "t":
         return openTranslations(app), true
       case "T":
-        if (!bible.hasTranslation(app.config.parallel) || app.config.parallel === app.translation()) {
-          const other = app.installed().find((x) => x.id !== app.translation())
-          if (!other) return app.toast("Install a second translation first", "Press t to manage translations", "warning"), true
-          app.setConfig("parallel", other.id)
-        }
-        app.setParallel(!app.parallel())
-        return true
+        return app.toggleParallel(), true
       case "o":
         return openBooks(app), true
       case "B":
@@ -227,9 +224,10 @@ export function Reader() {
   const status = createMemo(() => {
     tick()
     app.rev()
-    const readToday = store.readOn(pos().book, pos().chapter, app.today())
+    const day = app.readDay()
+    const readToday = store.readOn(pos().book, pos().chapter, day)
     const required = minimumReadMs(app.words().get(chapterKey()) ?? 0)
-    return { readToday, active: tracker.activeMs, required, everRead: store.isRead(pos().book, pos().chapter) }
+    return { readToday, day, active: tracker.activeMs, required, everRead: store.isRead(pos().book, pos().chapter) }
   })
 
   return (
@@ -261,7 +259,7 @@ export function Reader() {
             }
           >
             <text wrapMode="none" fg={t().success}>
-              ● read today
+              {status().day === app.today() ? "● read today" : `● read · ${prettyDay(status().day)}`}
             </text>
           </Show>
         </box>

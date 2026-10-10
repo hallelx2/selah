@@ -1,4 +1,5 @@
 import type { Database } from "bun:sqlite"
+import { renameSync, rmSync } from "node:fs"
 import { join } from "node:path"
 import { BOOKS } from "./books"
 import { paths } from "./paths"
@@ -13,8 +14,19 @@ export type ImportProgress = (event: { phase: "download" | "import" | "index"; f
 
 /** Downloads (or reads from cache) the source JSON for a translation. */
 export async function fetchSource(id: string, onProgress?: ImportProgress): Promise<SourceJson> {
-  const cached = Bun.file(join(paths.sources, `${id}.json`))
-  if (await cached.exists()) return (await cached.json()) as SourceJson
+  const file = join(paths.sources, `${id}.json`)
+  const cached = Bun.file(file)
+  if (await cached.exists()) {
+    try {
+      const json = (await cached.json()) as SourceJson
+      validate(id, json)
+      return json
+    } catch {
+      // A truncated or corrupt cache (an interrupted download) must not block every later
+      // import: discard it and fetch again.
+      rmSync(file, { force: true })
+    }
+  }
 
   const res = await fetch(sourceUrl(id))
   if (!res.ok || !res.body) throw new Error(`Download of ${id} failed: HTTP ${res.status}`)
@@ -29,7 +41,10 @@ export async function fetchSource(id: string, onProgress?: ImportProgress): Prom
   const bytes = Buffer.concat(chunks)
   const json = JSON.parse(bytes.toString("utf8")) as SourceJson
   validate(id, json)
-  await Bun.write(cached, bytes)
+  // Write then rename, so an interruption never leaves a half-written cache behind.
+  const tmp = `${file}.${process.pid}.part`
+  await Bun.write(tmp, bytes)
+  renameSync(tmp, file)
   return json
 }
 

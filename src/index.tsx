@@ -7,7 +7,8 @@ import { loadConfig, saveConfig } from "./data/config"
 import { dayKey } from "./data/dates"
 import { openBibleDb } from "./data/db"
 import { importTranslation } from "./data/importer"
-import { formatRef, parseRef } from "./data/ref"
+import { parseCli } from "./cli"
+import { formatRef } from "./data/ref"
 import { bookProgress, consistency, currentStreak, firstDay, longestStreak, trackedDays, verdict } from "./data/stats"
 import { ReadingTracker } from "./data/tracker"
 import { CATALOG } from "./data/translations"
@@ -34,26 +35,27 @@ Options
 
 Data lives in $XDG_DATA_HOME/selah, settings in $XDG_CONFIG_HOME/selah/config.json.`
 
-const argv = process.argv.slice(2)
-const flags = new Set(argv.filter((a) => a.startsWith("-")))
-const tIndex = argv.findIndex((a) => a === "-t" || a === "--translation")
-const translationFlag = tIndex >= 0 ? argv[tIndex + 1]?.toUpperCase() : undefined
-const words = argv.filter((a, i) => !a.startsWith("-") && !(tIndex >= 0 && i === tIndex + 1))
+const cli = parseCli(process.argv.slice(2), { tty: !!process.stdout.isTTY })
+const action = cli.action
+const translationFlag = cli.translation
 
-if (flags.has("-h") || flags.has("--help")) {
+if (action.kind === "help") {
   console.log(HELP)
   process.exit(0)
 }
-if (flags.has("-v") || flags.has("--version")) {
+if (action.kind === "version") {
   console.log(pkg.version)
   process.exit(0)
+}
+if (action.kind === "error") {
+  console.error(action.message)
+  process.exit(1)
 }
 
 const config = loadConfig()
 if (translationFlag) config.translation = translationFlag
 const bible = new Bible(openBibleDb())
 const store = UserStore.open()
-const print = flags.has("-p") || flags.has("--print") || (!process.stdout.isTTY && words.length > 0)
 
 async function ensureTranslation(id: string) {
   if (bible.hasTranslation(id)) return
@@ -66,14 +68,12 @@ async function ensureTranslation(id: string) {
   process.stderr.write("done\n")
 }
 
-const command = words[0]?.toLowerCase()
-
-if (command === "install") {
-  for (const id of words.slice(1).map((w) => w.toUpperCase())) await ensureTranslation(id)
+if (action.kind === "install") {
+  for (const id of action.ids) await ensureTranslation(id)
   process.exit(0)
 }
 
-if (command === "translations") {
+if (action.kind === "translations") {
   const installed = new Set(bible.translations().map((t) => t.id))
   for (const c of CATALOG) {
     console.log(`${installed.has(c.id) ? "●" : "○"} ${c.id.padEnd(5)} ${c.name} (${c.year})${c.id === config.translation ? "  · current" : ""}`)
@@ -81,7 +81,7 @@ if (command === "translations") {
   process.exit(0)
 }
 
-if (command === "stats") {
+if (action.kind === "stats") {
   const totals = store.dayTotals()
   const today = dayKey()
   const streak = currentStreak(totals, config.goal, today)
@@ -100,7 +100,7 @@ if (command === "stats") {
     verdict: verdict(c30, trackedDays(totals, today)).label,
     bibleRead: { chapters: progress.total.read, percent: Math.round(progress.total.fraction * 1000) / 10 },
   }
-  if (flags.has("--json")) {
+  if (action.json) {
     // waybar's custom module format: text, tooltip, class.
     console.log(
       JSON.stringify({
@@ -119,28 +119,28 @@ if (command === "stats") {
   process.exit(0)
 }
 
-if (command === "search" && print !== false && (print || words.length > 1)) {
+if (action.kind === "search") {
   await ensureTranslation(config.translation)
-  const query = words.slice(1).join(" ")
-  for (const h of bible.search(config.translation, query, 50)) {
+  const hits = bible.search(config.translation, action.query, 50)
+  if (!hits.length) console.error(`No verses match ${action.query} in ${config.translation}.`)
+  for (const h of hits) {
     console.log(`${formatRef({ book: h.book, chapter: h.chapter, verseStart: h.verse })}  ${plain(h.text)}`)
   }
   process.exit(0)
 }
 
-const ref = words.length ? parseRef(words.join(" ")) : null
-if (words.length && !ref && command !== "search") {
-  console.error(`Not a reference: ${words.join(" ")}. Try "john 3:16" or "ps 23".`)
-  process.exit(1)
-}
-
-if (print && ref) {
+if (action.kind === "print") {
   await ensureTranslation(config.translation)
-  const verses = bible.verses(config.translation, ref)
-  console.log(`${formatRef(ref)} (${config.translation})`)
+  const verses = bible.verses(config.translation, action.ref)
+  console.log(`${formatRef(action.ref)} (${config.translation})`)
   for (const v of verses) console.log(`${String(v.verse).padStart(3)}  ${plain(v.text)}`)
   process.exit(0)
 }
+
+// An explicit -t must be readable in the app: fetch it now rather than open an empty reader.
+// (A configured translation that is missing falls back to an installed one inside the app.)
+if (translationFlag && bible.translations().length) await ensureTranslation(translationFlag)
+const ref = action.ref
 
 // the app ---------------------------------------------------------------------------------
 
@@ -181,11 +181,7 @@ await render(
         copy: (text) => renderer.copyToClipboardOSC52(text),
       }}
       initial={
-        ref
-          ? { route: "reader", book: ref.book, chapter: ref.chapter, verse: ref.verseStart }
-          : command === "search"
-            ? { route: "home" }
-            : undefined
+        ref ? { route: "reader", book: ref.book, chapter: ref.chapter, verse: ref.verseStart } : undefined
       }
     />
   ),

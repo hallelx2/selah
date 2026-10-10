@@ -67,7 +67,8 @@ export function parseSearch(input: string): SearchQuery {
   return { match: parts.join(" "), book, testament, terms }
 }
 
-const tokens = (s: string) => s.match(/[\p{L}\p{N}’']+/gu)?.map((t) => t.replace(/[’']/g, "")).filter(Boolean) ?? []
+// Split exactly where FTS5's unicode61 tokenizer splits: "Lord's" is "lord" + "s".
+const tokens = (s: string) => s.match(/[\p{L}\p{N}]+/gu) ?? []
 
 /** Well-loved verses for the home screen, one per day. */
 const VERSES_OF_THE_DAY = [
