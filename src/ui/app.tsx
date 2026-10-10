@@ -4,6 +4,7 @@ import { createEffect, createSignal, Match, onCleanup, onMount, Show, Switch } f
 import { importTranslation } from "../data/importer"
 import { CATALOG } from "../data/translations"
 import { CelebrationLayer } from "./components/celebration"
+import { SceneLayer } from "./scene"
 import { DialogLayer, ToastLayer } from "./components/dialog"
 import { openIcons } from "./dialogs"
 import { Logo } from "./components/logo"
@@ -92,6 +93,7 @@ function Root(props: { initial?: { route: Route; book?: number; chapter?: number
           </Match>
         </Switch>
       </Show>
+      <SceneLayer />
       <DialogLayer />
       <ToastLayer />
       <CelebrationLayer />

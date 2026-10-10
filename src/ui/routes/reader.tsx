@@ -13,6 +13,7 @@ import { openBookmarks, openBooks, openHelp, openNote, openPalette, openSearch, 
 import { ease, mixColor } from "../motion"
 import { useApp } from "../state"
 import { StudyPane } from "../study"
+import { sceneAt } from "../../data/scenes"
 
 /** Job, Psalms, Proverbs, Ecclesiastes, Song of Solomon, Lamentations: set as verse, not prose. */
 const POETRY = new Set([18, 19, 20, 21, 22, 25])
@@ -34,6 +35,8 @@ export function Reader() {
   })
   const chapterKey = createMemo(() => `${chapter().book}:${chapter().chapter}`)
   const book = createMemo(() => bookById(chapter().book))
+  /** Doré's engraving for where the reader is in the chapter, if the chapter has one. */
+  const chapterScene = createMemo(() => sceneAt(pos().book, pos().chapter, pos().verse))
   const verses = createMemo(() => bible.chapter(app.translation(), chapter().book, chapter().chapter))
   const parallelVerses = createMemo(() => {
     if (!app.parallel()) return new Map<number, string>()
@@ -293,6 +296,11 @@ export function Reader() {
         return true
       case "a":
         return openNote(app, { ...pos() }), true
+      case "i": {
+        const plate = sceneAt(pos().book, pos().chapter, pos().verse)
+        if (!plate) return app.toast(`No Doré engraving for ${book().name} ${pos().chapter}`, "ctrl+p, then Doré gallery, shows all 100"), true
+        return app.openScene(plate), true
+      }
       case "v":
         setAnchor((a) => (a === undefined ? pos().verse : undefined))
         return true
@@ -379,6 +387,14 @@ export function Reader() {
             <span style={{ fg: t().textMuted }}>  ·  {app.translation()}</span>
             <Show when={app.parallel()}>
               <span style={{ fg: t().textMuted }}> ⇄ {app.config.parallel}</span>
+            </Show>
+            <Show when={chapterScene()}>
+              <span style={{ fg: t().textMuted }}>{"  ·  "}</span>
+              <span style={{ fg: t().accent }}>
+                {app.ip("star")}
+                {dims().width >= 130 ? chapterScene()!.title : "scene"}
+              </span>
+              <span style={{ fg: t().textMuted }}> i</span>
             </Show>
           </text>
           <box flexDirection="row" gap={2}>

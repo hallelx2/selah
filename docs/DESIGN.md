@@ -46,10 +46,14 @@ a beam crossing the logo, ink surfacing on a page, rings of light for a mileston
 | Glow | Streak in the status bar, when today is not yet kept | slow pulse | A nudge, never an alarm |
 | Rings | Streak milestones (3, 7, 14, 30, 50, 100, 200, 365) | 2.2s, once each | Celebrates faithfulness; never replays |
 | Rise and slide | Dialogs and toasts | 0.17 to 0.28s | Spatial continuity; where a thing came from |
+| Ink | A Doré engraving opening | 1.2s | The plate surfaces row by row with a ragged wet edge, as a print lifts off the press |
+| Drift | An open engraving | 24s each way, at 12 fps | A slow Ken Burns zoom and pan, so a still plate is looked into, not at |
 
 Rules:
 
 1. **Nothing animates while idle.** The motion clock only ticks while an animation is running.
+   The one standing animation is the drift of an open engraving: the reader is looking at it,
+   it runs on its own 12 fps clock (not the 60 fps one), and it stops when the scene closes.
 2. **Input is never gated.** Keys reach a dialog from its first frame, mid-animation.
 3. **Reduced motion is complete.** With `motion: "reduced"`, `SELAH_REDUCED_MOTION=1` or `NO_COLOR`, every value is final immediately and milestones become a toast.
 4. **Every animation is a pure function of time.** Tests drive them on a manual clock and assert exact frames.

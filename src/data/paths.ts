@@ -33,6 +33,10 @@ export const paths = {
   get studyDb() {
     return join(this.data, "study.db")
   },
+  /** Doré's engravings, downloaded once (`selah install scenes`). */
+  get scenes() {
+    return join(this.data, "scenes")
+  },
   get userDb() {
     return join(this.data, "user.db")
   },
