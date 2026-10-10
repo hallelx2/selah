@@ -8,6 +8,7 @@ import {
   baseStrongs,
   Concordance,
   extendedStrongs,
+  importConcordance,
   installConcordance,
   lexiconText,
   parseLexiconLine,
@@ -178,6 +179,49 @@ describe("Hebrew in the terminal", () => {
     expect(displayHebrew("בָּרָא")).toBe("ארָבָּ")
     expect(displayHebrew("בָּרָא", "logical")).toBe("בָּרָא")
     expect(displayHebrew("ἀγάπη")).toBe("ἀγάπη")
+  })
+})
+
+describe("import", () => {
+  const small = [
+    { name: "TAGNT_x.txt", text: "Jhn.3.16#03=NKO\tἠγάπησεν (ēgapēsen)\tloved\tG0025=V-AAI-3S\tἀγαπάω=to love\tNA28" },
+    { name: "TBESG_x.txt", text: "G0025\tG0025 =\tG0025\tἀγαπάω\tagapaō\tG:V\tto love\tlove" },
+  ]
+
+  test("never blocks the event loop, and keeps serving the old data until the swap", async () => {
+    const db = new Database(":memory:")
+    await importConcordance(db, small)
+    const live = new Concordance(db)
+    expect(live.verse(43, 3, 16)).toHaveLength(1)
+    const files = await Promise.all(STEP_FILES.map(async (f) => ({ name: f.name, text: await Bun.file(join(import.meta.dir, "..", ".selah-test-sources", `stepbible-aca7d691414e`, f.name)).text() })))
+    let ticks = 0
+    const timer = setInterval(() => ticks++, 1)
+    let midway: number | undefined
+    const progress: number[] = []
+    const stats = await importConcordance(db, files, (f) => {
+      progress.push(f)
+      if (midway === undefined && f > 0.5) midway = live.verse(43, 3, 16).length
+    })
+    clearInterval(timer)
+    expect(ticks).toBeGreaterThan(20) // timers ran throughout
+    expect(progress.length).toBeGreaterThan(50)
+    expect(progress.at(-1)).toBe(1)
+    expect(midway).toBe(1) // still the old import while the new one was being built
+    expect(stats.words).toBeGreaterThan(440_000)
+    expect(live.verse(43, 3, 16).length).toBe(26)
+  }, 120_000)
+
+  test("each import swaps index generations, so indexes never pile up", async () => {
+    const db = new Database(":memory:")
+    new Concordance(db)
+    const names = () => db.query<{ name: string }, []>(`SELECT name FROM sqlite_master WHERE type = 'index' AND name NOT LIKE 'sqlite_%' ORDER BY name`).all().map((r) => r.name)
+    expect(names()).toEqual(["lexicon_strongs_a", "words_strongs_a", "words_verse_a"])
+    await importConcordance(db, small)
+    expect(names()).toEqual(["lexicon_strongs_b", "words_strongs_b", "words_verse_b"])
+    await importConcordance(db, small)
+    new Concordance(db)
+    expect(names()).toEqual(["lexicon_strongs_a", "words_strongs_a", "words_verse_a"])
+    expect(db.query(`SELECT name FROM sqlite_master WHERE name LIKE '%_import'`).all()).toEqual([])
   })
 })
 

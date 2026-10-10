@@ -122,6 +122,20 @@ describe("Words tab", () => {
     expect(f).toContain("ἀγάπη  agapē  G0026")
   })
 
+  test("a Strong's search from focus mode leaves it, so the study opens now", async () => {
+    h = await harness({ width: 200, height: 50, initial: { route: "reader", book: 43, chapter: 3, verse: 1 }, concordance: true })
+    await h.press("z")
+    expect(h.app().focus()).toBe(true)
+    await h.press("/")
+    await h.type("G26")
+    await wait(150)
+    await h.settle()
+    await h.press("return")
+    expect(h.app().focus()).toBe(false)
+    expect(h.frame()).toContain("ἀγάπη  agapē  G0026")
+    expect(h.app().wordStudy()).toBeUndefined()
+  })
+
   test("not installed: it offers the download, and i installs it", async () => {
     const empty = new Concordance(new Database(":memory:"))
     h = await openWords({ book: 43, chapter: 1, verse: 1 }, { concordance: empty })

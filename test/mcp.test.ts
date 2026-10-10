@@ -152,6 +152,14 @@ describe("word studies", () => {
     expect(john.text.length).toBeLessThan(8_000)
   })
 
+  test("a word that never occurs in the book says so, with the count elsewhere", async () => {
+    const r = await call("concordance", { strongs: "H7225", book: "John" })
+    expect(r.isError).toBe(false)
+    expect(r.text).toMatch(/^H7225 does not occur in John\. It occurs \d+ times in \d+ verses elsewhere/)
+    const john = await call("concordance", { strongs: "G0026", book: "1 John" })
+    expect(john.text).toContain("In 1 John: 18 occurrences in 14 verses.")
+  })
+
   test("bad numbers and books are tool errors", async () => {
     expect((await call("concordance", { strongs: "love" })).isError).toBe(true)
     expect((await call("concordance", { strongs: "G26", book: "Hezekiah" })).isError).toBe(true)

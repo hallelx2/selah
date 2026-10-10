@@ -56,8 +56,6 @@ CREATE TABLE IF NOT EXISTS words (
   -- NT editions N (Nestle-Aland), K (the KJV's Textus Receptus), O (others); lower case = minor
   editions TEXT NOT NULL
 );
-CREATE INDEX IF NOT EXISTS words_verse ON words (book, chapter, verse, position);
-CREATE INDEX IF NOT EXISTS words_strongs ON words (strongs, book, chapter, verse);
 CREATE TABLE IF NOT EXISTS lexicon (
   dstrong TEXT PRIMARY KEY,
   strongs TEXT NOT NULL,
@@ -67,8 +65,22 @@ CREATE TABLE IF NOT EXISTS lexicon (
   gloss TEXT NOT NULL,
   definition TEXT NOT NULL
 );
-CREATE INDEX IF NOT EXISTS lexicon_strongs ON lexicon (strongs);
 `
+
+/**
+ * The indexes, named with a generation letter. An import builds its tables beside the live
+ * ones (indexes included, so the swap is instant) under the other letter, then swaps them in.
+ */
+const indexes = (table: { words: string; lexicon: string }, gen: "a" | "b") => `
+CREATE INDEX IF NOT EXISTS words_verse_${gen} ON ${table.words} (book, chapter, verse, position);
+CREATE INDEX IF NOT EXISTS words_strongs_${gen} ON ${table.words} (strongs, book, chapter, verse);
+CREATE INDEX IF NOT EXISTS lexicon_strongs_${gen} ON ${table.lexicon} (strongs);
+`
+
+function liveGeneration(db: Database): "a" | "b" | undefined {
+  const r = db.query<{ name: string }, []>(`SELECT name FROM sqlite_master WHERE type = 'index' AND tbl_name = 'words' AND name LIKE 'words_verse_%'`).get()
+  return r ? (r.name.endsWith("_b") ? "b" : "a") : undefined
+}
 
 /** "H7225G", "G25", "{H1254A}" → "H7225", "G0025", "H1254". */
 export function baseStrongs(s: string): string {
@@ -199,35 +211,66 @@ export function parseLexiconLine(line: string): LexiconEntry | undefined {
   }
 }
 
-export function importConcordance(db: Database, files: Iterable<{ name: string; text: string }>): { words: number; entries: number; verses: number } {
+export type ImportProgress = (fraction: number) => void
+
+/**
+ * Imports into staging tables in batches, yielding between them so a running app keeps
+ * drawing and taking keys, then swaps them in at once. The live tables (if any) serve every
+ * query until the swap, and a failed import leaves them untouched.
+ */
+export async function importConcordance(
+  db: Database,
+  files: Iterable<{ name: string; text: string }>,
+  onProgress?: ImportProgress,
+): Promise<{ words: number; entries: number; verses: number }> {
   db.exec(CONCORDANCE_SCHEMA)
+  const gen = liveGeneration(db) === "a" ? "b" : "a"
+  const stage = { words: "words_import", lexicon: "lexicon_import" }
+  db.run(`DROP TABLE IF EXISTS ${stage.words}`)
+  db.run(`DROP TABLE IF EXISTS ${stage.lexicon}`)
+  db.exec(CONCORDANCE_SCHEMA.replace("IF NOT EXISTS words", `${stage.words}`).replace("IF NOT EXISTS lexicon", `${stage.lexicon}`))
+  db.exec(indexes(stage, gen))
   const insertWord = db.prepare(
-    `INSERT INTO words (book, chapter, verse, position, original, translit, gloss, strongs, dstrong, parts, grammar, editions) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO ${stage.words} (book, chapter, verse, position, original, translit, gloss, strongs, dstrong, parts, grammar, editions) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   )
-  const insertEntry = db.prepare(`INSERT OR REPLACE INTO lexicon (dstrong, strongs, lemma, translit, morph, gloss, definition) VALUES (?, ?, ?, ?, ?, ?, ?)`)
+  const insertEntry = db.prepare(`INSERT OR REPLACE INTO ${stage.lexicon} (dstrong, strongs, lemma, translit, morph, gloss, definition) VALUES (?, ?, ?, ?, ?, ?, ?)`)
   let words = 0
   let entries = 0
   const verses = new Set<string>()
-  db.transaction(() => {
-    db.run(`DELETE FROM words`)
-    db.run(`DELETE FROM lexicon`)
-    for (const f of files) {
-      const lexicon = /^TBES/.test(f.name)
-      for (const line of f.text.split("\n")) {
-        if (lexicon) {
-          const e = parseLexiconLine(line)
-          if (!e) continue
-          insertEntry.run(e.dstrong, e.strongs, e.lemma, e.translit, e.morph, e.gloss, e.definition)
-          entries++
-        } else {
-          const w = parseWordLine(line)
-          if (!w) continue
-          insertWord.run(w.book, w.chapter, w.verse, w.position, w.original, w.translit, w.gloss, w.strongs, w.dstrong, w.parts, w.grammar, w.editions)
-          verses.add(`${w.book}.${w.chapter}.${w.verse}`)
-          words++
-        }
+  const all = [...files].map((f) => ({ lexicon: /^TBES/.test(f.name), lines: f.text.split("\n") }))
+  const total = all.reduce((n, f) => n + f.lines.length, 0)
+  let done = 0
+  const BATCH = 8_000
+  const batch = db.transaction((lexicon: boolean, lines: string[]) => {
+    for (const line of lines) {
+      if (lexicon) {
+        const e = parseLexiconLine(line)
+        if (!e) continue
+        insertEntry.run(e.dstrong, e.strongs, e.lemma, e.translit, e.morph, e.gloss, e.definition)
+        entries++
+      } else {
+        const w = parseWordLine(line)
+        if (!w) continue
+        insertWord.run(w.book, w.chapter, w.verse, w.position, w.original, w.translit, w.gloss, w.strongs, w.dstrong, w.parts, w.grammar, w.editions)
+        verses.add(`${w.book}.${w.chapter}.${w.verse}`)
+        words++
       }
     }
+  })
+  for (const f of all) {
+    for (let i = 0; i < f.lines.length; i += BATCH) {
+      const lines = f.lines.slice(i, i + BATCH)
+      batch(f.lexicon, lines)
+      done += lines.length
+      onProgress?.(done / total)
+      await new Promise((r) => setTimeout(r, 0))
+    }
+  }
+  db.transaction(() => {
+    db.run(`DROP TABLE IF EXISTS words`)
+    db.run(`DROP TABLE IF EXISTS lexicon`)
+    db.run(`ALTER TABLE ${stage.words} RENAME TO words`)
+    db.run(`ALTER TABLE ${stage.lexicon} RENAME TO lexicon`)
   })()
   return { words, entries, verses: verses.size }
 }
@@ -261,6 +304,8 @@ export const bareForm = (s: string) => s.replace(/[^\p{L}\p{M}]/gu, "")
 export class Concordance {
   constructor(readonly db: Database) {
     db.exec(CONCORDANCE_SCHEMA)
+    // a fresh (empty) database gets generation a; an imported one already has its own
+    if (!liveGeneration(db)) db.exec(indexes({ words: "words", lexicon: "lexicon" }, "a"))
   }
 
   get installed(): boolean {
@@ -358,7 +403,6 @@ export async function installConcordance(db: Database, cacheDir: string, onProgr
   }
   onProgress?.({ phase: "import", fraction: 0 })
   const files = await Promise.all(STEP_FILES.map(async (f) => ({ name: f.name, text: await Bun.file(join(dir, f.name)).text() })))
-  const stats = importConcordance(db, files)
-  onProgress?.({ phase: "import", fraction: 1 })
+  const stats = await importConcordance(db, files, (fraction) => onProgress?.({ phase: "import", fraction }))
   return stats
 }

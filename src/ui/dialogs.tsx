@@ -172,6 +172,9 @@ function SearchDialog(props: { app: App; initial: string }) {
     if (h.strongs) {
       app.setStudyOpen(true)
       app.setStudyTab("words")
+      // focusing the pane also leaves focus mode, where the pane is not drawn and the study
+      // would wait, unseen, to open later somewhere else
+      app.setStudyFocused(true)
       app.setWordStudy(h.strongs)
     }
     if (h.heading !== undefined) {

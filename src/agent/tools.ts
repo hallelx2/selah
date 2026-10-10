@@ -185,6 +185,8 @@ export const TOOLS: SelahTool[] = [
       const lex = c.entry(strongs)
       const n = c.count(strongs)
       if (!n.words) return `${strongs} does not occur in the text.`
+      const inBook = book ? c.count(strongs, book.id) : undefined
+      if (book && !inBook!.words) return `${strongs} does not occur in ${book.name}. It occurs ${n.words} times in ${n.verses} verses elsewhere; call again without book to see them.`
       const per = c.perBook(strongs).map((p) => `${bookById(p.book).short} ${p.count}`)
       const occ = c.occurrences(strongs, { book: book?.id, limit: Number(a.limit ?? 25) })
       const tr = ctx.translation()
@@ -197,6 +199,7 @@ export const TOOLS: SelahTool[] = [
           lex ? `${strongs} ${lex.lemma} (${lex.translit}), ${lex.morph}: ${lex.gloss}` : strongs,
           lex ? lex.definition.replace(/\*/g, "").slice(0, 1200) : "",
           `${n.words} occurrences in ${n.verses} verses. By book: ${per.join(", ")}`,
+          book ? `In ${book.name}: ${inBook!.words} occurrences in ${inBook!.verses} verses.` : "",
           `${book ? `In ${book.name}` : "Verses"} (${tr}, first ${verses.length}):`,
           ...verses,
         ]
