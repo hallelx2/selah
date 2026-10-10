@@ -1,6 +1,6 @@
 import { TextAttributes, type InputRenderable, type KeyEvent, type ScrollBoxRenderable } from "@opentui/core"
 import { createEffect, createMemo, createSignal, For, on, onCleanup, Show } from "solid-js"
-import { createStore, produce } from "solid-js/store"
+import { createStore, produce, unwrap } from "solid-js/store"
 import { EventType, pickAgent, type AgentEvent, type AgentProvider } from "../agent"
 import { bookById } from "../data/books"
 import { findBook, formatRef, type Ref } from "../data/ref"
@@ -46,21 +46,20 @@ export function applyEvent(msg: Extract<AskMessage, { role: "assistant" }>, e: A
       if (t) t.args += e.delta
       break
     }
-    case EventType.TOOL_CALL_END: {
+    case EventType.TOOL_CALL_RESULT: {
       const t = msg.tools.find((x) => x.id === e.toolCallId)
-      if (t?.name === "suggest_note") {
+      if (!t) break
+      t.result = e.content
+      // Only a suggestion the tool accepted is offered; a failed call (no verse, a bad
+      // reference) would otherwise sit at the top of ctrl+k forever.
+      if (t.name === "suggest_note" && !e.isError) {
         try {
           const a = JSON.parse(t.args) as { reference?: string; note?: string }
-          if (a.reference && a.note) msg.suggestions.push({ reference: a.reference, note: a.note })
+          if (a.reference && a.note?.trim() && parseVerse(a.reference)) msg.suggestions.push({ reference: a.reference, note: a.note.trim() })
         } catch {
           // a malformed suggestion is simply not offered
         }
       }
-      break
-    }
-    case EventType.TOOL_CALL_RESULT: {
-      const t = msg.tools.find((x) => x.id === e.toolCallId)
-      if (t) t.result = e.content
       break
     }
     case EventType.RUN_ERROR:
@@ -146,7 +145,37 @@ export function AskTab(props: { register: (r: { key: (k: KeyEvent) => boolean; c
   const [elapsed, setElapsed] = createSignal(0)
   const [agent, setAgent] = createSignal<AgentProvider | undefined>()
   const [detected, setDetected] = createSignal(false)
-  let abort: AbortController | undefined
+  /**
+   * The answer in flight. A run belongs to the chapter it was asked on: when the reader clears
+   * the thread or moves to another chapter, the run is detached, so its last events and its
+   * cleanup can never land on a thread they do not belong to.
+   */
+  type Run = {
+    key: { book: number; chapter: number }
+    controller: AbortController
+    /** The run's own copy of the conversation, kept whether or not it is on screen. */
+    messages: AskMessage[]
+    answer: Extract<AskMessage, { role: "assistant" }>
+    index: number
+    sessionId?: string
+    provider: string
+    /** why it stopped belonging to the visible thread */
+    detached?: "cleared" | "moved"
+  }
+  let run: Run | undefined
+  const detach = (why: "cleared" | "moved") => {
+    if (!run) return
+    run.detached = why
+    run.controller.abort()
+    // Saved now, not only when the agent winds down: a provider slow to honour the abort must
+    // not lose the answer so far.
+    if (why === "moved") {
+      run.answer.error ??= "Stopped"
+      app.deps.store.saveAskThread(run.key.book, run.key.chapter, run.provider, run.sessionId, run.messages)
+    }
+    run = undefined
+    setRunning(false)
+  }
   let input: InputRenderable | undefined
   let scroll: ScrollBoxRenderable | undefined
 
@@ -160,7 +189,7 @@ export function AskTab(props: { register: (r: { key: (k: KeyEvent) => boolean; c
   // Each chapter has its own conversation.
   createEffect(
     on(chapter, (c) => {
-      abort?.abort()
+      detach("moved")
       const saved = app.deps.store.askThread<AskMessage>(c.book, c.chapter)
       setThread({ messages: saved?.messages ?? [], sessionId: saved?.sessionId, provider: saved?.provider })
       setTimeout(() => scroll && !scroll.isDestroyed && scroll.scrollTo(scroll.scrollHeight), 0)
@@ -176,7 +205,7 @@ export function AskTab(props: { register: (r: { key: (k: KeyEvent) => boolean; c
     if (app.studyFocused()) focusInput()
     else input?.blur()
   })
-  onCleanup(() => abort?.abort())
+  onCleanup(() => detach("moved"))
 
   const timer = setInterval(() => running() && setElapsed((n) => n + 1), 1000)
   onCleanup(() => clearInterval(timer))
@@ -191,26 +220,50 @@ export function AskTab(props: { register: (r: { key: (k: KeyEvent) => boolean; c
     const verse = app.deps.bible.verses(app.translation(), { book: p.book, chapter: p.chapter, verseStart: p.verse })[0]
     const context = `[The reader has ${formatRef({ book: c.book, chapter: c.chapter })} open in ${app.translation()}, at verse ${p.verse}${verse ? `: "${plain(verse.text)}"` : ""}.]`
     const history = thread.messages.map((m) => ({ role: m.role, text: m.text }))
-    setThread(produce((s) => s.messages.push({ role: "user", text: q, at: app.now() })))
-    setThread(produce((s) => s.messages.push({ role: "assistant", text: "", tools: [], suggestions: [], provider: a.label, at: app.now() })))
-    const index = thread.messages.length - 1
+    const resumable = thread.provider === a.id ? thread.sessionId : undefined
+    const user: AskMessage = { role: "user", text: q, at: app.now() }
+    const answer: Extract<AskMessage, { role: "assistant" }> = { role: "assistant", text: "", tools: [], suggestions: [], provider: a.label, at: app.now() }
+    const r: Run = {
+      key: c,
+      controller: new AbortController(),
+      messages: [...structuredClone(unwrap(thread.messages)), user, answer],
+      answer,
+      index: thread.messages.length + 1,
+      sessionId: resumable,
+      provider: a.id,
+    }
+    run = r
+    setThread(produce((s) => s.messages.push(structuredClone(user), structuredClone(answer))))
     setRunning(true)
     setElapsed(0)
-    abort = new AbortController()
-    const resumable = thread.provider === a.id ? thread.sessionId : undefined
+    const visible = () => run === r
+    const update = (f: (m: Extract<AskMessage, { role: "assistant" }>) => void) => {
+      f(r.answer)
+      if (visible()) setThread(produce((s) => f(s.messages[r.index] as Extract<AskMessage, { role: "assistant" }>)))
+    }
     try {
-      for await (const e of a.run({ prompt: `${context}\n\n${q}`, history, sessionId: resumable, threadId: `${c.book}:${c.chapter}`, signal: abort.signal })) {
-        if (abort.signal.aborted) break
-        setThread(produce((s) => applyEvent(s.messages[index] as Extract<AskMessage, { role: "assistant" }>, e)))
-        if (e.type === EventType.RUN_FINISHED && e.result?.sessionId) setThread({ sessionId: e.result.sessionId, provider: a.id })
-        setTimeout(() => scroll && !scroll.isDestroyed && scroll.scrollTo(scroll.scrollHeight), 0)
+      for await (const e of a.run({ prompt: `${context}\n\n${q}`, history, sessionId: resumable, threadId: `${c.book}:${c.chapter}`, signal: r.controller.signal })) {
+        if (r.controller.signal.aborted) break
+        update((m) => applyEvent(m, e))
+        if (e.type === EventType.RUN_FINISHED && e.result?.sessionId) {
+          r.sessionId = e.result.sessionId
+          if (visible()) setThread({ sessionId: e.result.sessionId, provider: a.id })
+        }
+        if (visible()) setTimeout(() => scroll && !scroll.isDestroyed && scroll.scrollTo(scroll.scrollHeight), 0)
       }
     } catch (err) {
-      setThread(produce((s) => ((s.messages[index] as { error?: string }).error = err instanceof Error ? err.message : String(err))))
+      update((m) => (m.error = err instanceof Error ? err.message : String(err)))
     } finally {
-      if (abort.signal.aborted) setThread(produce((s) => ((s.messages[index] as { error?: string }).error ??= "Stopped")))
-      setRunning(false)
-      persist()
+      if (r.controller.signal.aborted) update((m) => (m.error ??= "Stopped"))
+      if (visible()) {
+        run = undefined
+        setRunning(false)
+        persist()
+      } else if (r.detached === "moved") {
+        // The reader went to another chapter: the answer so far is kept on its own chapter.
+        app.deps.store.saveAskThread(r.key.book, r.key.chapter, r.provider, r.sessionId, r.messages)
+      }
+      // "cleared": the reader threw this conversation away; nothing is written back.
     }
   }
 
@@ -219,7 +272,8 @@ export function AskTab(props: { register: (r: { key: (k: KeyEvent) => boolean; c
     for (let i = thread.messages.length - 1; i >= 0; i--) {
       const m = thread.messages[i]!
       if (m.role !== "assistant") continue
-      const j = m.suggestions.findIndex((s) => !s.accepted)
+      // threads saved before suggestions were validated may hold one that names no verse
+      const j = m.suggestions.findIndex((s) => !s.accepted && parseVerse(s.reference))
       if (j >= 0) return { i, j, s: m.suggestions[j]! }
     }
   }
@@ -270,7 +324,7 @@ export function AskTab(props: { register: (r: { key: (k: KeyEvent) => boolean; c
   }
 
   function clear() {
-    abort?.abort()
+    detach("cleared")
     setThread({ messages: [], sessionId: undefined, provider: undefined })
     persist()
   }
@@ -278,7 +332,7 @@ export function AskTab(props: { register: (r: { key: (k: KeyEvent) => boolean; c
   props.register({
     captures: () => !!agent(),
     key: (k) => {
-      if (k.name === "escape" && running()) return abort?.abort(), true
+      if (k.name === "escape" && running()) return run?.controller.abort(), true
       if (k.ctrl && k.name === "s") return saveAnswer(), true
       if (k.ctrl && k.name === "r") return openReferences(), true
       if (k.ctrl && k.name === "k") return acceptSuggestion(), true
@@ -404,7 +458,10 @@ export function AskTab(props: { register: (r: { key: (k: KeyEvent) => boolean; c
               backgroundColor={t().backgroundElement}
               focusedBackgroundColor={t().backgroundElement}
               cursorColor={t().primary}
-              onSubmit={((v: unknown) => void ask(typeof v === "string" ? v : (input?.value ?? ""))) as never}
+              onSubmit={((v: unknown) =>
+                void ask(typeof v === "string" ? v : (input?.value ?? "")).catch((err) =>
+                  app.toast(`Ask failed: ${err instanceof Error ? err.message : String(err)}`, undefined, "error"),
+                )) as never}
             />
           </box>
           <text fg={t().textMuted} wrapMode="none">
@@ -416,10 +473,14 @@ export function AskTab(props: { register: (r: { key: (k: KeyEvent) => boolean; c
   )
 }
 
-function parseVerse(reference: string): { book: number; chapter: number; verse: number } | undefined {
+/** "John 3:16" → a verse that exists, or undefined. */
+export function parseVerse(reference: string): { book: number; chapter: number; verse: number } | undefined {
   const m = /^(.*?)\s(\d+):(\d+)/.exec(reference.trim())
   const book = m && findBook(m[1]!)
-  return book && m ? { book: book.id, chapter: Number(m[2]), verse: Number(m[3]) } : undefined
+  if (!book || !m) return undefined
+  const chapter = Number(m[2])
+  const verse = Number(m[3])
+  return chapter >= 1 && chapter <= book.chapters && verse >= 1 ? { book: book.id, chapter, verse } : undefined
 }
 
 export { TRANSPARENT }

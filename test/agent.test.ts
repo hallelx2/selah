@@ -94,6 +94,13 @@ describe("codex exec --json → AG-UI", () => {
     expect(ev[4]).toMatchObject({ content: "16 For God so loved the world" })
   })
 
+  test("an API error wrapped in JSON reads as its sentence", async () => {
+    // verbatim from a real run on 2026-10-10
+    const line = String.raw`{"type":"turn.failed","error":{"message":"{\"type\":\"error\",\"status\":400,\"error\":{\"type\":\"invalid_request_error\",\"message\":\"The 'gpt-6-astra' model is not supported when using Codex with a ChatGPT account.\"}}"}}`
+    const ev = await collect(codexToAgUi(from([line]), "t"))
+    expect(ev.at(-1)).toMatchObject({ type: EventType.RUN_ERROR, message: "The 'gpt-6-astra' model is not supported when using Codex with a ChatGPT account." })
+  })
+
   test("a usage-limit failure surfaces its message", async () => {
     const ev = await collect(codexToAgUi(from(['{"type":"turn.failed","error":{"message":"You\'ve hit your usage limit."}}']), "t"))
     expect(ev.at(-1)).toMatchObject({ type: EventType.RUN_ERROR, message: "You've hit your usage limit." })
@@ -108,11 +115,43 @@ describe("answers", () => {
     apply({ type: EventType.TOOL_CALL_START, toolCallId: "b", toolCallName: "suggest_note" })
     apply({ type: EventType.TOOL_CALL_ARGS, toolCallId: "b", delta: '{"reference":"John 3:16","note":"God so loved"}' })
     apply({ type: EventType.TOOL_CALL_END, toolCallId: "b" })
+    expect(m.suggestions).toEqual([]) // not until the tool says it took it
+    apply({ type: EventType.TOOL_CALL_RESULT, messageId: "r", toolCallId: "b", content: "Suggested a note on John 3:16 for the reader to accept." })
     apply({ type: EventType.TEXT_MESSAGE_START, messageId: "t" })
     apply({ type: EventType.TEXT_MESSAGE_CONTENT, messageId: "t", delta: "Hello" })
     expect(m.tools.map((t) => t.name)).toEqual(["suggest_note"])
     expect(m.suggestions).toEqual([{ reference: "John 3:16", note: "God so loved" }])
     expect(m.text).toBe("Hello")
+  })
+
+  test("a suggest_note the tool rejected, or one naming no real verse, is never offered", () => {
+    const m: Extract<AskMessage, { role: "assistant" }> = { role: "assistant", text: "", tools: [], suggestions: [], provider: "x", at: 0 }
+    const suggest = (id: string, args: unknown, isError = false) => {
+      applyEvent(m, { type: EventType.TOOL_CALL_START, toolCallId: id, toolCallName: "suggest_note" })
+      applyEvent(m, { type: EventType.TOOL_CALL_ARGS, toolCallId: id, delta: JSON.stringify(args) })
+      applyEvent(m, { type: EventType.TOOL_CALL_END, toolCallId: id })
+      applyEvent(m, { type: EventType.TOOL_CALL_RESULT, messageId: id, toolCallId: id, content: isError ? "Suggest a note on one verse" : "ok", isError })
+    }
+    suggest("whole-chapter", { reference: "John 3", note: "x" }, true)
+    suggest("no-such-chapter", { reference: "John 30:1", note: "x" })
+    suggest("not-a-book", { reference: "Hezekiah 4:2", note: "x" })
+    suggest("empty", { reference: "John 3:2", note: "  " })
+    suggest("good", { reference: "John 3:2", note: "He came by night." })
+    expect(m.suggestions).toEqual([{ reference: "John 3:2", note: "He came by night." }])
+  })
+
+  test("tool errors carry through from Claude and Codex", async () => {
+    const claude = await collect(
+      claudeToAgUi(
+        from([{ type: "user", parent_tool_use_id: null, message: { content: [{ type: "tool_result", tool_use_id: "c", content: "bad", is_error: true }] } }]) as never,
+        "t",
+      ),
+    )
+    expect(claude.find((e) => e.type === EventType.TOOL_CALL_RESULT)).toMatchObject({ isError: true })
+    const codex = await collect(
+      codexToAgUi(from(['{"type":"item.completed","item":{"id":"i","type":"mcp_tool_call","tool":"suggest_note","arguments":{},"status":"failed","error":{"message":"bad"}}}']), "t"),
+    )
+    expect(codex.find((e) => e.type === EventType.TOOL_CALL_RESULT)).toMatchObject({ isError: true, content: "bad" })
   })
 
   test("citedRefs finds references, ranges and continuations, once each", () => {

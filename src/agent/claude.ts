@@ -96,10 +96,10 @@ export async function* claudeToAgUi(stream: AsyncIterable<SDKMessage>, threadId:
       } else if (m.type === "user" && !m.parent_tool_use_id) {
         const content = (m.message as { content?: unknown }).content
         if (Array.isArray(content)) {
-          for (const c of content as { type: string; tool_use_id?: string; content?: unknown }[]) {
+          for (const c of content as { type: string; tool_use_id?: string; content?: unknown; is_error?: boolean }[]) {
             if (c.type !== "tool_result" || !c.tool_use_id) continue
             const text = typeof c.content === "string" ? c.content : Array.isArray(c.content) ? (c.content as { type: string; text?: string }[]).map((x) => x.text ?? "").join("\n") : ""
-            yield { type: EventType.TOOL_CALL_RESULT, messageId: crypto.randomUUID(), toolCallId: c.tool_use_id, content: text, role: "tool" }
+            yield { type: EventType.TOOL_CALL_RESULT, messageId: crypto.randomUUID(), toolCallId: c.tool_use_id, content: text, role: "tool", isError: !!c.is_error }
           }
         }
       } else if (m.type === "result") {

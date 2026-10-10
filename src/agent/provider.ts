@@ -16,7 +16,9 @@ export type AgentEvent =
   | (BaseEvent & { type: EventType.TOOL_CALL_START; toolCallId: string; toolCallName: string; parentMessageId?: string })
   | (BaseEvent & { type: EventType.TOOL_CALL_ARGS; toolCallId: string; delta: string })
   | (BaseEvent & { type: EventType.TOOL_CALL_END; toolCallId: string })
-  | (BaseEvent & { type: EventType.TOOL_CALL_RESULT; messageId: string; toolCallId: string; content: string; role?: "tool" })
+  // isError is Selah's addition: AG-UI's result carries only content, and a failed tool call must
+  // not count as done (a failed suggest_note is no suggestion).
+  | (BaseEvent & { type: EventType.TOOL_CALL_RESULT; messageId: string; toolCallId: string; content: string; role?: "tool"; isError?: boolean })
 
 export interface AskInput {
   /** The question, already including any context the provider should see first. */

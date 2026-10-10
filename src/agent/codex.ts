@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, symlinkSync, writeFileSync } from "node:fs"
+import { existsSync, lstatSync, mkdirSync, readlinkSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs"
 import { homedir } from "node:os"
 import { join } from "node:path"
 import { paths } from "../data/paths"
@@ -16,19 +16,31 @@ export function codexProvider(executable: string, env: Record<string, string | u
     label: "Codex",
     async *run(input: AskInput) {
       const home = codexHome(env)
-      const args = ["exec", "--json", "--skip-git-repo-check", "--ephemeral", "-s", "read-only", promptWithHistory(input)]
-      const proc = Bun.spawn([executable, ...args], {
+      // The prompt goes on stdin ("-"): a long thread is far past the kernel's 128 KiB limit on
+      // one argument.
+      const proc = Bun.spawn([executable, "exec", "--json", "--skip-git-repo-check", "--ephemeral", "-s", "read-only", "-"], {
         stdout: "pipe",
         stderr: "pipe",
-        stdin: "ignore",
+        stdin: new Blob([promptWithHistory(input)]),
         cwd: home,
         env: { ...process.env, CODEX_HOME: home },
       })
-      input.signal.addEventListener("abort", () => proc.kill(), { once: true })
-      yield* codexToAgUi(lines(proc.stdout), input.threadId, async () => {
-        const code = await proc.exited
-        return code === 0 ? undefined : (await new Response(proc.stderr).text()).trim().split("\n").slice(-3).join(" ") || `codex exited with ${code}`
-      })
+      const kill = () => proc.kill()
+      if (input.signal.aborted) kill()
+      input.signal.addEventListener("abort", kill, { once: true })
+      // Read from the start rather than after exit. Bun 1.4.2 buffers an unread pipe itself (8 MB
+      // measured, no stall), but nothing promises that, and a stalled Codex would hang Ask.
+      const stderr = new Response(proc.stderr).text()
+      try {
+        yield* codexToAgUi(lines(proc.stdout), input.threadId, async () => {
+          const code = await proc.exited
+          if (code === 0) return undefined
+          return (await stderr).trim().split("\n").slice(-3).join(" ") || `codex exited with ${code}`
+        })
+      } finally {
+        input.signal.removeEventListener("abort", kill)
+        if (proc.exitCode === null) proc.kill()
+      }
     },
   }
 }
@@ -42,11 +54,13 @@ export function codexHome(env: Record<string, string | undefined> = {}): string 
   const home = join(paths.data, "codex-home")
   mkdirSync(home, { recursive: true })
   const userHome = process.env.CODEX_HOME && !process.env.CODEX_HOME.startsWith(home) ? process.env.CODEX_HOME : join(homedir(), ".codex")
-  const auth = join(home, "auth.json")
-  if (!existsSync(auth) && existsSync(join(userHome, "auth.json"))) symlinkSync(join(userHome, "auth.json"), auth)
+  linkAuth(join(userHome, "auth.json"), join(home, "auth.json"))
   const mcp = selahMcpCommand()
   const toml = (v: string) => JSON.stringify(v)
-  const envPairs = Object.entries({ SELAH_HOME: process.env.SELAH_HOME, ...env }).filter(([, v]) => v)
+  // Codex starts MCP servers with a minimal environment, so everything that decides where
+  // Selah's data lives goes along, or the server would open a different library than the app.
+  const inherited = Object.fromEntries(PATH_VARS.map((k) => [k, process.env[k]]))
+  const envPairs = Object.entries({ ...inherited, ...env }).filter(([, v]) => v)
   writeFileSync(
     join(home, "config.toml"),
     [
@@ -61,8 +75,26 @@ export function codexHome(env: Record<string, string | undefined> = {}): string 
   return home
 }
 
+/** Every variable `src/data/paths.ts` reads. */
+const PATH_VARS = ["SELAH_HOME", "SELAH_SOURCES", "XDG_DATA_HOME", "XDG_CONFIG_HOME", "XDG_CACHE_HOME"]
+
+/** Points `link` at the reader's auth.json, repairing a dangling or stale link, never touching a real file. */
+function linkAuth(target: string, link: string) {
+  let current: string | undefined
+  try {
+    const st = lstatSync(link)
+    if (!st.isSymbolicLink()) return // a login made inside Selah's Codex home; leave it be
+    current = readlinkSync(link)
+  } catch {
+    // no link yet
+  }
+  if (current === target && existsSync(target)) return
+  if (current !== undefined) unlinkSync(link)
+  if (existsSync(target)) symlinkSync(target, link)
+}
+
 /** Codex has no session to resume in ephemeral mode, so earlier turns ride along in the prompt. */
-function promptWithHistory(input: AskInput): string {
+export function promptWithHistory(input: AskInput): string {
   const past = input.history.map((h) => `${h.role === "user" ? "Reader" : "You"}: ${h.text}`).join("\n\n")
   return [SYSTEM_PROMPT, past ? `Conversation so far:\n\n${past}` : "", `Reader: ${input.prompt}`].filter(Boolean).join("\n\n---\n\n")
 }
@@ -91,7 +123,7 @@ interface CodexItem {
   tool?: string
   arguments?: unknown
   status?: string
-  result?: { content?: { type: string; text?: string }[] } | string
+  result?: { content?: { type: string; text?: string }[]; is_error?: boolean; isError?: boolean } | string
   error?: { message?: string } | string
 }
 
@@ -123,7 +155,8 @@ export async function* codexToAgUi(input: AsyncIterable<string>, threadId: strin
         yield { type: EventType.TOOL_CALL_END, toolCallId: item.id }
         const r = item.result
         const text = typeof r === "string" ? r : r?.content?.map((c) => c.text ?? "").join("\n") ?? (typeof item.error === "string" ? item.error : item.error?.message ?? "")
-        yield { type: EventType.TOOL_CALL_RESULT, messageId: crypto.randomUUID(), toolCallId: item.id, content: text, role: "tool" }
+        const isError = item.status === "failed" || !!item.error || (typeof r === "object" && !!(r.is_error || r.isError))
+        yield { type: EventType.TOOL_CALL_RESULT, messageId: crypto.randomUUID(), toolCallId: item.id, content: text, role: "tool", isError }
       }
     } else if ((e.type === "item.started" || e.type === "item.completed") && item?.type === "web_search") {
       if (!started.has(item.id)) {
@@ -142,6 +175,16 @@ export async function* codexToAgUi(input: AsyncIterable<string>, threadId: strin
     }
   }
   const exitError = await exit?.()
-  if (failed || exitError) yield { type: EventType.RUN_ERROR, message: failed ?? exitError!, code: "codex" }
+  if (failed || exitError) yield { type: EventType.RUN_ERROR, message: readable(failed ?? exitError!), code: "codex" }
   else yield { type: EventType.RUN_FINISHED, threadId, runId }
+}
+
+/** Codex passes API errors through as JSON in a string; the reader should see the sentence inside. */
+function readable(message: string): string {
+  try {
+    const e = JSON.parse(message) as { message?: string; error?: { message?: string } }
+    return e.error?.message ?? e.message ?? message
+  } catch {
+    return message
+  }
 }

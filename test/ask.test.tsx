@@ -2,6 +2,7 @@
 import { afterEach, describe, expect, test } from "bun:test"
 import { EventType, type AgentEvent, type AgentProvider, type AskInput } from "../src/agent/provider"
 import { UserStore } from "../src/data/user"
+import type { AskMessage } from "../src/ui/ask"
 import { harness, type Harness } from "./harness"
 
 let h: Harness | undefined
@@ -44,6 +45,7 @@ const answer: AgentEvent[] = [
   { type: EventType.TOOL_CALL_START, toolCallId: "c2", toolCallName: "suggest_note" },
   { type: EventType.TOOL_CALL_ARGS, toolCallId: "c2", delta: '{"reference":"John 3:2","note":"He came by night, but he came."}' },
   { type: EventType.TOOL_CALL_END, toolCallId: "c2" },
+  { type: EventType.TOOL_CALL_RESULT, messageId: "y", toolCallId: "c2", content: "Suggested a note on John 3:2 for the reader to accept." },
   { type: EventType.RUN_FINISHED, threadId: "t", runId: "r", result: { sessionId: "sess-1" } },
 ]
 
@@ -128,6 +130,53 @@ describe("Ask tab", () => {
     await tick(h, 60)
     expect(h.frame()).toContain("Stopped")
     expect(h.frame()).not.toContain("thinking")
+  })
+
+  test("ctrl+x mid-answer clears the thread and Ask keeps working", async () => {
+    let release!: () => void
+    const gate = new Promise<void>((r) => (release = r))
+    const seen: AskInput[] = []
+    const store = UserStore.memory()
+    h = await openAsk({ agents: [fakeAgent(answer, seen, gate)], store })
+    await h.type("Who is Nicodemus?")
+    await h.press("return")
+    await tick(h, 60)
+    expect(h.frame()).toContain("thinking")
+    await h.press("x", { ctrl: true })
+    release()
+    await tick(h, 80)
+    expect(h.frame()).not.toContain("thinking")
+    expect(h.frame()).not.toContain("Who is Nicodemus?")
+    expect(store.askThread(43, 3)?.messages ?? []).toEqual([]) // the old run wrote nothing back
+    // and the tab is not stuck: a new question runs
+    await h.type("Who wrote John?")
+    await h.press("return")
+    await tick(h, 80)
+    expect(seen).toHaveLength(2)
+    expect(h.frame()).toContain("Nicodemus was a Pharisee")
+  })
+
+  test("moving to another chapter mid-answer keeps that answer on its own chapter", async () => {
+    let release!: () => void
+    const gate = new Promise<void>((r) => (release = r))
+    const store = UserStore.memory()
+    h = await openAsk({ agents: [fakeAgent(answer, [], gate)], store })
+    await h.type("Who is Nicodemus?")
+    await h.press("return")
+    await tick(h, 60)
+    await h.press("tab") // back to the reader
+    await h.press("n") // John 4
+    await tick(h, 60)
+    release()
+    await tick(h, 80)
+    expect(h.frame()).toContain("John 4 · KJV")
+    expect(h.frame()).not.toContain("Stopped")
+    expect(h.frame()).not.toContain("Who is Nicodemus?")
+    expect(store.askThread(43, 4)?.messages ?? []).toEqual([])
+    const john3 = store.askThread<AskMessage>(43, 3)!.messages
+    expect(john3.map((m) => m.role)).toEqual(["user", "assistant"])
+    expect(john3[0]!.text).toBe("Who is Nicodemus?")
+    expect((john3[1] as { error?: string }).error).toBe("Stopped")
   })
 
   test("typing in Ask never triggers pane shortcuts", async () => {
