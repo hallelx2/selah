@@ -1,8 +1,8 @@
 # Maintainer: hallelx2 <halleluyaholudele@gmail.com>
 pkgname=selah-bin
-pkgver=0.2.0
+pkgver=0.3.0
 pkgrel=1
-pkgdesc="A Bible for the terminal, with an honest reading tracker: streaks, consistency heatmap, reading plans"
+pkgdesc="A Bible for the terminal: study desk, Matthew Henry, Hebrew and Greek, Doré engravings, Ask your own Claude or Codex, and an honest reading tracker"
 arch=('x86_64' 'aarch64')
 url="https://github.com/hallelx2/selah"
 license=('MIT')
@@ -14,8 +14,8 @@ source=("LICENSE-$pkgver::https://raw.githubusercontent.com/hallelx2/selah/v$pkg
 source_x86_64=("selah-$pkgver-x86_64::https://github.com/hallelx2/selah/releases/download/v$pkgver/selah-linux-x64")
 source_aarch64=("selah-$pkgver-aarch64::https://github.com/hallelx2/selah/releases/download/v$pkgver/selah-linux-arm64")
 sha256sums=('9e37de5278988bdf453acf1055de228e19f2ed4e892cd3bc9b0af1b7491b9b5b')
-sha256sums_x86_64=('fc773d0d96a60cb7f562ded48dbefc5312a4711339cad8573c12590f14df48cf')
-sha256sums_aarch64=('e8d7f8d470bf93084021bb01f0f5140e7793f345af1eb51e26ae2cc49f411a39')
+sha256sums_x86_64=('145c549b1f1f657243f558b01f9d914003f798c4b6d854385d1dd3c77c758233')
+sha256sums_aarch64=('e37c4607f72a42215039e16efb6040c273787c159bfc7141c3b2f42acf776df0')
 
 package() {
   install -Dm755 "selah-$pkgver-$CARCH" "$pkgdir/usr/bin/selah"
