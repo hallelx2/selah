@@ -54,6 +54,10 @@ export async function harness(opts: {
   bible?: Bible
   /** Agents for the Ask tab; none by default. */
   agents?: import("../src/agent").AgentProvider[] | (() => Promise<never>)
+  /** Where Doré's plates are; the shared test copy by default. */
+  scenesDir?: string
+  /** Serves downloads in place of the network. */
+  fetch?: typeof fetch
   /** The Hebrew and Greek concordance: installed with true, not installed by default. */
   concordance?: boolean | import("../src/data/concordance").Concordance
 } = {}): Promise<Harness> {
@@ -83,6 +87,8 @@ export async function harness(opts: {
           commentary,
           concordance,
           cacheDir: join(import.meta.dir, "..", ".selah-test-sources"),
+          scenesDir: opts.scenesDir ?? join(import.meta.dir, "..", ".selah-test-sources", "dore-8710"),
+          fetch: opts.fetch,
           tracker,
           config,
           saveConfig: (c) => (config = c),

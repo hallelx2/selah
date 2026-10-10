@@ -30,6 +30,7 @@ Usage
   selah install <id>        download a translation     ${CATALOG.map((c) => c.id).join(", ")}
   selah install commentary  Matthew Henry's Commentary on the Whole Bible
   selah install concordance Hebrew and Greek words with Strong's numbers and lexicons
+  selah install scenes      Doré's 100 Bible engravings, shown with the passages
   selah notes export [file] all notes and journals as Markdown
   selah mcp                 serve Selah's tools to Claude Code, Codex or any MCP client
   selah translations        list translations
@@ -88,6 +89,13 @@ if (action.kind === "install") {
       process.stderr.write("Installing Matthew Henry's Commentary… ")
       const stats = await installCommentary(commentary.db, paths.sources)
       process.stderr.write(`done: ${stats.chapters} chapters, ${stats.paragraphs} paragraphs\n`)
+      continue
+    }
+    if (id === "SCENES" || id === "DORE") {
+      const { installScenes, PLATES, SCENES_BYTES } = await import("./data/scenes")
+      process.stderr.write(`Installing Doré's engravings (${PLATES.length} plates, ${(SCENES_BYTES / 1e6).toFixed(0)} MB)… `)
+      const stats = await installScenes(paths.scenes)
+      process.stderr.write(`done: ${stats.downloaded} downloaded, ${stats.total - stats.downloaded} already here\n`)
       continue
     }
     if (id === "CONCORDANCE" || id === "STRONGS" || id === "WORDS") {
@@ -246,6 +254,7 @@ await render(
         store,
         commentary,
         concordance,
+        scenesDir: paths.scenes,
         cacheDir: paths.sources,
         agents: async () => (await import("./agent")).detectAgents({ bible, commentary, concordance, store, translation: () => config.translation }),
         tracker,

@@ -16,6 +16,7 @@ import { DialogHeader, SelectDialog, type SelectItem } from "./components/dialog
 import { Hints, LeftBar, TRANSPARENT, fit } from "./components/primitives"
 import { plain, VerseText } from "./components/verse"
 import type { App } from "./state"
+import { openGallery } from "./scene"
 
 // palette ----------------------------------------------------------------------------
 
@@ -71,6 +72,7 @@ export function openPalette(app: App) {
         { title: app.focus() ? "Leave focus mode" : "Focus mode", category: "Reader", hint: "z", run: () => app.setFocus(!app.focus()) },
         { title: "Study notes", category: "Study", hint: "tab", run: () => (app.setStudyOpen(true), app.setStudyTab("notes"), app.setStudyFocused(true)) },
         { title: "Matthew Henry's commentary", category: "Study", hint: "tab 2", run: () => (app.setStudyOpen(true), app.setStudyTab("commentary"), app.setStudyFocused(true)) },
+        { title: "Doré gallery", category: "Study", hint: "i", run: () => openGallery(app) },
         { title: "Hebrew and Greek words of this verse", category: "Study", hint: "tab 3", run: () => (app.setStudyOpen(true), app.setStudyTab("words"), app.setStudyFocused(true)) },
         { title: "Ask about this chapter", category: "Study", hint: "tab 4", run: () => (app.setStudyOpen(true), app.setStudyTab("ask"), app.setStudyFocused(true)) },
         { title: app.config.prose ? "One verse per line" : "Prose: flowing paragraphs", category: "Reader", hint: "w", run: () => app.setConfig("prose", !app.config.prose) },
@@ -781,6 +783,7 @@ const KEYS: [string, [string, string][]][] = [
       ["-  =", "narrow / widen text"],
       ["z", "focus mode"],
       ["w", "prose / verse layout"],
+      ["i", "Doré's engraving of the scene"],
     ],
   ],
   [

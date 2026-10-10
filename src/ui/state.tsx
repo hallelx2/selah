@@ -25,6 +25,10 @@ export interface Deps {
   commentary?: Commentary
   /** The Hebrew and Greek words with Strong's numbers, in study.db. */
   concordance?: Concordance
+  /** Where Doré's engravings live once installed. */
+  scenesDir?: string
+  /** How downloads are fetched (tests serve them locally). */
+  fetch?: typeof fetch
   /** Where downloaded study packs are cached. */
   cacheDir?: string
   /** Finds the reader's local agents (Claude Code, Codex) for the Ask tab. */
@@ -102,6 +106,8 @@ function init(deps: Deps) {
   const [studyTab, setStudyTab] = createSignal<StudyTab>("notes")
   /** A Strong's number for the Words tab to open a study of (from search or the palette). */
   const [wordStudy, setWordStudy] = createSignal<string | undefined>()
+  /** The Doré engraving shown full screen, if any. */
+  const [scene, setScene] = createSignal<import("../data/scenes").Plate | undefined>()
   const [studyFocused, setStudyFocusedSignal] = createSignal(false)
   // Focus mode hides the pane, so the pane taking the keyboard always leaves focus mode
   // (otherwise nothing would be listening and the keyboard would freeze).
@@ -394,6 +400,9 @@ function init(deps: Deps) {
     setStudyTab,
     wordStudy,
     setWordStudy,
+    scene,
+    openScene: (p: import("../data/scenes").Plate) => setScene(p),
+    closeScene: () => setScene(undefined),
     studyFocused,
     setStudyFocused,
     motion,

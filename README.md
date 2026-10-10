@@ -90,6 +90,26 @@ you are reading, and `esc` goes back.
 
 ![A word study of agapē from 1 John 4:8](docs/screenshots/study.png)
 
+### Scenes: Doré's engravings
+
+Gustave Doré's 100 Bible engravings (1866), each mapped to the passage it shows. When the
+chapter you are reading has one, the header says so (✦), and `i` opens it full screen.
+
+- **Ink:** the engraving surfaces like a print, row by row from the top, over 1.2s.
+- **Drift:** it then moves in a slow Ken Burns zoom and pan, with its title, the passage and
+  the gallery's caption below.
+- **Navigation:** `←` and `→` walk the gallery, `enter` opens the passage, `g` lists all 100,
+  and `esc` closes. The gallery is also in the command palette.
+
+![Doré's engraving of Jesus and the woman of Samaria, surfacing like ink](docs/screenshots/scene.gif)
+
+`selah install scenes` downloads the plates once, about 17 MB, from Project Gutenberg. Each
+plate is checked against its pinned SHA-256.
+
+The image is drawn as the terminal allows: kitty graphics in kitty and ghostty, sixel in foot,
+and half-blocks everywhere else, including tmux. With reduced motion the engraving appears at
+once and holds still.
+
 ### Ask
 
 Ask questions about what you are reading and get answers grounded in the text, with every
@@ -155,6 +175,7 @@ selah stats                   # streak, today, consistency
 selah install ASV YLT NHEB    # more translations
 selah install commentary      # Matthew Henry
 selah install concordance     # Hebrew and Greek, Strong's numbers, lexicons
+selah install scenes          # Doré's 100 engravings
 ```
 
 ### Keys
@@ -168,6 +189,7 @@ selah install concordance     # Hebrew and Greek, Strong's numbers, lexicons
 | `o` | go to book | `t` `T` | translation / parallel | `?` | all keys |
 | `z` | focus mode | `w` | prose / verse layout | | |
 | `/` | search | `ctrl+b` | sidebar | `q` | quit |
+| `i` | Doré's engraving | | | | |
 
 ### Your streak in waybar
 
@@ -201,6 +223,7 @@ All are public domain, taken from [scrollmapper/bible_databases](https://github.
 - `$XDG_DATA_HOME/selah/bible.db`: the texts and their search index.
 - `$XDG_DATA_HOME/selah/study.db`: study packs (Matthew Henry, the Hebrew and Greek words and
   lexicons). Rebuildable, never personal.
+- `$XDG_DATA_HOME/selah/scenes/`: Doré's engravings, once installed.
 - `$XDG_DATA_HOME/selah/user.db`: your reading sessions, reads, highlights, bookmarks and notes.
   It is separate from the texts, so adding or removing a translation never touches it.
 - `$XDG_CONFIG_HOME/selah/config.json`: theme, mode, translation, daily goal, `icons`
@@ -217,6 +240,7 @@ bun test               # data, tracker, stats, plans, themes and rendered UI fra
 bun run typecheck
 bun scripts/screenshots.tsx   # regenerate docs/screenshots from real frames
 bun scripts/gifs.tsx          # record the GIFs frame by frame on a manual clock
+bun scripts/dore-catalogue.ts --check   # the Doré catalogue still matches the pinned gallery
 ```
 
 `bun scripts/build.ts --release` cross-compiles every release target and writes `SHA256SUMS`;
@@ -235,3 +259,8 @@ The Hebrew and Greek words, Strong's numbers and lexicons come from
 Tyndale House, Cambridge ([STEPBible.org](https://www.stepbible.org)), under
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Both are downloaded at a pinned commit
 and are not redistributed in this repository.
+
+Doré's engravings (1866) and the gallery's captions come from
+[The Doré Bible Gallery](https://www.gutenberg.org/ebooks/8710), Project Gutenberg #8710, and are
+in the public domain. `scripts/dore-catalogue.ts` builds the catalogue from the gallery; the
+images are downloaded, not redistributed here.

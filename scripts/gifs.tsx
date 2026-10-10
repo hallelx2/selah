@@ -12,7 +12,11 @@ import { hex, svg } from "./frame-svg"
 const FPS = 20
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
+// GIFS=scene records only those
+const only = process.env.GIFS?.split(",")
+
 async function record(name: string, h: Harness, frames: number, step = 1000 / FPS, before?: () => Promise<void>) {
+  if (only && !only.includes(name)) return h.destroy()
   const dir = join("/tmp", `selah-gif-${name}`)
   rmSync(dir, { recursive: true, force: true })
   mkdirSync(dir, { recursive: true })
@@ -64,6 +68,15 @@ const nerd = { icons: "nerd" as const, motion: "full" as const }
   const h = await harness({ width: 120, height: 44, store: seededStore(), start: at, config: { ...nerd, theme: "tokyonight" } })
   await record("progress", h, 26, 1000 / FPS, async () => {
     await h.press("s", { ctrl: true })
+  })
+}
+
+// 4. A Doré engraving: ink surfaces row by row, then the slow drift begins.
+{
+  const h = await harness({ width: 110, height: 40, store: seededStore(), start: at, config: { ...nerd, theme: "gruvbox" }, initial: { route: "reader", book: 43, chapter: 4, verse: 7 } })
+  await record("scene", h, 30, 1000 / FPS, async () => {
+    await h.press("i")
+    await wait(200) // the plate decodes off the render loop
   })
 }
 

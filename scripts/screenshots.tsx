@@ -59,5 +59,11 @@ await shot("study", { store: seededStore(), start: at, width: 190, height: 46, c
   for (let i = 0; i < 10; i++) await h.press("j")
   await h.press("return")
 })
+await shot("scene", { store: seededStore(), start: at, width: 150, height: 46, config: { motion: "full", theme: "gruvbox" }, initial: { route: "reader", book: 43, chapter: 4, verse: 7 } }, async (h) => {
+  await h.press("i")
+  await new Promise((r) => setTimeout(r, 300))
+  h.advance(2000)
+  await h.settle()
+})
 await shot("tokyonight", { store: seededStore(), start: at, config: { theme: "tokyonight", sidebar: true }, initial: { route: "reader", book: 45, chapter: 8, verse: 28 } })
 process.exit(0)
