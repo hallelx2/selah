@@ -8,6 +8,7 @@ import { Bar, Hints, LeftBar, TRANSPARENT } from "./components/primitives"
 import { AskTab } from "./ask"
 import { WordsTab } from "./words"
 import { Inline } from "./components/inline"
+import { Markdown } from "./components/markdown"
 import { mixColor } from "./motion"
 import { useApp, type StudyTab } from "./state"
 
@@ -228,6 +229,8 @@ function Editor(props: {
   // The latest text, captured on every change: by the time an unmount saves, the textarea
   // may already be destroyed, and reading it then would throw and lose the edit.
   let current = initial
+  // what the preview shows: the saved text, kept in step with every edit and reload
+  const [text, setText] = createSignal(initial)
   const flush = () => {
     clearTimeout(timer)
     timer = undefined
@@ -251,6 +254,7 @@ function Editor(props: {
           area.setText(fresh)
           last = fresh
           current = fresh
+          setText(fresh)
         }
       },
       { defer: true },
@@ -282,7 +286,23 @@ function Editor(props: {
           {state() === "saved" ? `${app.i("check")} saved` : props.active ? "autosaves" : props.hint}
         </text>
       </box>
+      {/* Not editing: the note as Markdown. The textarea stays mounted (hidden) so reloads and
+          saves keep working, and e brings it back with the raw text. */}
+      <Show when={!props.active && text().trim()}>
+        <scrollbox
+          height={props.height}
+          flexGrow={props.grow ? 1 : 0}
+          minHeight={props.grow ? 4 : undefined}
+          backgroundColor={t().backgroundElement}
+          scrollbarOptions={{ visible: false }}
+          paddingLeft={1}
+          paddingRight={1}
+        >
+          <Markdown content={text()} />
+        </scrollbox>
+      </Show>
       <textarea
+        visible={props.active || !text().trim()}
         ref={(r: TextareaRenderable) => (area = r)}
         initialValue={initial}
         placeholder={props.placeholder}
@@ -298,6 +318,7 @@ function Editor(props: {
         wrapMode="word"
         onContentChange={() => {
           if (area && !area.isDestroyed) current = area.plainText
+          setText(current)
           setState("editing")
           clearTimeout(timer)
           timer = setTimeout(flush, 600)

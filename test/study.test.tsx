@@ -9,6 +9,13 @@ afterEach(() => {
   h = undefined
 })
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
+/** Markdown lays out a few frames after it mounts; wait for the text rather than a fixed time. */
+async function waitFor(hh: Harness, text: string) {
+  for (let i = 0; i < 60 && !hh.frame().includes(text); i++) {
+    await wait(10)
+    await hh.settle()
+  }
+}
 
 describe("study desk layout", () => {
   test("at 200 columns the text and the pane fill the screen side by side", async () => {
@@ -144,8 +151,7 @@ describe("review fixes", () => {
     await h.type("from the dialog")
     await h.press("s", { ctrl: true })
     expect(store.note({ book: 43, chapter: 3, verse: 16 })?.body).toBe("from the dialog")
-    await wait(20)
-    await h.settle()
+    await waitFor(h, "from the dialog")
     expect(h.frame()).toContain("from the dialog") // the pane shows it
     await h.press("tab")
     await h.press("e")
@@ -165,5 +171,76 @@ describe("review fixes", () => {
     await h.settle()
     await h.press("1")
     expect(h.frame()).toContain("e verse note") // back on Notes: the 1 key was handled, not typed
+  })
+})
+
+describe("notes as Markdown (HAL-2586)", () => {
+  const pane = (frame: string) =>
+    frame
+      .split("\n")
+      .map((l) => l.slice(140))
+      .join("\n")
+
+  test("a note renders as Markdown when not editing, and as raw text on e", async () => {
+    const store = UserStore.memory()
+    store.saveNote({ book: 43, chapter: 3, verse: 16 }, "- one\n- **two**\n\n*so loved*")
+    store.saveJournal(43, 3, "# Nicodemus\n\nHe came **by night**.")
+    h = await harness({ width: 200, height: 46, store, initial: { route: "reader", book: 43, chapter: 3, verse: 16 } })
+    await h.press("tab")
+    await waitFor(h, "- two") // only the preview shows this: the raw note reads "- **two**"
+    let p = pane(h.frame())
+    // a list, with its markers concealed into bullets and the emphasis markers gone
+    expect(p).toMatch(/one/)
+    expect(p).toMatch(/two/)
+    expect(p).not.toContain("**two**")
+    expect(p).not.toContain("*so loved*")
+    expect(p).toContain("so loved")
+    // the journal's heading without its #
+    expect(p).toContain("Nicodemus")
+    expect(p).not.toContain("# Nicodemus")
+    expect(p).not.toContain("**by night**")
+    // bold is really bold: the span carrying "two" has the bold attribute
+    const bold = h.spans().lines.flatMap((l) => l.spans).find((s) => s.text.includes("two"))
+    expect(bold && (bold.attributes & 1)).toBe(1)
+    // e: the raw text, to edit
+    await h.press("e")
+    await wait(20)
+    await h.settle()
+    p = pane(h.frame())
+    expect(p).toContain("- **two**")
+    expect(p).toContain("*so loved*")
+    // escape: Markdown again, with what was typed
+    await h.type(" amen")
+    await h.press("escape")
+    await waitFor(h, "so loved amen")
+    p = pane(h.frame())
+    expect(p).toContain("so loved amen")
+    expect(p).not.toContain("*so loved")
+  })
+
+  test("switching theme keeps every style alive, one per theme, and the preview renders", async () => {
+    const { themeMarkdownStyle } = await import("../src/ui/components/markdown")
+    const store = UserStore.memory()
+    store.saveNote({ book: 43, chapter: 3, verse: 16 }, "- one\n- **two**")
+    h = await harness({ width: 200, height: 46, store, initial: { route: "reader", book: 43, chapter: 3, verse: 16 } })
+    await h.press("tab")
+    await waitFor(h, "- two")
+    const first = themeMarkdownStyle(h.app().theme())
+    h.app().setConfig("theme", "catppuccin")
+    await waitFor(h, "- two")
+    const second = themeMarkdownStyle(h.app().theme())
+    expect(second).not.toBe(first)
+    h.app().setConfig("theme", "opencode")
+    await wait(30)
+    await h.settle()
+    expect(themeMarkdownStyle(h.app().theme())).toBe(first) // reused, never freed
+    expect(() => first.getStyleCount()).not.toThrow()
+    expect(pane(h.frame())).toContain("- two")
+  })
+
+  test("an empty note still shows its placeholder, not an empty preview", async () => {
+    h = await harness({ width: 200, initial: { route: "reader", book: 43, chapter: 3, verse: 16 } })
+    await h.press("tab")
+    expect(pane(h.frame())).toMatch(/Write|note/i)
   })
 })
