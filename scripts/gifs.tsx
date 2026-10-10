@@ -24,7 +24,7 @@ async function record(name: string, h: Harness, frames: number, step = 1000 / FP
     const frame = h.spans()
     const bg = frame.lines[0]?.spans[0]?.bg
     const file = join(dir, `${String(i).padStart(4, "0")}.svg`)
-    await Bun.write(file, svg(frame, bg && bg.a > 0 ? hex(bg) : "#0a0a0a"))
+    await Bun.write(file, svg(frame, bg && bg.a > 0 ? hex(bg) : "#0a0a0a", h.frame()))
     await Bun.$`rsvg-convert -z 1 ${file} -o ${file.replace(".svg", ".png")}`.quiet()
   }
   const out = `docs/screenshots/${name}.gif`
