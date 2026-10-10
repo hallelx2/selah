@@ -5,6 +5,7 @@ import { BOOKS, bookById } from "../data/books"
 import { prettyDay } from "../data/dates"
 import { importTranslation, removeTranslation } from "../data/importer"
 import { PLANS } from "../data/plans"
+import { parseSearch } from "../data/bible"
 import { formatRef, parseRef } from "../data/ref"
 import type { Goal } from "../data/stats"
 import { CATALOG } from "../data/translations"
@@ -67,6 +68,8 @@ export function openPalette(app: App) {
         { title: app.parallel() ? "Close parallel view" : "Parallel translation", category: "Reader", hint: "T", run: () => app.toggleParallel() },
         { title: "Note on this verse", category: "Reader", hint: "a", run: () => openNote(app, { ...app.position() }) },
         { title: app.focus() ? "Leave focus mode" : "Focus mode", category: "Reader", hint: "z", run: () => app.setFocus(!app.focus()) },
+        { title: "Study notes", category: "Study", hint: "tab", run: () => (app.setStudyOpen(true), app.setStudyTab("notes"), app.setStudyFocused(true)) },
+        { title: "Matthew Henry's commentary", category: "Study", hint: "tab 2", run: () => (app.setStudyOpen(true), app.setStudyTab("commentary"), app.setStudyFocused(true)) },
         { title: app.config.prose ? "One verse per line" : "Prose: flowing paragraphs", category: "Reader", hint: "w", run: () => app.setConfig("prose", !app.config.prose) },
       )
     }
@@ -139,8 +142,25 @@ function SearchDialog(props: { app: App; initial: string }) {
   let scroll: ScrollBoxRenderable | undefined
   onCleanup(() => clearTimeout(timer))
 
-  const hits = createMemo(() => app.deps.bible.search(app.translation(), debounced(), 200))
-  const total = createMemo(() => (debounced().trim() ? app.deps.bible.searchCount(app.translation(), debounced()) : 0))
+  // `in:commentary` (or `in:henry`) searches Matthew Henry instead of the text.
+  const inHenry = createMemo(() => /\bin:(commentary|henry)\b/i.test(debounced()))
+  const hits = createMemo<{ book: number; chapter: number; verse: number; marked: string; heading?: string }[]>(() => {
+    if (!inHenry()) return app.deps.bible.search(app.translation(), debounced(), 200)
+    const q = parseSearch(debounced().replace(/\bin:(commentary|henry)\b/gi, ""))
+    if (!q.match || !app.deps.commentary?.installed) return []
+    return app.deps.commentary.search(q.match, 100).map((h) => ({ ...h, marked: h.snippet }))
+  })
+  const total = createMemo(() =>
+    inHenry() ? hits().length : debounced().trim() ? app.deps.bible.searchCount(app.translation(), debounced()) : 0,
+  )
+  const open = (h: { book: number; chapter: number; verse: number; heading?: string }) => {
+    app.closeAllDialogs()
+    app.openChapter({ book: h.book, chapter: h.chapter }, h.verse)
+    if (h.heading !== undefined) {
+      app.setStudyOpen(true)
+      app.setStudyTab("commentary")
+    }
+  }
   const update = (v: string) => {
     setQuery(v)
     clearTimeout(timer)
@@ -163,10 +183,7 @@ function SearchDialog(props: { app: App; initial: string }) {
       if (key.name === "pageup") return n && select(Math.max(0, index() - 6)), true
       if (key.name === "return") {
         const h = hits()[index()]
-        if (h) {
-          app.closeAllDialogs()
-          app.openChapter({ book: h.book, chapter: h.chapter }, h.verse)
-        }
+        if (h) open(h)
         return true
       }
       return false
@@ -192,8 +209,12 @@ function SearchDialog(props: { app: App; initial: string }) {
         />
         <text fg={t().textMuted} wrapMode="none" paddingTop={1}>
           {debounced().trim()
-            ? `${total()} ${total() === 1 ? "verse" : "verses"} in ${app.translation()}${total() > hits().length ? ` · showing the best ${hits().length}` : ""}`
-            : 'Search every verse. Quote a phrase, or narrow with in:psalms, in:ot, in:nt.'}
+            ? inHenry()
+              ? app.deps.commentary?.installed
+                ? `${total()} passages in Matthew Henry`
+                : "Install Matthew Henry first: tab, then 2, in the reader"
+              : `${total()} ${total() === 1 ? "verse" : "verses"} in ${app.translation()}${total() > hits().length ? ` · showing the best ${hits().length}` : ""}`
+            : 'Search every verse. Quote a phrase, or narrow with in:psalms, in:ot, in:nt, in:commentary.'}
         </text>
       </box>
       <Show when={hits().length > 0}>
@@ -209,13 +230,12 @@ function SearchDialog(props: { app: App; initial: string }) {
                   paddingRight={3}
                   backgroundColor={active() ? t().backgroundElement : TRANSPARENT}
                   onMouseOver={() => setIndex(i())}
-                  onMouseUp={() => {
-                    app.closeAllDialogs()
-                    app.openChapter({ book: h.book, chapter: h.chapter }, h.verse)
-                  }}
+                  onMouseUp={() => open(h)}
                 >
                   <text wrapMode="none" fg={active() ? t().primary : t().accent} attributes={TextAttributes.BOLD}>
-                    {formatRef({ book: h.book, chapter: h.chapter, verseStart: h.verse })}
+                    {h.heading !== undefined
+                      ? `Henry · ${formatRef({ book: h.book, chapter: h.chapter })} · ${h.heading}`
+                      : formatRef({ book: h.book, chapter: h.chapter, verseStart: h.verse })}
                   </text>
                   <text wrapMode="word" paddingBottom={1}>
                     <VerseText text={h.marked} matchColor={t().warning} />
@@ -728,6 +748,8 @@ const KEYS: [string, [string, string][]][] = [
       ["v  y", "select verses / copy"],
       ["t  T", "translation / parallel view"],
       ["ctrl+b", "sidebar"],
+      ["tab  ctrl+l", "study pane / toggle"],
+      ["-  =", "narrow / widen text"],
       ["z", "focus mode"],
       ["w", "prose / verse layout"],
     ],

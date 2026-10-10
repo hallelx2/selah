@@ -4,7 +4,7 @@ import { DEFAULT_CONFIG, type Config } from "../src/data/config"
 import { ReadingTracker } from "../src/data/tracker"
 import { UserStore } from "../src/data/user"
 import type { Route } from "../src/ui/state"
-import { fixtureBible } from "./fixture"
+import { fixtureBible, fixtureCommentary } from "./fixture"
 import type { Bible } from "../src/data/bible"
 
 const NAMED: Record<string, string> = {
@@ -51,6 +51,7 @@ export async function harness(opts: {
   bible?: Bible
 } = {}): Promise<Harness> {
   const bible = opts.bible ?? (await fixtureBible())
+  const commentary = await fixtureCommentary()
   const store = opts.store ?? UserStore.memory()
   let now = (opts.start ?? new Date(2026, 9, 8, 7, 0, 0)).getTime()
   const clock = () => now
@@ -67,6 +68,7 @@ export async function harness(opts: {
         deps={{
           bible,
           store,
+          commentary,
           tracker,
           config,
           saveConfig: (c) => (config = c),

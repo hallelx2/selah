@@ -29,6 +29,10 @@ export const paths = {
   get bibleDb() {
     return join(this.data, "bible.db")
   },
+  /** Optional study packs (commentary, concordance): large, rebuildable, never personal. */
+  get studyDb() {
+    return join(this.data, "study.db")
+  },
   get userDb() {
     return join(this.data, "user.db")
   },

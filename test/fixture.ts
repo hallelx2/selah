@@ -22,3 +22,21 @@ export async function fixtureBible(): Promise<Bible> {
   }
   return new Bible(openBibleDb(file))
 }
+
+/** Matthew Henry imported once from the cached pinned tarball into a shared fixture study.db. */
+export async function fixtureCommentary() {
+  const { Commentary, COMMENTARY_URL, importCommentary } = await import("../src/data/commentary")
+  const { readTar } = await import("../src/data/tar")
+  const dir = join(root, ".selah-test-home")
+  mkdirSync(dir, { recursive: true })
+  const file = join(dir, "fixture-study.db")
+  const db = new Database(file, { create: true })
+  const c = new Commentary(db)
+  if (c.installed) return c
+  const tarFile = join(root, ".selah-test-sources", "mhenry-complete.tar.gz")
+  if (!existsSync(tarFile)) await Bun.write(tarFile, await (await fetch(COMMENTARY_URL)).arrayBuffer())
+  const decoder = new TextDecoder()
+  const files = [...readTar(new Uint8Array(await Bun.file(tarFile).arrayBuffer()))].map((e) => ({ path: e.path, text: decoder.decode(e.data) }))
+  importCommentary(db, files)
+  return c
+}

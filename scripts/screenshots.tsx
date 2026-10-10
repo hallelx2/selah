@@ -40,5 +40,9 @@ await shot("prose", { store: seededStore(), start: at, config: { prose: true, th
 await shot("focus", { store: seededStore(), start: at, config: { theme: "kanagawa" }, initial: { route: "reader", book: 19, chapter: 23, verse: 4 } }, async (h) => {
   await h.press("z")
 })
+await shot("desk", { store: seededStore(), start: at, width: 190, height: 46, initial: { route: "reader", book: 43, chapter: 3, verse: 16 } }, async (h) => {
+  await h.press("tab")
+  await h.press("2")
+})
 await shot("tokyonight", { store: seededStore(), start: at, config: { theme: "tokyonight", sidebar: true }, initial: { route: "reader", book: 45, chapter: 8, verse: 28 } })
 process.exit(0)

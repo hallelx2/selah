@@ -8,7 +8,11 @@ import { loadConfig, saveConfig } from "./data/config"
 import { dayKey } from "./data/dates"
 import { openBibleDb } from "./data/db"
 import { importTranslation } from "./data/importer"
+import { Database } from "bun:sqlite"
 import { parseCli } from "./cli"
+import { bookById } from "./data/books"
+import { Commentary, installCommentary } from "./data/commentary"
+import { paths } from "./data/paths"
 import { formatRef } from "./data/ref"
 import { bookProgress, consistency, currentStreak, firstDay, longestStreak, trackedDays, verdict } from "./data/stats"
 import { ReadingTracker } from "./data/tracker"
@@ -26,6 +30,8 @@ Usage
   selah search <words>      print search results       selah search "living water"
   selah stats [--json]      print streak and progress  (for status bars)
   selah install <id>        download a translation     ${CATALOG.map((c) => c.id).join(", ")}
+  selah install commentary  Matthew Henry's Commentary on the Whole Bible
+  selah notes export [file] all notes and journals as Markdown
   selah translations        list translations
 
 Options
@@ -69,8 +75,27 @@ async function ensureTranslation(id: string) {
   process.stderr.write("done\n")
 }
 
+const commentary = new Commentary(new Database(paths.studyDb, { create: true }))
+
 if (action.kind === "install") {
-  for (const id of action.ids) await ensureTranslation(id)
+  for (const id of action.ids) {
+    if (id === "COMMENTARY" || id === "HENRY") {
+      process.stderr.write("Installing Matthew Henry's Commentary… ")
+      const stats = await installCommentary(commentary.db, paths.sources)
+      process.stderr.write(`done: ${stats.chapters} chapters, ${stats.paragraphs} paragraphs\n`)
+      continue
+    }
+    await ensureTranslation(id)
+  }
+  process.exit(0)
+}
+
+if (action.kind === "notes-export") {
+  const md = store.exportMarkdown((id) => bookById(id).name)
+  if (action.file) {
+    await Bun.write(action.file, md)
+    console.error(`Wrote ${action.file}`)
+  } else console.log(md)
   process.exit(0)
 }
 
@@ -194,6 +219,8 @@ await render(
       deps={{
         bible,
         store,
+        commentary,
+        cacheDir: paths.sources,
         tracker,
         config,
         saveConfig: (c) => saveConfig({ ...c, translation: translationFlag && c.translation === translationFlag ? loadConfig().translation : c.translation }),

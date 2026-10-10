@@ -21,6 +21,8 @@ export interface Config {
   icons?: "nerd" | "unicode" | "none"
   /** Flowing paragraphs with superscript verse numbers, instead of one verse per line. */
   prose: boolean
+  /** Width of the study pane in columns. */
+  studyWidth: number
 }
 
 export const DEFAULT_CONFIG: Config = {
@@ -34,6 +36,7 @@ export const DEFAULT_CONFIG: Config = {
   measure: 76,
   motion: "full",
   prose: false,
+  studyWidth: 60,
 }
 
 export function loadConfig(file = paths.configFile): Config {

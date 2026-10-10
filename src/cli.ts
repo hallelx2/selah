@@ -5,6 +5,7 @@ export type CliAction =
   | { kind: "version" }
   | { kind: "install"; ids: string[] }
   | { kind: "translations" }
+  | { kind: "notes-export"; file?: string }
   | { kind: "stats"; json: boolean }
   | { kind: "search"; query: string }
   | { kind: "print"; ref: Ref }
@@ -33,6 +34,7 @@ export function parseCli(argv: string[], opts: { tty: boolean }): Cli {
   if (flags.has("-v") || flags.has("--version")) return done({ kind: "version" })
   if (command === "install") return done({ kind: "install", ids: words.slice(1).map((w) => w.toUpperCase()) })
   if (command === "translations") return done({ kind: "translations" })
+  if (command === "notes" && words[1]?.toLowerCase() === "export") return done({ kind: "notes-export", file: words[2] })
   if (command === "stats") return done({ kind: "stats", json: flags.has("--json") })
   if (command === "search") {
     const query = words.slice(1).join(" ").trim()

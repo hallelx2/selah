@@ -2,6 +2,7 @@ import type { KeyEvent, RGBA, TerminalColors } from "@opentui/core"
 import { batch, createContext, createMemo, createSignal, onCleanup, useContext, type JSX, type ParentProps } from "solid-js"
 import { createStore, produce } from "solid-js/store"
 import type { Bible } from "../data/bible"
+import type { Commentary } from "../data/commentary"
 import { bookById, nextChapter, prevChapter, type ChapterKey } from "../data/books"
 import type { Config } from "../data/config"
 import { dayKey, type DayKey } from "../data/dates"
@@ -19,6 +20,10 @@ export type Route = "home" | "reader" | "progress"
 export interface Deps {
   bible: Bible
   store: UserStore
+  /** Matthew Henry, in study.db. Absent only in tests that do not need it. */
+  commentary?: Commentary
+  /** Where downloaded study packs are cached. */
+  cacheDir?: string
   tracker: ReadingTracker
   config: Config
   saveConfig: (c: Config) => void
@@ -53,6 +58,8 @@ type KeyHandler = (key: KeyEvent) => boolean | void
 
 export const MILESTONES = [3, 7, 14, 30, 50, 100, 200, 365] as const
 
+export type StudyTab = "notes" | "commentary"
+
 export interface ActivePlan {
   id: string
   startedOn: DayKey
@@ -79,6 +86,10 @@ function init(deps: Deps) {
   const [plan, setPlanSignal] = createSignal<ActivePlan | undefined>(deps.store.get<ActivePlan | undefined>("plan", undefined))
   const [today, setToday] = createSignal(dayKey(now()))
   const [focus, setFocus] = createSignal(false)
+  // The study desk: a pane beside the reading column, and which side has the keyboard.
+  const [studyOpen, setStudyOpen] = createSignal(false)
+  const [studyTab, setStudyTab] = createSignal<StudyTab>("notes")
+  const [studyFocused, setStudyFocused] = createSignal(false)
   const [celebration, setCelebration] = createSignal<{ streak: number; anim: Anim } | undefined>()
   // The last read recorded, so the reader can play its completion beam.
   const [lastRead, setLastRead] = createSignal<{ book: number; chapter: number; anim: Anim } | undefined>()
@@ -358,6 +369,12 @@ function init(deps: Deps) {
     activePlan,
     setPlan,
     markRead,
+    studyOpen,
+    setStudyOpen,
+    studyTab,
+    setStudyTab,
+    studyFocused,
+    setStudyFocused,
     motion,
     focus,
     setFocus,
