@@ -3,6 +3,7 @@ import { batch, createContext, createMemo, createSignal, onCleanup, useContext, 
 import { createStore, produce } from "solid-js/store"
 import type { Bible } from "../data/bible"
 import type { Commentary } from "../data/commentary"
+import type { Concordance } from "../data/concordance"
 import { bookById, nextChapter, prevChapter, type ChapterKey } from "../data/books"
 import type { Config } from "../data/config"
 import { dayKey, type DayKey } from "../data/dates"
@@ -22,6 +23,8 @@ export interface Deps {
   store: UserStore
   /** Matthew Henry, in study.db. Absent only in tests that do not need it. */
   commentary?: Commentary
+  /** The Hebrew and Greek words with Strong's numbers, in study.db. */
+  concordance?: Concordance
   /** Where downloaded study packs are cached. */
   cacheDir?: string
   /** Finds the reader's local agents (Claude Code, Codex) for the Ask tab. */
@@ -62,7 +65,7 @@ type KeyHandler = (key: KeyEvent) => boolean | void
 
 export const MILESTONES = [3, 7, 14, 30, 50, 100, 200, 365] as const
 
-export type StudyTab = "notes" | "commentary" | "ask"
+export type StudyTab = "notes" | "commentary" | "words" | "ask"
 
 export interface ActivePlan {
   id: string
@@ -97,6 +100,8 @@ function init(deps: Deps) {
   // The study desk: a pane beside the reading column, and which side has the keyboard.
   const [studyOpen, setStudyOpen] = createSignal(false)
   const [studyTab, setStudyTab] = createSignal<StudyTab>("notes")
+  /** A Strong's number for the Words tab to open a study of (from search or the palette). */
+  const [wordStudy, setWordStudy] = createSignal<string | undefined>()
   const [studyFocused, setStudyFocusedSignal] = createSignal(false)
   // Focus mode hides the pane, so the pane taking the keyboard always leaves focus mode
   // (otherwise nothing would be listening and the keyboard would freeze).
@@ -387,6 +392,8 @@ function init(deps: Deps) {
     setStudyOpen,
     studyTab,
     setStudyTab,
+    wordStudy,
+    setWordStudy,
     studyFocused,
     setStudyFocused,
     motion,

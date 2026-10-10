@@ -6,6 +6,7 @@ import { COMMENTARY_ATTRIBUTION, installCommentary } from "../data/commentary"
 import { formatRef } from "../data/ref"
 import { Bar, Hints, LeftBar, TRANSPARENT } from "./components/primitives"
 import { AskTab } from "./ask"
+import { WordsTab } from "./words"
 import { Inline } from "./components/inline"
 import { mixColor } from "./motion"
 import { useApp, type StudyTab } from "./state"
@@ -13,12 +14,14 @@ import { useApp, type StudyTab } from "./state"
 const TABS: { id: StudyTab; label: string; key: string }[] = [
   { id: "notes", label: "Notes", key: "1" },
   { id: "commentary", label: "Commentary", key: "2" },
+  { id: "words", label: "Words", key: "3" },
   { id: "ask", label: "Ask", key: "4" },
 ]
 
 /**
  * The study desk's right-hand pane. It follows the reader's cursor verse: the Notes tab edits
- * that verse's note and the chapter's journal, the Commentary tab opens Henry on that verse.
+ * that verse's note and the chapter's journal, the Commentary tab opens Henry on that verse,
+ * the Words tab shows its Hebrew or Greek, and Ask answers questions about it.
  * `tab` moves the keyboard between the reader and the pane.
  */
 export function StudyPane(props: { overlay?: boolean }) {
@@ -47,6 +50,8 @@ export function StudyPane(props: { overlay?: boolean }) {
       if (key.ctrl && key.name === "c") return false
       return !key.ctrl
     }
+    // escape steps back inside a tab first (a word study back to the verse's words)
+    if (key.name === "escape" && paneKey?.("escape", key.sequence)) return true
     if (key.name === "tab" || key.name === "escape") return app.setStudyFocused(false), true
     if (key.ctrl && key.name === "l") return app.setStudyOpen(false), app.setStudyFocused(false), true
     const tab = TABS.find((x) => x.key === key.name)
@@ -106,6 +111,9 @@ export function StudyPane(props: { overlay?: boolean }) {
         </Show>
         <Show when={app.studyTab() === "commentary"}>
           <CommentaryTab register={(fn) => ((paneKey = fn), (captures = undefined), (paneKeyEvent = undefined))} />
+        </Show>
+        <Show when={app.studyTab() === "words"}>
+          <WordsTab register={(fn) => ((paneKey = fn), (captures = undefined), (paneKeyEvent = undefined))} />
         </Show>
         <Show when={app.studyTab() === "ask"}>
           <AskTab
@@ -188,7 +196,7 @@ function NotesTab(props: {
               : [
                   { key: "e", label: "verse note" },
                   { key: "w", label: "journal" },
-                  { key: "1 2", label: "tabs" },
+                  { key: "1-4", label: "tabs" },
                   { key: "[ ]", label: "width" },
                 ]
           }

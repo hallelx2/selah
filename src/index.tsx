@@ -11,6 +11,7 @@ import { Database } from "bun:sqlite"
 import { parseCli } from "./cli"
 import { bookById } from "./data/books"
 import { Commentary, installCommentary } from "./data/commentary"
+import { Concordance, installConcordance } from "./data/concordance"
 import { paths } from "./data/paths"
 import { formatRef } from "./data/ref"
 import { bookProgress, consistency, currentStreak, firstDay, longestStreak, trackedDays, verdict } from "./data/stats"
@@ -28,6 +29,7 @@ Usage
   selah stats [--json]      print streak and progress  (for status bars)
   selah install <id>        download a translation     ${CATALOG.map((c) => c.id).join(", ")}
   selah install commentary  Matthew Henry's Commentary on the Whole Bible
+  selah install concordance Hebrew and Greek words with Strong's numbers and lexicons
   selah notes export [file] all notes and journals as Markdown
   selah mcp                 serve Selah's tools to Claude Code, Codex or any MCP client
   selah translations        list translations
@@ -76,7 +78,9 @@ async function ensureTranslation(id: string) {
   process.stderr.write("done\n")
 }
 
-const commentary = new Commentary(new Database(paths.studyDb, { create: true }))
+const studyDb = new Database(paths.studyDb, { create: true })
+const commentary = new Commentary(studyDb)
+const concordance = new Concordance(studyDb)
 
 if (action.kind === "install") {
   for (const id of action.ids) {
@@ -84,6 +88,13 @@ if (action.kind === "install") {
       process.stderr.write("Installing Matthew Henry's Commentary… ")
       const stats = await installCommentary(commentary.db, paths.sources)
       process.stderr.write(`done: ${stats.chapters} chapters, ${stats.paragraphs} paragraphs\n`)
+      continue
+    }
+    if (id === "CONCORDANCE" || id === "STRONGS" || id === "WORDS") {
+      process.stderr.write("Installing the Hebrew and Greek concordance (STEPBible)… ")
+      const started = performance.now()
+      const stats = await installConcordance(concordance.db, paths.sources)
+      process.stderr.write(`done: ${stats.words} words in ${stats.verses} verses, ${stats.entries} lexicon entries (${((performance.now() - started) / 1000).toFixed(1)}s)\n`)
       continue
     }
     await ensureTranslation(id)
@@ -94,7 +105,7 @@ if (action.kind === "install") {
 if (action.kind === "mcp") {
   // stdout is the protocol channel: nothing else may write to it.
   const { runMcpServer } = await import("./mcp")
-  await runMcpServer({ bible, commentary, store, translation: () => config.translation }, pkg.version)
+  await runMcpServer({ bible, commentary, concordance, store, translation: () => config.translation }, pkg.version)
   await new Promise(() => {})
 }
 
@@ -234,8 +245,9 @@ await render(
         bible,
         store,
         commentary,
+        concordance,
         cacheDir: paths.sources,
-        agents: async () => (await import("./agent")).detectAgents({ bible, commentary, store, translation: () => config.translation }),
+        agents: async () => (await import("./agent")).detectAgents({ bible, commentary, concordance, store, translation: () => config.translation }),
         tracker,
         config,
         saveConfig: (c) => saveConfig({ ...c, translation: translationFlag && c.translation === translationFlag ? loadConfig().translation : c.translation }),

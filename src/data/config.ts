@@ -25,6 +25,11 @@ export interface Config {
   studyWidth: number
   /** Which local agent answers in the Ask tab: the first one found, or a specific one. */
   agent: "auto" | "claude" | "codex"
+  /**
+   * How Hebrew is drawn. "visual" reverses each word for terminals that lay text out left to
+   * right (nearly all); "logical" leaves it to a terminal that applies bidi itself.
+   */
+  hebrew: "visual" | "logical"
 }
 
 export const DEFAULT_CONFIG: Config = {
@@ -40,6 +45,7 @@ export const DEFAULT_CONFIG: Config = {
   prose: false,
   studyWidth: 60,
   agent: "auto",
+  hebrew: "visual",
 }
 
 export function loadConfig(file = paths.configFile): Config {

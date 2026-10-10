@@ -6,6 +6,7 @@ import { prettyDay } from "../data/dates"
 import { importTranslation, removeTranslation } from "../data/importer"
 import { PLANS } from "../data/plans"
 import { parseSearch } from "../data/bible"
+import { baseStrongs } from "../data/concordance"
 import { formatRef, parseRef } from "../data/ref"
 import type { Goal } from "../data/stats"
 import { CATALOG } from "../data/translations"
@@ -70,6 +71,7 @@ export function openPalette(app: App) {
         { title: app.focus() ? "Leave focus mode" : "Focus mode", category: "Reader", hint: "z", run: () => app.setFocus(!app.focus()) },
         { title: "Study notes", category: "Study", hint: "tab", run: () => (app.setStudyOpen(true), app.setStudyTab("notes"), app.setStudyFocused(true)) },
         { title: "Matthew Henry's commentary", category: "Study", hint: "tab 2", run: () => (app.setStudyOpen(true), app.setStudyTab("commentary"), app.setStudyFocused(true)) },
+        { title: "Hebrew and Greek words of this verse", category: "Study", hint: "tab 3", run: () => (app.setStudyOpen(true), app.setStudyTab("words"), app.setStudyFocused(true)) },
         { title: "Ask about this chapter", category: "Study", hint: "tab 4", run: () => (app.setStudyOpen(true), app.setStudyTab("ask"), app.setStudyFocused(true)) },
         { title: app.config.prose ? "One verse per line" : "Prose: flowing paragraphs", category: "Reader", hint: "w", run: () => app.setConfig("prose", !app.config.prose) },
       )
@@ -145,18 +147,33 @@ function SearchDialog(props: { app: App; initial: string }) {
 
   // `in:commentary` (or `in:henry`) searches Matthew Henry instead of the text.
   const inHenry = createMemo(() => /\bin:(commentary|henry)\b/i.test(debounced()))
-  const hits = createMemo<{ book: number; chapter: number; verse: number; marked: string; heading?: string }[]>(() => {
+  // A Strong's number ("G26", "h7225") searches the concordance: every verse using that word.
+  const strongs = createMemo(() => (/^\s*[hg]\d{1,4}[a-z]?\s*$/i.test(debounced()) ? baseStrongs(debounced()) : undefined))
+  const hits = createMemo<{ book: number; chapter: number; verse: number; marked: string; heading?: string; strongs?: string }[]>(() => {
+    const s = strongs()
+    if (s) {
+      if (!app.deps.concordance?.installed) return []
+      return app.deps.concordance.occurrences(s, { limit: 200 }).map((o) => {
+        const v = app.deps.bible.verses(app.translation(), { book: o.book, chapter: o.chapter, verseStart: o.verse })[0]
+        return { ...o, marked: v?.text ?? "", strongs: s }
+      })
+    }
     if (!inHenry()) return app.deps.bible.search(app.translation(), debounced(), 200)
     const q = parseSearch(debounced().replace(/\bin:(commentary|henry)\b/gi, ""))
     if (!q.match || !app.deps.commentary?.installed) return []
     return app.deps.commentary.search(q.match, 100).map((h) => ({ ...h, marked: h.snippet }))
   })
   const total = createMemo(() =>
-    inHenry() ? hits().length : debounced().trim() ? app.deps.bible.searchCount(app.translation(), debounced()) : 0,
+    strongs() ? (app.deps.concordance?.count(strongs()!).verses ?? 0) : inHenry() ? hits().length : debounced().trim() ? app.deps.bible.searchCount(app.translation(), debounced()) : 0,
   )
-  const open = (h: { book: number; chapter: number; verse: number; heading?: string }) => {
+  const open = (h: { book: number; chapter: number; verse: number; heading?: string; strongs?: string }) => {
     app.closeAllDialogs()
     app.openChapter({ book: h.book, chapter: h.chapter }, h.verse)
+    if (h.strongs) {
+      app.setStudyOpen(true)
+      app.setStudyTab("words")
+      app.setWordStudy(h.strongs)
+    }
     if (h.heading !== undefined) {
       app.setStudyOpen(true)
       app.setStudyTab("commentary")
@@ -199,7 +216,7 @@ function SearchDialog(props: { app: App; initial: string }) {
         <input
           ref={(r: InputRenderable) => setTimeout(() => !r.isDestroyed && r.focus(), 1)}
           value={props.initial}
-          placeholder='Words, "a phrase", in:john, in:nt'
+          placeholder='Words, "a phrase", in:john, in:nt, G26'
           placeholderColor={t().textMuted}
           textColor={t().text}
           focusedTextColor={t().text}
@@ -210,12 +227,16 @@ function SearchDialog(props: { app: App; initial: string }) {
         />
         <text fg={t().textMuted} wrapMode="none" paddingTop={1}>
           {debounced().trim()
-            ? inHenry()
+            ? strongs()
+              ? app.deps.concordance?.installed
+                ? `${strongs()} ${app.deps.concordance.entry(strongs()!)?.translit ?? ""}: ${total()} ${total() === 1 ? "verse" : "verses"}${total() > hits().length ? ` · showing the first ${hits().length}` : ""}`
+                : "Install the Hebrew and Greek words first: tab, then 3, in the reader"
+              : inHenry()
               ? app.deps.commentary?.installed
                 ? `${total()} passages in Matthew Henry`
                 : "Install Matthew Henry first: tab, then 2, in the reader"
               : `${total()} ${total() === 1 ? "verse" : "verses"} in ${app.translation()}${total() > hits().length ? ` · showing the best ${hits().length}` : ""}`
-            : 'Search every verse. Quote a phrase, or narrow with in:psalms, in:ot, in:nt, in:commentary.'}
+            : "Search every verse. Quote a phrase, narrow with in:psalms, in:ot, in:nt or in:commentary, or type a Strong's number like G26."}
         </text>
       </box>
       <Show when={hits().length > 0}>

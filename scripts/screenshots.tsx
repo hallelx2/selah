@@ -4,7 +4,11 @@ import { hex, svg } from "./frame-svg"
 import { harness } from "../test/harness"
 import { seededStore } from "../test/seed"
 
+// SHOTS=words,study renders only those
+const only = process.env.SHOTS?.split(",")
+
 async function shot(name: string, setup: Parameters<typeof harness>[0], act?: (h: Awaited<ReturnType<typeof harness>>) => Promise<void>) {
+  if (only && !only.includes(name)) return
   const h = await harness({ width: 120, height: 38, ...setup, config: { icons: "nerd", ...setup?.config } })
   await act?.(h)
   await new Promise((r) => setTimeout(r, 200))
@@ -12,7 +16,7 @@ async function shot(name: string, setup: Parameters<typeof harness>[0], act?: (h
   const frame = h.spans()
   const bg = frame.lines[0]?.spans[0]?.bg
   const file = `docs/screenshots/${name}.svg`
-  await Bun.write(file, svg(frame, bg && bg.a > 0 ? hex(bg) : "#0a0a0a"))
+  await Bun.write(file, svg(frame, bg && bg.a > 0 ? hex(bg) : "#0a0a0a", h.frame()))
   await Bun.$`rsvg-convert -z 1.5 ${file} -o docs/screenshots/${name}.png`.quiet()
   h.destroy()
   console.log(`wrote ${file}`)
@@ -43,6 +47,17 @@ await shot("focus", { store: seededStore(), start: at, config: { theme: "kanagaw
 await shot("desk", { store: seededStore(), start: at, width: 190, height: 46, initial: { route: "reader", book: 43, chapter: 3, verse: 16 } }, async (h) => {
   await h.press("tab")
   await h.press("2")
+})
+await shot("words", { store: seededStore(), start: at, width: 190, height: 46, concordance: true, initial: { route: "reader", book: 19, chapter: 23, verse: 1 } }, async (h) => {
+  await h.press("tab")
+  await h.press("3")
+  await h.press("j")
+})
+await shot("study", { store: seededStore(), start: at, width: 190, height: 46, concordance: true, config: { theme: "catppuccin" }, initial: { route: "reader", book: 62, chapter: 4, verse: 8 } }, async (h) => {
+  await h.press("tab")
+  await h.press("3")
+  for (let i = 0; i < 10; i++) await h.press("j")
+  await h.press("return")
 })
 await shot("tokyonight", { store: seededStore(), start: at, config: { theme: "tokyonight", sidebar: true }, initial: { route: "reader", book: 45, chapter: 8, verse: 28 } })
 process.exit(0)

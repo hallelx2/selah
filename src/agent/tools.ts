@@ -2,7 +2,9 @@ import { z } from "zod"
 import type { Bible } from "../data/bible"
 import { bookById } from "../data/books"
 import type { Commentary } from "../data/commentary"
-import { formatRef, parseRef } from "../data/ref"
+import { baseStrongs, type Concordance } from "../data/concordance"
+import { describeMorphology } from "../data/morphology"
+import { findBook, formatRef, parseRef } from "../data/ref"
 import type { UserStore } from "../data/user"
 
 /**
@@ -14,6 +16,7 @@ import type { UserStore } from "../data/user"
 export interface ToolContext {
   bible: Bible
   commentary?: Commentary
+  concordance?: Concordance
   store: UserStore
   translation: () => string
 }
@@ -135,6 +138,74 @@ export const TOOLS: SelahTool[] = [
     },
   },
   {
+    name: "get_original_words",
+    description:
+      "The Hebrew or Greek words behind a verse (up to 5 verses): each word with its transliteration, English gloss, Strong's number, lexicon form and parsed grammar. Use it for word studies and questions about what the original says.",
+    shape: { reference: z.string().describe("A verse or short range, e.g. 'John 3:16' or 'Gen 1:1-3'") },
+    run: (ctx, a) => {
+      const c = ctx.concordance
+      if (!c?.installed) throw new Error("The Hebrew and Greek concordance is not installed. The reader can install it with `selah install concordance`.")
+      const ref = refOrThrow(String(a.reference))
+      const start = ref.verseStart ?? 1
+      const end = Math.min(ref.verseEnd ?? (ref.verseStart ? ref.verseStart : start + 4), start + 4)
+      const out: string[] = []
+      for (let v = start; v <= end; v++) {
+        const words = c.verse(ref.book, ref.chapter, v, ctx.translation())
+        if (!words.length) continue
+        out.push(`${formatRef({ book: ref.book, chapter: ref.chapter, verseStart: v })} (${ref.book <= 39 ? "Hebrew, Leningrad codex" : "Greek"})`)
+        for (const w of words) {
+          const lex = c.entry(w.dstrong)
+          const title = w.verse === 0 ? " [title]" : ""
+          const variant = w.inText ? "" : ` [not in the text ${ctx.translation()} follows]`
+          out.push(
+            `${w.position}. ${w.original} (${w.translit}) "${w.gloss}" ${w.strongs}${lex ? ` = ${lex.lemma} ${lex.translit}: ${lex.gloss}` : ""}; ${describeMorphology(w.grammar, ref.book)}${title}${variant}`,
+          )
+        }
+      }
+      if (!out.length) throw new Error(`No original-language words for ${formatRef(ref)}`)
+      return clip(out.join("\n"))
+    },
+  },
+  {
+    name: "concordance",
+    description:
+      "Every use of one Hebrew or Greek word (by Strong's number, e.g. G0026 or H2617): its lexicon entry, how often it occurs, counts per book, and the verses with the reader's translation. Filter to one book with book.",
+    shape: {
+      strongs: z.string().describe("A Strong's number, e.g. 'G0026', 'H7225' or 'G25'"),
+      book: z.string().optional().describe("Only this book, e.g. '1 John'"),
+      limit: z.number().int().min(1).max(60).optional().describe("How many verses to list (default 25)"),
+    },
+    run: (ctx, a) => {
+      const c = ctx.concordance
+      if (!c?.installed) throw new Error("The Hebrew and Greek concordance is not installed. The reader can install it with `selah install concordance`.")
+      const strongs = baseStrongs(String(a.strongs))
+      if (!strongs) throw new Error(`"${a.strongs}" is not a Strong's number. Use a form like G0026 or H7225.`)
+      const book = a.book ? findBook(String(a.book)) : undefined
+      if (a.book && !book) throw new Error(`"${a.book}" is not a book of the Bible.`)
+      const lex = c.entry(strongs)
+      const n = c.count(strongs)
+      if (!n.words) return `${strongs} does not occur in the text.`
+      const per = c.perBook(strongs).map((p) => `${bookById(p.book).short} ${p.count}`)
+      const occ = c.occurrences(strongs, { book: book?.id, limit: Number(a.limit ?? 25) })
+      const tr = ctx.translation()
+      const verses = occ.map((o) => {
+        const v = ctx.bible.verses(tr, { book: o.book, chapter: o.chapter, verseStart: o.verse })[0]
+        return `${formatRef({ book: o.book, chapter: o.chapter, verseStart: o.verse })} [${o.forms}]: ${v ? plain(v.text) : ""}`
+      })
+      return clip(
+        [
+          lex ? `${strongs} ${lex.lemma} (${lex.translit}), ${lex.morph}: ${lex.gloss}` : strongs,
+          lex ? lex.definition.replace(/\*/g, "").slice(0, 1200) : "",
+          `${n.words} occurrences in ${n.verses} verses. By book: ${per.join(", ")}`,
+          `${book ? `In ${book.name}` : "Verses"} (${tr}, first ${verses.length}):`,
+          ...verses,
+        ]
+          .filter(Boolean)
+          .join("\n"),
+      )
+    },
+  },
+  {
     name: "get_notes",
     description:
       "The reader's own notes, chapter journal and highlights for a chapter. Use it to connect an answer to what they have already written.",
@@ -195,7 +266,7 @@ export function callTool(ctx: ToolContext, name: string, args: Record<string, un
 
 export const SYSTEM_PROMPT = `You are a study companion inside Selah, a Bible reader in the terminal. The reader is studying scripture and asks you questions about what they are reading.
 
-Ground every answer in the text. Use Selah's tools: read the passage with get_passage, find related verses with search_bible, and consult Matthew Henry with get_commentary when it helps. Cite references in the standard form (John 3:16, Rom 8:28) so the reader can open them. When you draw on Henry, say so.
+Ground every answer in the text. Use Selah's tools: read the passage with get_passage, find related verses with search_bible, and consult Matthew Henry with get_commentary when it helps. For what a word means in the original, read the Hebrew or Greek with get_original_words, then trace that word through scripture with concordance. Cite references in the standard form (John 3:16, Rom 8:28) so the reader can open them. When you draw on Henry, say so.
 
 Be clear about what scripture says, what Henry or the wider Christian tradition says, and where Christians differ. Do not invent quotations. Keep answers focused: a few short paragraphs, or a short list, unless the reader asks for depth.
 
