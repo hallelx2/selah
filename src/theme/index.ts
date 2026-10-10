@@ -22,6 +22,20 @@ export const BASE_TOKENS = [
 
 export type BaseToken = (typeof BASE_TOKENS)[number]
 
+/** opencode's markdown tokens, each with the base token it falls back to in a theme without it. */
+export const MARKDOWN_TOKENS = {
+  text: ["markdownText", "text"],
+  heading: ["markdownHeading", "primary"],
+  link: ["markdownLink", "info"],
+  linkText: ["markdownLinkText", "accent"],
+  code: ["markdownCode", "success"],
+  quote: ["markdownBlockQuote", "textMuted"],
+  emph: ["markdownEmph", "warning"],
+  strong: ["markdownStrong", "text"],
+  listItem: ["markdownListItem", "accent"],
+} as const satisfies Record<string, readonly [string, BaseToken]>
+export type MarkdownToken = keyof typeof MARKDOWN_TOKENS
+
 export interface Theme extends Record<BaseToken, RGBA> {
   /** Verse highlight backgrounds, colours 1 to 4. */
   highlight: [RGBA, RGBA, RGBA, RGBA]
@@ -33,6 +47,8 @@ export interface Theme extends Record<BaseToken, RGBA> {
   backdrop: RGBA
   /** The colour behind the reading column. */
   page: RGBA
+  /** opencode's markdown colours, for notes rendered as Markdown. */
+  markdown: Record<MarkdownToken, RGBA>
   name: string
   mode: "dark" | "light"
 }
@@ -104,6 +120,9 @@ export function resolveTheme(name: string, json: ThemeJson, mode: "dark" | "ligh
     onPrimary: luminance(base.primary) > 0.55 ? tint(solid, RGBA.fromHex("#000000"), 0.6) : RGBA.fromHex("#ffffff"),
     backdrop: RGBA.fromInts(0, 0, 0, 150),
     page: base.background,
+    markdown: Object.fromEntries(
+      Object.entries(MARKDOWN_TOKENS).map(([k, [token, fallback]]) => [k, json.theme[token] !== undefined ? resolve(json.theme[token]!) : base[fallback]]),
+    ) as Record<MarkdownToken, RGBA>,
   }
 }
 
