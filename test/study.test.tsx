@@ -122,7 +122,7 @@ describe("searching Henry", () => {
   })
 })
 
-// PR #5 review findings (HAL-2588)
+// PR #5 review findings (HAL-2587)
 describe("review fixes", () => {
   test("1. tab in focus mode leaves focus mode and opens the pane; keys keep working", async () => {
     h = await harness({ width: 200, initial: { route: "reader", book: 43, chapter: 3, verse: 16 } })
