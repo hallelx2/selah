@@ -218,6 +218,26 @@ describe("notes as Markdown (HAL-2586)", () => {
     expect(p).not.toContain("*so loved")
   })
 
+  test("switching theme keeps every style alive, one per theme, and the preview renders", async () => {
+    const { themeMarkdownStyle } = await import("../src/ui/components/markdown")
+    const store = UserStore.memory()
+    store.saveNote({ book: 43, chapter: 3, verse: 16 }, "- one\n- **two**")
+    h = await harness({ width: 200, height: 46, store, initial: { route: "reader", book: 43, chapter: 3, verse: 16 } })
+    await h.press("tab")
+    await waitFor(h, "- two")
+    const first = themeMarkdownStyle(h.app().theme())
+    h.app().setConfig("theme", "catppuccin")
+    await waitFor(h, "- two")
+    const second = themeMarkdownStyle(h.app().theme())
+    expect(second).not.toBe(first)
+    h.app().setConfig("theme", "opencode")
+    await wait(30)
+    await h.settle()
+    expect(themeMarkdownStyle(h.app().theme())).toBe(first) // reused, never freed
+    expect(() => first.getStyleCount()).not.toThrow()
+    expect(pane(h.frame())).toContain("- two")
+  })
+
   test("an empty note still shows its placeholder, not an empty preview", async () => {
     h = await harness({ width: 200, initial: { route: "reader", book: 43, chapter: 3, verse: 16 } })
     await h.press("tab")

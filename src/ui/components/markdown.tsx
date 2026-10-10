@@ -1,5 +1,4 @@
 import { SyntaxStyle } from "@opentui/core"
-import { createMemo, onCleanup } from "solid-js"
 import type { Theme } from "../../theme"
 import { useApp } from "../state"
 
@@ -20,14 +19,23 @@ export function markdownStyle(theme: Theme): SyntaxStyle {
   ])
 }
 
+/**
+ * One style per theme, kept for the session. OpenTUI's markdown view swaps a new style into its
+ * blocks only on its next frame, and a background highlight can still be reading the old one,
+ * so freeing a style on a theme change could pull it from under a block mid-highlight. There are
+ * at most a few dozen themes, so the styles simply stay.
+ */
+const styles = new Map<string, SyntaxStyle>()
+export function themeMarkdownStyle(theme: Theme): SyntaxStyle {
+  // keyed by the colours themselves: the system theme keeps one name across palettes
+  const key = [...Object.values(theme.markdown), theme.textMuted].map((c) => `${c.r},${c.g},${c.b}`).join(";")
+  let style = styles.get(key)
+  if (!style) styles.set(key, (style = markdownStyle(theme)))
+  return style
+}
+
 /** Markdown in the theme's colours, through OpenTUI's own markdown renderable. */
 export function Markdown(props: { content: string }) {
   const app = useApp()
-  const style = createMemo<SyntaxStyle>((prev) => {
-    // freed a tick later, once the renderable holds the new one
-    if (prev) setTimeout(() => prev.destroy(), 0)
-    return markdownStyle(app.theme())
-  })
-  onCleanup(() => style().destroy())
-  return <markdown content={props.content} syntaxStyle={style()} fg={app.theme().markdown.text} conceal />
+  return <markdown content={props.content} syntaxStyle={themeMarkdownStyle(app.theme())} fg={app.theme().markdown.text} conceal />
 }
