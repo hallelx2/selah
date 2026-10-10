@@ -29,7 +29,7 @@ export type AskMessage =
   | { role: "assistant"; text: string; tools: AskTool[]; suggestions: AskSuggestion[]; error?: string; provider: string; at: number }
 
 /** Folds one AG-UI event into the answer being built. Pure, so the mapping is testable. */
-export function applyEvent(msg: Extract<AskMessage, { role: "assistant" }>, e: AgentEvent) {
+export function applyEvent(msg: Extract<AskMessage, { role: "assistant" }>, e: AgentEvent, verseExists: (v: { book: number; chapter: number; verse: number }) => boolean = () => true) {
   switch (e.type) {
     case EventType.TEXT_MESSAGE_CONTENT:
       msg.text += e.delta
@@ -55,7 +55,8 @@ export function applyEvent(msg: Extract<AskMessage, { role: "assistant" }>, e: A
       if (t.name === "suggest_note" && !e.isError) {
         try {
           const a = JSON.parse(t.args) as { reference?: string; note?: string }
-          if (a.reference && a.note?.trim() && parseVerse(a.reference)) msg.suggestions.push({ reference: a.reference, note: a.note.trim() })
+          const v = a.reference ? parseVerse(a.reference) : undefined
+          if (a.reference && a.note?.trim() && v && verseExists(v)) msg.suggestions.push({ reference: a.reference, note: a.note.trim() })
         } catch {
           // a malformed suggestion is simply not offered
         }
@@ -158,8 +159,9 @@ export function AskTab(props: { register: (r: { key: (k: KeyEvent) => boolean; c
     messages: AskMessage[]
     answer: Extract<AskMessage, { role: "assistant" }>
     index: number
+    /** the thread's provider and session, as persist() would write them */
     sessionId?: string
-    provider: string
+    provider?: string
     /** why it stopped belonging to the visible thread */
     detached?: "cleared" | "moved"
   }
@@ -172,7 +174,7 @@ export function AskTab(props: { register: (r: { key: (k: KeyEvent) => boolean; c
     // not lose the answer so far.
     if (why === "moved") {
       run.answer.error ??= "Stopped"
-      app.deps.store.saveAskThread(run.key.book, run.key.chapter, run.provider, run.sessionId, run.messages)
+      app.deps.store.saveAskThread(run.key.book, run.key.chapter, run.provider ?? agent()?.id ?? "", run.sessionId, run.messages)
     }
     run = undefined
     setRunning(false)
@@ -235,8 +237,8 @@ export function AskTab(props: { register: (r: { key: (k: KeyEvent) => boolean; c
       messages: [...structuredClone(unwrap(thread.messages)), user, answer],
       answer,
       index: thread.messages.length + 1,
-      sessionId: resumable,
-      provider: a.id,
+      sessionId: thread.sessionId,
+      provider: thread.provider,
     }
     run = r
     setThread(produce((s) => s.messages.push(structuredClone(user), structuredClone(answer))))
@@ -250,9 +252,10 @@ export function AskTab(props: { register: (r: { key: (k: KeyEvent) => boolean; c
     try {
       for await (const e of a.run({ prompt: `${context}\n\n${q}`, history, sessionId: resumable, threadId: `${c.book}:${c.chapter}`, signal: r.controller.signal })) {
         if (r.controller.signal.aborted) break
-        update((m) => applyEvent(m, e))
+        update((m) => applyEvent(m, e, verseExists))
         if (e.type === EventType.RUN_FINISHED && e.result?.sessionId) {
           r.sessionId = e.result.sessionId
+          r.provider = a.id
           if (visible()) setThread({ sessionId: e.result.sessionId, provider: a.id })
         }
         if (visible()) setTimeout(() => scroll && !scroll.isDestroyed && scroll.scrollTo(scroll.scrollHeight), 0)
@@ -265,21 +268,26 @@ export function AskTab(props: { register: (r: { key: (k: KeyEvent) => boolean; c
         run = undefined
         setRunning(false)
         persist()
-      } else if (r.detached === "moved") {
-        // The reader went to another chapter: the answer so far is kept on its own chapter.
-        app.deps.store.saveAskThread(r.key.book, r.key.chapter, r.provider, r.sessionId, r.messages)
       }
-      // "cleared": the reader threw this conversation away; nothing is written back.
+      // Detached runs write nothing here. After a clear, the reader threw the conversation
+      // away; after a move, detach() already saved it, and a late second save could overwrite
+      // what the reader has done on that chapter since coming back.
     }
   }
 
+  const verseExists = (v: { book: number; chapter: number; verse: number }) =>
+    app.deps.bible.verses(app.translation(), { book: v.book, chapter: v.chapter, verseStart: v.verse }).length > 0
+  const validSuggestion = (s: AskSuggestion) => {
+    const v = parseVerse(s.reference)
+    return !!v && verseExists(v)
+  }
   const lastAnswer = () => [...thread.messages].reverse().find((m): m is Extract<AskMessage, { role: "assistant" }> => m.role === "assistant" && !!m.text)
   const pending = () => {
     for (let i = thread.messages.length - 1; i >= 0; i--) {
       const m = thread.messages[i]!
       if (m.role !== "assistant") continue
       // threads saved before suggestions were validated may hold one that names no verse
-      const j = m.suggestions.findIndex((s) => !s.accepted && parseVerse(s.reference))
+      const j = m.suggestions.findIndex((s) => !s.accepted && validSuggestion(s))
       if (j >= 0) return { i, j, s: m.suggestions[j]! }
     }
   }
@@ -481,7 +489,7 @@ export function AskTab(props: { register: (r: { key: (k: KeyEvent) => boolean; c
   )
 }
 
-/** "John 3:16" → a verse that exists, or undefined. */
+/** "John 3:16" → book, chapter and verse, with the chapter checked; whether the verse exists needs the Bible. */
 export function parseVerse(reference: string): { book: number; chapter: number; verse: number } | undefined {
   const m = /^(.*?)\s(\d+):(\d+)/.exec(reference.trim())
   const book = m && findBook(m[1]!)

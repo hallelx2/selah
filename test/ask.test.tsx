@@ -186,6 +186,57 @@ describe("Ask tab", () => {
     expect((john3[1] as { error?: string }).error).toBe("Stopped")
   })
 
+  test("coming back and clearing is never undone by the old run winding down", async () => {
+    let release!: () => void
+    const gate = new Promise<void>((r) => (release = r))
+    const store = UserStore.memory()
+    h = await openAsk({ agents: [fakeAgent(answer, [], gate)], store })
+    await h.type("Who is Nicodemus?")
+    await h.press("return")
+    await tick(h, 60)
+    await h.press("tab")
+    await h.press("n") // away to John 4…
+    await tick(h, 40)
+    await h.press("p") // …and back to John 3
+    await tick(h, 40)
+    expect(h.frame()).toContain("Who is Nicodemus?") // the answer so far was kept
+    await h.press("tab")
+    await h.press("x", { ctrl: true })
+    release() // the old run only now winds down
+    await tick(h, 80)
+    expect(store.askThread(43, 3)?.messages ?? []).toEqual([])
+  })
+
+  test("moving away mid-answer keeps the thread's earlier provider session", async () => {
+    let release!: () => void
+    const gate = new Promise<void>((r) => (release = r))
+    const store = UserStore.memory()
+    store.saveAskThread(43, 3, "claude", "claude-session", [{ role: "user", text: "Earlier", at: 0 }, { role: "assistant", text: "Before.", tools: [], suggestions: [], provider: "Claude Code", at: 0 }])
+    h = await openAsk({ agents: [fakeAgent(answer, [], gate)], store })
+    await h.type("Who is Nicodemus?")
+    await h.press("return")
+    await tick(h, 60)
+    await h.press("tab")
+    await h.press("n")
+    release()
+    await tick(h, 80)
+    const saved = store.askThread(43, 3)!
+    expect(saved.provider).toBe("claude")
+    expect(saved.sessionId).toBe("claude-session")
+  })
+
+  test("a suggested note on a verse the chapter does not have is not offered", async () => {
+    const script = answer.map((e) =>
+      e.type === EventType.TOOL_CALL_ARGS && e.toolCallId === "c2" ? { ...e, delta: '{"reference":"John 3:99","note":"Nowhere."}' } : e,
+    )
+    h = await openAsk({ agents: [fakeAgent(script)] })
+    await h.type("Who is Nicodemus?")
+    await h.press("return")
+    await tick(h, 80)
+    expect(h.frame()).toContain("Nicodemus was a Pharisee")
+    expect(h.frame()).not.toContain("Suggested note on John 3:99")
+  })
+
   test("typing in Ask never triggers pane shortcuts", async () => {
     const seen: AskInput[] = []
     h = await openAsk({ agents: [fakeAgent(answer, seen)] })
