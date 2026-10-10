@@ -87,6 +87,10 @@ export function toolLabel(t: AskTool, ip: (name: "book" | "search" | "quote" | "
       return `${ip("quote")}Henry on ${a.reference ?? "this"}`
     case "search_commentary":
       return `${ip("quote")}searched Henry for ${q(a.query)}`
+    case "get_original_words":
+      return `${ip("book")}read the ${a.reference ? `original of ${a.reference}` : "original"}`
+    case "concordance":
+      return `${ip("search")}traced ${a.strongs ?? "a word"}${a.book ? ` in ${a.book}` : ""}`
     case "get_notes":
       return `${ip("note")}read your notes`
     case "reading_context":

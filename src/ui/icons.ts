@@ -39,6 +39,8 @@ const TABLE = {
   library: ["\uf0ca", "≡"],
   dot: ["", "●"],
   circle: ["", "○"],
+  // fa-language (U+F1AB), checked present with fc-list on 2026-10-10
+  language: ["\uf1ab", "α"],
 } as const satisfies Record<string, readonly [string, string]>
 
 export type IconName = keyof typeof TABLE

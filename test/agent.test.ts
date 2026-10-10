@@ -3,7 +3,7 @@ import { describe, expect, test } from "bun:test"
 import { claudeToAgUi } from "../src/agent/claude"
 import { codexToAgUi } from "../src/agent/codex"
 import { EventType, type AgentEvent } from "../src/agent/provider"
-import { applyEvent, citedRefs, type AskMessage } from "../src/ui/ask"
+import { applyEvent, citedRefs, toolLabel, type AskMessage } from "../src/ui/ask"
 
 async function collect(it: AsyncIterable<AgentEvent>) {
   const out: AgentEvent[] = []
@@ -152,6 +152,14 @@ describe("answers", () => {
       codexToAgUi(from(['{"type":"item.completed","item":{"id":"i","type":"mcp_tool_call","tool":"suggest_note","arguments":{},"status":"failed","error":{"message":"bad"}}}']), "t"),
     )
     expect(codex.find((e) => e.type === EventType.TOOL_CALL_RESULT)).toMatchObject({ isError: true, content: "bad" })
+  })
+
+  test("tool chips say what the agent did, word studies included", () => {
+    const label = (name: string, args: unknown) => toolLabel({ id: "x", name, args: JSON.stringify(args) }, () => "")
+    expect(label("get_original_words", { reference: "John 3:16" })).toBe("read the original of John 3:16")
+    expect(label("concordance", { strongs: "G0026", book: "1 John" })).toBe("traced G0026 in 1 John")
+    expect(label("concordance", { strongs: "H2617" })).toBe("traced H2617")
+    expect(label("search_bible", { query: "Nicodemus" })).toBe("searched “Nicodemus”")
   })
 
   test("citedRefs finds references, ranges and continuations, once each", () => {

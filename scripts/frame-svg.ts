@@ -5,9 +5,17 @@ import type { CapturedFrame, RGBA } from "@opentui/core"
 const CW = 9.6
 const CH = 20
 export const hex = (c: RGBA) => `#${[c.r, c.g, c.b].map((x) => Math.round(x * 255).toString(16).padStart(2, "0")).join("")}`
+const graphemes = new Intl.Segmenter("en", { granularity: "grapheme" })
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
 
-export function svg(frame: CapturedFrame, background: string): string {
+/**
+ * `chars` is the same frame from captureCharFrame(). OpenTUI's captureSpans slices span text by
+ * code point, so a grapheme with combining marks (pointed Hebrew, accented Greek) shifts every
+ * later character in its span; the char frame has one grapheme per cell and is right. Glyphs
+ * come from it, colours and widths from the spans.
+ */
+export function svg(frame: CapturedFrame, background: string, chars?: string): string {
+  const grid = chars?.split("\n").map((l) => [...graphemes.segment(l)].map((g) => g.segment))
   const w = Math.ceil(frame.cols * CW) + 48
   const h = frame.rows * CH + 48 + 28
   const out: string[] = [
@@ -18,7 +26,9 @@ export function svg(frame: CapturedFrame, background: string): string {
   ]
   frame.lines.forEach((line, row) => {
     let col = 0
-    for (const span of line.spans) {
+    for (const original of line.spans) {
+      const cells = grid?.[row]
+      const span = cells && cells.length >= col + original.width ? { ...original, text: cells.slice(col, col + original.width).join("") } : original
       const x = col * CW
       const y = row * CH
       const width = span.width * CW
@@ -26,10 +36,29 @@ export function svg(frame: CapturedFrame, background: string): string {
       if (span.text.trim()) {
         const bold = span.attributes & 1 ? ` font-weight="bold"` : ""
         const italic = span.attributes & 4 ? ` font-style="italic"` : ""
-        // Place each cell explicitly so wide and block glyphs stay on the grid.
-        const chars = Array.from(span.text)
-        const xs = chars.map((_, i) => (x + i * CW).toFixed(1)).join(" ")
-        out.push(`<text x="${xs}" y="${y + 15}" fill="${hex(span.fg)}"${bold}${italic} xml:space="preserve">${esc(span.text)}</text>`)
+        // One cell per grapheme, as the terminal draws it. Runs of plain characters get an x per
+        // character; a grapheme with combining marks (Hebrew points, Greek accents) or a
+        // right-to-left letter gets its own element, so the SVG renderer can neither split its
+        // marks into cells nor reorder it with bidi.
+        const attrs = `y="${y + 15}" fill="${hex(span.fg)}"${bold}${italic} xml:space="preserve"`
+        let run: { x: number; chars: string[] } | undefined
+        const flush = () => {
+          if (run?.chars.length) out.push(`<text x="${run.chars.map((_, i) => (run!.x + i * CW).toFixed(1)).join(" ")}" ${attrs}>${esc(run.chars.join(""))}</text>`)
+          run = undefined
+        }
+        let cell = 0
+        for (const { segment: g } of graphemes.segment(span.text)) {
+          const gx = x + cell * CW
+          if ([...g].length > 1 || /[\u0590-\u08FF]/.test(g)) {
+            flush()
+            if (g.trim()) out.push(`<text x="${gx.toFixed(1)}" ${attrs}>${esc(g)}</text>`)
+          } else {
+            run ??= { x: gx, chars: [] }
+            run.chars.push(g)
+          }
+          cell += 1
+        }
+        flush()
       }
       col += span.width
     }

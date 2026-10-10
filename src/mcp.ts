@@ -10,7 +10,7 @@ import { callTool, TOOLS, type ToolContext } from "./agent/tools"
 export async function runMcpServer(ctx: ToolContext, version: string) {
   const server = new McpServer(
     { name: "selah", version },
-    { instructions: "Bible passages, search, Matthew Henry's Commentary and the reader's own notes and reading context, from Selah." },
+    { instructions: "Bible passages, search, Matthew Henry's Commentary, the Hebrew and Greek words with a Strong's concordance, and the reader's own notes and reading context, from Selah." },
   )
   for (const tool of TOOLS) {
     server.registerTool(

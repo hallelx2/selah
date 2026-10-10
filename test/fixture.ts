@@ -40,3 +40,14 @@ export async function fixtureCommentary() {
   importCommentary(db, files)
   return c
 }
+
+/** The STEPBible concordance imported once into its own fixture db (the pinned files download on first use). */
+export async function fixtureConcordance() {
+  const { Concordance, installConcordance } = await import("../src/data/concordance")
+  const dir = join(root, ".selah-test-home")
+  mkdirSync(dir, { recursive: true })
+  const db = new Database(join(dir, "fixture-concordance.db"), { create: true })
+  const c = new Concordance(db)
+  if (!c.installed) await installConcordance(db, join(root, ".selah-test-sources"))
+  return c
+}

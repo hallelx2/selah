@@ -45,11 +45,50 @@ A Bible for the terminal, built on the same TUI stack as [opencode](https://gith
 
 ## Study desk
 
-Press `tab` in the reader to open the study desk beside the text: your notes and a chapter
-journal (autosaved), Matthew Henry's Complete Commentary opened at the verse you are on
-(`selah install commentary`, about 14 MB once), and Ask.
+Press `tab` in the reader to open the study desk beside the text. Its tabs follow the verse
+you are on:
+
+1. **Notes:** your note on the verse and a chapter journal, both autosaved.
+2. **Commentary:** Matthew Henry's Complete Commentary, opened at the verse
+   (`selah install commentary`, about 14 MB once).
+3. **Words:** the Hebrew or Greek behind the verse, word by word (`selah install concordance`,
+   about 108 MB once). See below.
+4. **Ask:** questions answered by your own Claude Code or Codex. See below.
 
 ![Study desk](docs/screenshots/desk.png)
+
+### Words: Hebrew, Greek and a concordance
+
+The Words tab lists each original word of the verse. For each one you get:
+
+- its transliteration and an English gloss
+- its Strong's number
+- its grammar in plain English: `V-AAI-3S` reads "verb · aorist active indicative · 3rd person
+  singular", and Hebrew is read morpheme by morpheme
+
+Press `enter` on a word for a study. The study shows:
+
+- its lexicon entry
+- how often it occurs, and in which books
+- every verse that uses it, in your translation
+
+`enter` opens a verse in the reader and keeps the study open. `f` narrows the list to the book
+you are reading, and `esc` goes back.
+
+- **Hebrew** is drawn right to left. Each word is reversed for terminals that lay text out left
+  to right, which is nearly all of them; set `"hebrew": "logical"` if yours applies bidi
+  itself. Cantillation marks are dropped, and vowel points stay.
+- **The Greek** amalgamates the editions. Words that the text behind your translation does not
+  have are dimmed. The KJV and YLT follow the Textus Receptus, and the others follow
+  Nestle-Aland, so John 5:4 is in the KJV's text and not in the BSB's.
+- **Search** with a Strong's number (`/`, then `G26` or `H2617`) to list a word's verses, and
+  open its study.
+- **Coverage:** every verse of the KJV, numbered as the KJV numbers them. Psalm titles appear
+  with verse 1.
+
+![The Hebrew of Psalm 23:1](docs/screenshots/words.png)
+
+![A word study of agapē from 1 John 4:8](docs/screenshots/study.png)
 
 ### Ask
 
@@ -57,8 +96,8 @@ Ask questions about what you are reading and get answers grounded in the text, w
 reference openable. Ask uses **your own Claude Code or Codex**, with your existing login.
 Selah installs nothing and holds no API keys.
 
-- The agent reads passages, searches the Bible and Matthew Henry, and sees your notes, through
-  Selah's tools. None of your coding setup is loaded: no Claude Code settings or CLAUDE.md,
+- The agent reads passages, searches the Bible and Matthew Henry, reads the Hebrew and Greek
+  and traces a word through the concordance, and sees your notes, through Selah's tools. None of your coding setup is loaded: no Claude Code settings or CLAUDE.md,
   and no Codex skills or other MCP servers.
   - **Claude:** Bash, file reads and edits are disallowed. It may use Selah's tools and the web.
   - **Codex:** runs in its read-only sandbox (it can write nothing) with its shell, browser,
@@ -73,7 +112,7 @@ Set `agent` in config.json to `claude` or `codex` to choose; `auto` uses the fir
 ### Selah's tools in your own agent
 
 `selah mcp` serves the same tools over MCP, so Claude Code, Codex or any MCP client can read
-passages, search, consult Henry and see what you are studying:
+passages, search, consult Henry, study the original words and see what you are studying:
 
 ```sh
 claude mcp add selah -- selah mcp
@@ -114,6 +153,8 @@ selah ps 23 -p                # print a passage and exit
 selah search "living water"   # print search results
 selah stats                   # streak, today, consistency
 selah install ASV YLT NHEB    # more translations
+selah install commentary      # Matthew Henry
+selah install concordance     # Hebrew and Greek, Strong's numbers, lexicons
 ```
 
 ### Keys
@@ -158,10 +199,13 @@ All are public domain, taken from [scrollmapper/bible_databases](https://github.
 ## Files
 
 - `$XDG_DATA_HOME/selah/bible.db`: the texts and their search index.
+- `$XDG_DATA_HOME/selah/study.db`: study packs (Matthew Henry, the Hebrew and Greek words and
+  lexicons). Rebuildable, never personal.
 - `$XDG_DATA_HOME/selah/user.db`: your reading sessions, reads, highlights, bookmarks and notes.
   It is separate from the texts, so adding or removing a translation never touches it.
 - `$XDG_CONFIG_HOME/selah/config.json`: theme, mode, translation, daily goal, `icons`
-  (`nerd`, `unicode` or `none`), `motion` (`full` or `reduced`) and `prose`. Safe to edit by hand.
+  (`nerd`, `unicode` or `none`), `motion` (`full` or `reduced`), `prose`, `agent` and `hebrew`
+  (`visual` or `logical`). Safe to edit by hand.
 
 `SELAH_HOME` puts all three under one directory. `SELAH_NO_PALETTE=1` skips the terminal palette
 query for terminals that mishandle it. `SELAH_DEBUG_LOG=<file>` writes errors to a file.
@@ -184,3 +228,10 @@ The design rules every screen follows are in [docs/DESIGN.md](docs/DESIGN.md).
 
 MIT. Themes in `src/theme/assets` are opencode's, used under its MIT license
 ([LICENSE.opencode](src/theme/assets/LICENSE.opencode)). The Bible texts are in the public domain.
+
+Matthew Henry's Commentary comes from [lyteword/mhenry-complete](https://github.com/lyteword/mhenry-complete) (CC0).
+The Hebrew and Greek words, Strong's numbers and lexicons come from
+[STEPBible-Data](https://github.com/STEPBible/STEPBible-Data): TAHOT, TAGNT, TBESH and TBESG, by
+Tyndale House, Cambridge ([STEPBible.org](https://www.stepbible.org)), under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Both are downloaded at a pinned commit
+and are not redistributed in this repository.

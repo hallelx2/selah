@@ -4,7 +4,8 @@ import { DEFAULT_CONFIG, type Config } from "../src/data/config"
 import { ReadingTracker } from "../src/data/tracker"
 import { UserStore } from "../src/data/user"
 import type { Route } from "../src/ui/state"
-import { fixtureBible, fixtureCommentary } from "./fixture"
+import { fixtureBible, fixtureCommentary, fixtureConcordance } from "./fixture"
+import { join } from "node:path"
 import type { Bible } from "../src/data/bible"
 
 const NAMED: Record<string, string> = {
@@ -53,9 +54,15 @@ export async function harness(opts: {
   bible?: Bible
   /** Agents for the Ask tab; none by default. */
   agents?: import("../src/agent").AgentProvider[] | (() => Promise<never>)
+  /** The Hebrew and Greek concordance: installed with true, not installed by default. */
+  concordance?: boolean | import("../src/data/concordance").Concordance
 } = {}): Promise<Harness> {
   const bible = opts.bible ?? (await fixtureBible())
   const commentary = await fixtureCommentary()
+  const { Concordance } = await import("../src/data/concordance")
+  const { Database } = await import("bun:sqlite")
+  const concordance =
+    opts.concordance === true ? await fixtureConcordance() : opts.concordance instanceof Concordance ? opts.concordance : new Concordance(new Database(":memory:"))
   const store = opts.store ?? UserStore.memory()
   let now = (opts.start ?? new Date(2026, 9, 8, 7, 0, 0)).getTime()
   const clock = () => now
@@ -74,6 +81,8 @@ export async function harness(opts: {
           bible,
           store,
           commentary,
+          concordance,
+          cacheDir: join(import.meta.dir, "..", ".selah-test-sources"),
           tracker,
           config,
           saveConfig: (c) => (config = c),

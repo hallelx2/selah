@@ -44,8 +44,10 @@ export function Bar(props: { fraction: number; width: number; color?: RGBA; trac
   const cells = () => {
     const f = Math.max(0, Math.min(1, props.fraction))
     const total = f * props.width
-    const full = Math.floor(total)
-    const part = Math.round((total - full) * 8)
+    // eighths of a cell; a remainder that rounds up to 8/8 is a whole cell, not a ninth glyph
+    let full = Math.floor(total)
+    let part = Math.round((total - full) * 8)
+    if (part === 8) (full += 1), (part = 0)
     const partial = part > 0 && full < props.width ? " ▏▎▍▌▋▊▉"[part]! : ""
     const rest = props.width - full - (partial ? 1 : 0)
     return { filled: "█".repeat(full) + partial, rest: "█".repeat(Math.max(0, rest)) }
