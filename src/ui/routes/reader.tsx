@@ -297,6 +297,10 @@ export function Reader() {
         app.setFocus(!focus())
         return true
       case "w":
+        if (app.parallel()) {
+          app.toast("Prose is off in parallel view", "Verses stay aligned side by side. T closes parallel.", "warning")
+          return true
+        }
         app.setConfig("prose", !app.config.prose)
         app.toast(app.config.prose ? "Prose: verses flow as paragraphs" : "Verses: one per line", "w to switch back")
         scrollToCursorSoon(true)
@@ -528,7 +532,7 @@ export function Reader() {
         }
       >
         <Footer
-          mode={anchor() !== undefined ? "SELECT" : count() ? `:${count()}` : app.config.prose ? "PROSE" : "READ"}
+          mode={anchor() !== undefined ? "SELECT" : count() ? `:${count()}` : prose() ? "PROSE" : "READ"}
           icon={anchor() !== undefined ? "copy" : "book"}
           hints={
             anchor() !== undefined
@@ -544,7 +548,7 @@ export function Reader() {
                   { key: "/", label: "search" },
                   { key: "m", label: "mark read" },
                   { key: "z", label: "focus" },
-                  { key: "w", label: app.config.prose ? "verses" : "prose" },
+                  { key: "w", label: prose() ? "verses" : "prose" },
                   { key: "h", label: "highlight" },
                   { key: "b", label: "bookmark" },
                   { key: "ctrl+p", label: "commands" },

@@ -1,7 +1,7 @@
 import { RGBA, TextAttributes } from "@opentui/core"
 import { useTerminalDimensions } from "@opentui/solid"
 import { createEffect, createSignal, For, onCleanup, Show, type JSX } from "solid-js"
-import { mixColor } from "../motion"
+import { mixColor, type Anim } from "../motion"
 import type { IconName } from "../icons"
 import { useApp } from "../state"
 
@@ -133,18 +133,25 @@ export function StreakStatus() {
   const goal = () => app.config.goal
   const doneToday = () => (goal().kind === "chapters" ? app.todayTotals().chapters : Math.floor(app.todayTotals().minutes))
   const met = () => doneToday() >= goal().amount
-  // A live streak not yet kept today glows softly: a nudge, never an alarm.
+  // A live streak not yet kept today takes one slow breath every 20s: a nudge, never an
+  // alarm. Each breath is a motion-clock animation, so between breaths nothing renders.
   const nudging = () => app.streak() > 0 && !met() && !app.motion.reduced()
-  const [phase, setPhase] = createSignal(0)
+  const [breath, setBreath] = createSignal<Anim | undefined>()
   createEffect(() => {
     if (!nudging()) return
-    const id = setInterval(() => setPhase((n) => n + 1), 80)
-    onCleanup(() => clearInterval(id))
+    const inhale = () => setBreath(app.motion.start(2_400))
+    const first = setTimeout(inhale, 1_500)
+    const every = setInterval(inhale, 20_000)
+    onCleanup(() => {
+      clearTimeout(first)
+      clearInterval(every)
+    })
   })
   const streakColor = () => {
     if (app.streak() === 0) return t().textMuted
-    if (!nudging()) return t().warning
-    return mixColor(t().warning, t().backgroundPanel, 0.25 + 0.25 * Math.sin(phase() / 6))
+    const b = breath()
+    if (!nudging() || !b || app.motion.done(b)) return t().warning
+    return mixColor(t().warning, t().backgroundPanel, 0.55 * Math.sin(Math.PI * app.motion.progress(b)))
   }
   return (
     <text wrapMode="none" selectable={false}>

@@ -42,9 +42,13 @@ function Root(props: { initial?: { route: Route; book?: number; chapter?: number
     }
   })
 
-  // Ask once whether Nerd Font glyphs render: there is no way to detect the font.
-  onMount(() => {
-    if (ready() && app.config.icons === undefined) setTimeout(() => openIcons(app, true), 50)
+  // Ask once whether Nerd Font glyphs render (there is no way to detect the font), as soon as
+  // the library is ready: on a true first launch that is after Setup finishes.
+  let asked = false
+  createEffect(() => {
+    if (!ready() || asked || app.config.icons !== undefined) return
+    asked = true
+    setTimeout(() => openIcons(app, true), 50)
   })
 
   onMount(() => {

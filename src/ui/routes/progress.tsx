@@ -261,10 +261,12 @@ function Heatmap(props: { width: number }) {
               {(col, w) => {
                 const cell = col[d]
                 if (!cell) return <span>{"  "}</span>
-                // Drawn left to right as the screen opens, like ink filling a ledger.
-                if (w() / grid().weeks.length > intro()) return <span style={{ fg: t().heat[0] }}>{"· "}</span>
-                const isToday = cell.day === app.today()
-                return <span style={{ fg: isToday && cell.level === 0 ? t().primary : t().heat[cell.level] }}>{isToday && cell.level === 0 ? "□ " : "■ "}</span>
+                // Drawn left to right as the screen opens, like ink filling a ledger. These are
+                // getters: a For body runs once, so anything that animates must stay reactive.
+                const shown = () => w() / grid().weeks.length <= intro()
+                const empty = () => cell.day === app.today() && cell.level === 0
+                const fg = () => (!shown() ? t().heat[0] : empty() ? t().primary : t().heat[cell.level])
+                return <span style={{ fg: fg() }}>{!shown() ? "· " : empty() ? "□ " : "■ "}</span>
               }}
             </For>
           </text>
@@ -293,14 +295,17 @@ function Bars(props: { width: number }) {
           <text wrapMode="none">
             <For each={days()}>
               {(d) => {
-                const eighths = Math.round((valueOf(d) / scale()) * HEIGHT * 8 * intro())
+                // Getters, not constants: the bars grow with the intro.
                 const fromBottom = HEIGHT - 1 - row
-                const fill = Math.max(0, Math.min(8, eighths - fromBottom * 8))
+                const fill = () => {
+                  const eighths = Math.round((valueOf(d) / scale()) * HEIGHT * 8 * intro())
+                  return Math.max(0, Math.min(8, eighths - fromBottom * 8))
+                }
                 const ok = met(d, app.config.goal)
-                const onGoal = row === goalRow() - 1 && fill === 0
+                const onGoal = () => row === goalRow() - 1 && fill() === 0
                 return (
-                  <span style={{ fg: fill ? (ok ? t().success : t().primary) : t().borderSubtle }}>
-                    {fill ? EIGHTHS[fill] + " " : onGoal ? "┈┈" : "  "}
+                  <span style={{ fg: fill() ? (ok ? t().success : t().primary) : t().borderSubtle }}>
+                    {fill() ? EIGHTHS[fill()] + " " : onGoal() ? "┈┈" : "  "}
                   </span>
                 )
               }}
