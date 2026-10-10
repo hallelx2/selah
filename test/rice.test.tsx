@@ -194,3 +194,17 @@ describe("icons", () => {
     expect(h.frame()).toContain(" John 3 · KJV")
   })
 })
+
+describe("edge to edge", () => {
+  test("the terminal's own background (and so its padding) follows the theme", async () => {
+    h = await harness()
+    expect(h.painted.at(-1)).toBe("#0a0a0a") // opencode dark
+    await h.press("p", { ctrl: true })
+    await h.type("theme")
+    await h.press("return")
+    await h.type("tokyonight")
+    await h.press("return")
+    expect(h.config().theme).toBe("tokyonight")
+    expect(h.painted.at(-1)).toBe("#1a1b26")
+  })
+})

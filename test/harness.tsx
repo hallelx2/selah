@@ -31,6 +31,8 @@ export interface Harness {
   store: UserStore
   config: () => Config
   copied: string[]
+  /** Every terminal background Selah asked for, as hex, or "reset". */
+  painted: string[]
   quit: { called: boolean }
   destroy: () => void
   /** The current frame with colours, for screenshots. */
@@ -57,6 +59,7 @@ export async function harness(opts: {
   // animation tests opt back in with config: { motion: "full" }.
   let config: Config = { ...DEFAULT_CONFIG, motion: "reduced", icons: "unicode", ...opts.config }
   const copied: string[] = []
+  const painted: string[] = []
   const quit = { called: false }
   const t = await testRender(
     () => (
@@ -70,6 +73,8 @@ export async function harness(opts: {
           now: clock,
           quit: () => (quit.called = true),
           copy: (text) => (copied.push(text), true),
+          setTerminalBackground: (c) =>
+            painted.push(c ? `#${[c.r, c.g, c.b].map((x) => Math.round(x * 255).toString(16).padStart(2, "0")).join("")}` : "reset"),
         }}
         initial={opts.initial}
       />
@@ -100,6 +105,7 @@ export async function harness(opts: {
     store,
     config: () => config,
     copied,
+    painted,
     quit,
     destroy: () => t.renderer.destroy(),
     spans: () => t.captureSpans(),

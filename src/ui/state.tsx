@@ -1,4 +1,4 @@
-import type { KeyEvent, TerminalColors } from "@opentui/core"
+import type { KeyEvent, RGBA, TerminalColors } from "@opentui/core"
 import { batch, createContext, createMemo, createSignal, onCleanup, useContext, type JSX, type ParentProps } from "solid-js"
 import { createStore, produce } from "solid-js/store"
 import type { Bible } from "../data/bible"
@@ -27,6 +27,11 @@ export interface Deps {
   now?: () => number
   quit: () => void
   copy: (text: string) => boolean
+  /**
+   * Paints the terminal's own default background (OSC 11), which also fills the window
+   * padding around the grid. Undefined resets it to the user's colour (OSC 111).
+   */
+  setTerminalBackground?: (color: RGBA | undefined) => void
 }
 
 export interface DialogEntry {
