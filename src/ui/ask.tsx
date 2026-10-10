@@ -145,6 +145,7 @@ export function AskTab(props: { register: (r: { key: (k: KeyEvent) => boolean; c
   const [elapsed, setElapsed] = createSignal(0)
   const [agent, setAgent] = createSignal<AgentProvider | undefined>()
   const [detected, setDetected] = createSignal(false)
+  const [detectError, setDetectError] = createSignal<string>()
   /**
    * The answer in flight. A run belongs to the chapter it was asked on: when the reader clears
    * the thread or moves to another chapter, the run is detached, so its last events and its
@@ -185,7 +186,7 @@ export function AskTab(props: { register: (r: { key: (k: KeyEvent) => boolean; c
       const choice = app.deps.agents ? await app.deps.agents() : undefined
       if (choice) setAgent(pickAgent(choice, app.config.agent))
     } catch (err) {
-      app.toast("Could not start Ask", err instanceof Error ? err.message : String(err), "error")
+      setDetectError(err instanceof Error ? err.message : String(err))
     } finally {
       setDetected(true)
     }
@@ -370,7 +371,9 @@ export function AskTab(props: { register: (r: { key: (k: KeyEvent) => boolean; c
               Ask questions about what you are reading
             </text>
             <text fg={t().textMuted} wrapMode="word">
-              {detected()
+              {detectError()
+                ? `Ask could not start: ${detectError()}`
+                : detected()
                 ? "Ask uses your own Claude Code or Codex, with your existing login. Neither was found on your PATH. Install one (claude.com/claude-code or the codex CLI), sign in once, and reopen this tab."
                 : "Looking for Claude Code or Codex…"}
             </text>

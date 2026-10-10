@@ -68,8 +68,7 @@ describe("Ask tab", () => {
     h = await openAsk({ agents: async () => Promise.reject(new Error("SDK failed to load")) })
     await tick(h)
     expect(h.frame()).not.toContain("Looking for Claude Code or Codex")
-    expect(h.frame()).toContain("Neither was found on your PATH")
-    expect(h.frame()).toContain("Could not start Ask")
+    expect(h.frame()).toContain("Ask could not start: SDK failed to load")
   })
 
   test("streams an answer with tool chips, references and a suggested note", async () => {
