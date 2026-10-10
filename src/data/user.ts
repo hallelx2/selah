@@ -53,6 +53,16 @@ CREATE TABLE IF NOT EXISTS highlights (
   PRIMARY KEY (book, chapter, verse)
 ) WITHOUT ROWID;
 
+CREATE TABLE IF NOT EXISTS ask_threads (
+  book INTEGER NOT NULL,
+  chapter INTEGER NOT NULL,
+  provider TEXT NOT NULL,
+  session_id TEXT,
+  messages TEXT NOT NULL,
+  updated_at INTEGER NOT NULL,
+  PRIMARY KEY (book, chapter)
+) WITHOUT ROWID;
+
 CREATE TABLE IF NOT EXISTS journal (
   book INTEGER NOT NULL,
   chapter INTEGER NOT NULL,
@@ -347,6 +357,36 @@ export class UserStore {
       )
       .all()
       .map((r) => ({ book: r.book, chapter: r.chapter, verse: r.verse, body: r.body, createdAt: r.created_at, updatedAt: r.updated_at }))
+  }
+
+  // ask threads ------------------------------------------------------------------
+
+  /** The conversation the reader has had about a chapter, if any. */
+  askThread<T>(book: number, chapter: number): { provider: string; sessionId?: string; messages: T[] } | undefined {
+    const r = this.db
+      .query<{ provider: string; session_id: string | null; messages: string }, [number, number]>(
+        `SELECT provider, session_id, messages FROM ask_threads WHERE book = ? AND chapter = ?`,
+      )
+      .get(book, chapter)
+    if (!r) return
+    try {
+      return { provider: r.provider, sessionId: r.session_id ?? undefined, messages: JSON.parse(r.messages) as T[] }
+    } catch {
+      return
+    }
+  }
+
+  saveAskThread(book: number, chapter: number, provider: string, sessionId: string | undefined, messages: unknown[], at = Date.now()) {
+    if (!messages.length) {
+      this.db.run(`DELETE FROM ask_threads WHERE book = ? AND chapter = ?`, [book, chapter])
+      return
+    }
+    this.db.run(
+      `INSERT INTO ask_threads (book, chapter, provider, session_id, messages, updated_at) VALUES (?, ?, ?, ?, ?, ?)
+       ON CONFLICT (book, chapter) DO UPDATE SET provider = excluded.provider, session_id = excluded.session_id,
+         messages = excluded.messages, updated_at = excluded.updated_at`,
+      [book, chapter, provider, sessionId ?? null, JSON.stringify(messages), at],
+    )
   }
 
   // chapter journal ------------------------------------------------------------

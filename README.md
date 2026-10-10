@@ -43,6 +43,43 @@ A Bible for the terminal, built on the same TUI stack as [opencode](https://gith
 
 ![Parallel translations in Catppuccin](docs/screenshots/parallel.png)
 
+## Study desk
+
+Press `tab` in the reader to open the study desk beside the text: your notes and a chapter
+journal (autosaved), Matthew Henry's Complete Commentary opened at the verse you are on
+(`selah install commentary`, about 14 MB once), and Ask.
+
+![Study desk](docs/screenshots/desk.png)
+
+### Ask
+
+Ask questions about what you are reading and get answers grounded in the text, with every
+reference openable. Ask uses **your own Claude Code or Codex**, with your existing login.
+Selah installs nothing and holds no API keys.
+
+- The agent reads passages, searches the Bible and Matthew Henry, and sees your notes, through
+  Selah's tools. None of your coding setup is loaded: no Claude Code settings or CLAUDE.md,
+  and no Codex skills or other MCP servers.
+  - **Claude:** Bash, file reads and edits are disallowed. It may use Selah's tools and the web.
+  - **Codex:** runs in its read-only sandbox (it can write nothing) with its shell, browser,
+    image and plugin tools turned off. That sandbox does not stop reads, so do not count on
+    Codex being unable to see your files.
+- It can suggest a note; nothing is saved unless you press `ctrl+k`. `ctrl+s` saves an answer
+  as a note on the current verse, and `ctrl+r` opens the references it cites.
+- Each chapter keeps its own conversation, and follow-ups continue the same session.
+
+Set `agent` in config.json to `claude` or `codex` to choose; `auto` uses the first one found.
+
+### Selah's tools in your own agent
+
+`selah mcp` serves the same tools over MCP, so Claude Code, Codex or any MCP client can read
+passages, search, consult Henry and see what you are studying:
+
+```sh
+claude mcp add selah -- selah mcp
+codex mcp add selah -- selah mcp
+```
+
 ## Install
 
 ```sh
