@@ -37,6 +37,8 @@ export interface Harness {
   destroy: () => void
   /** The current frame with colours, for screenshots. */
   spans: () => import("@opentui/core").CapturedFrame
+  /** The live app state, for tests that drive what keys cannot (mouse-only actions). */
+  app: () => import("../src/ui/state").App
   /** Every renderable in the tree, for leak checks. */
   renderables: () => unknown[]
 }
@@ -61,6 +63,7 @@ export async function harness(opts: {
   let config: Config = { ...DEFAULT_CONFIG, motion: "reduced", icons: "unicode", ...opts.config }
   const copied: string[] = []
   const painted: string[] = []
+  let appRef: import("../src/ui/state").App | undefined
   const quit = { called: false }
   const t = await testRender(
     () => (
@@ -75,6 +78,7 @@ export async function harness(opts: {
           now: clock,
           quit: () => (quit.called = true),
           copy: (text) => (copied.push(text), true),
+          onApp: (a) => (appRef = a),
           setTerminalBackground: (c) =>
             painted.push(c ? `#${[c.r, c.g, c.b].map((x) => Math.round(x * 255).toString(16).padStart(2, "0")).join("")}` : "reset"),
         }}
@@ -111,6 +115,7 @@ export async function harness(opts: {
     quit,
     destroy: () => t.renderer.destroy(),
     spans: () => t.captureSpans(),
+    app: () => appRef!,
     renderables: () => {
       const out: unknown[] = []
       const walk = (r: { getChildren(): unknown[] }) => {

@@ -121,3 +121,49 @@ describe("searching Henry", () => {
     expect(h.frame()).toContain(" Commentary ")
   })
 })
+
+// PR #5 review findings (HAL-2588)
+describe("review fixes", () => {
+  test("1. tab in focus mode leaves focus mode and opens the pane; keys keep working", async () => {
+    h = await harness({ width: 200, initial: { route: "reader", book: 43, chapter: 3, verse: 16 } })
+    await h.press("z")
+    await h.press("tab")
+    expect(h.frame()).toContain(" Notes ")
+    expect(h.frame()).toContain("John 3 · KJV")
+    await h.press("escape") // back to the reader
+    await h.press("j")
+    expect(h.frame()).toContain("verse 17/36")
+  })
+
+  test("2. the pane's note editor shows a note saved elsewhere, and does not overwrite it", async () => {
+    const store = UserStore.memory()
+    h = await harness({ width: 200, store, initial: { route: "reader", book: 43, chapter: 3, verse: 16 } })
+    await h.press("tab")
+    await h.press("tab") // pane open, keyboard back in the reader
+    await h.press("a") // the note dialog
+    await h.type("from the dialog")
+    await h.press("s", { ctrl: true })
+    expect(store.note({ book: 43, chapter: 3, verse: 16 })?.body).toBe("from the dialog")
+    await wait(20)
+    await h.settle()
+    expect(h.frame()).toContain("from the dialog") // the pane shows it
+    await h.press("tab")
+    await h.press("e")
+    await wait(20)
+    await h.type(" and more")
+    await h.press("escape")
+    expect(store.note({ book: 43, chapter: 3, verse: 16 })?.body).toBe("from the dialog and more")
+  })
+
+  test("3. switching tab while editing ends the edit, so the new tab gets its keys", async () => {
+    h = await harness({ width: 200, initial: { route: "reader", book: 43, chapter: 3, verse: 16 } })
+    await h.press("tab")
+    await h.press("e")
+    await wait(20)
+    // simulate the mouse switching tabs mid-edit
+    h.app().setStudyTab("commentary")
+    await h.settle()
+    await h.press("1")
+    expect(h.frame()).toContain("e verse note") // back on Notes: the 1 key was handled, not typed
+  })
+})

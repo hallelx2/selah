@@ -238,7 +238,11 @@ function SearchDialog(props: { app: App; initial: string }) {
                       : formatRef({ book: h.book, chapter: h.chapter, verseStart: h.verse })}
                   </text>
                   <text wrapMode="word" paddingBottom={1}>
-                    <VerseText text={h.marked} matchColor={t().warning} />
+                    <VerseText
+                      text={h.marked}
+                      matchColor={t().warning}
+                      segments={h.heading !== undefined ? { brackets: false, emphasis: true } : undefined}
+                    />
                   </text>
                 </box>
               )

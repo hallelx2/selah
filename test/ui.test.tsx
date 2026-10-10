@@ -264,3 +264,25 @@ describe("performance", () => {
     expect(created).toBeLessThan(10)
   })
 })
+
+describe("segments", () => {
+  test("Henry's [1.] numbering survives; his *italics* render as italics", async () => {
+    const { segments } = await import("../src/ui/components/verse")
+    expect(segments("[1.] Jesus \u0001Christ\u0002 came", { brackets: false, emphasis: true })).toEqual([
+      { text: "[1.] Jesus ", italic: false, match: false },
+      { text: "Christ", italic: false, match: true },
+      { text: " came", italic: false, match: false },
+    ])
+    expect(segments("a *word* here", { brackets: false, emphasis: true }).map((s) => [s.text, s.italic])).toEqual([
+      ["a ", false],
+      ["word", true],
+      [" here", false],
+    ])
+    // the KJV default is unchanged
+    expect(segments("hath not the Father: [but] he").map((s) => [s.text, s.italic])).toEqual([
+      ["hath not the Father: ", false],
+      ["but", true],
+      [" he", false],
+    ])
+  })
+})

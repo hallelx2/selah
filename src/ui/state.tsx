@@ -37,6 +37,8 @@ export interface Deps {
    * padding around the grid. Undefined resets it to the user's colour (OSC 111).
    */
   setTerminalBackground?: (color: RGBA | undefined) => void
+  /** Hands the app state to a test harness. */
+  onApp?: (app: App) => void
 }
 
 export interface DialogEntry {
@@ -85,11 +87,21 @@ function init(deps: Deps) {
   const [rev, setRev] = createSignal(0)
   const [plan, setPlanSignal] = createSignal<ActivePlan | undefined>(deps.store.get<ActivePlan | undefined>("plan", undefined))
   const [today, setToday] = createSignal(dayKey(now()))
-  const [focus, setFocus] = createSignal(false)
+  const [focus, setFocusSignal] = createSignal(false)
+  const setFocus = (v: boolean) => {
+    if (v) setStudyFocusedSignal(false)
+    setFocusSignal(v)
+  }
   // The study desk: a pane beside the reading column, and which side has the keyboard.
   const [studyOpen, setStudyOpen] = createSignal(false)
   const [studyTab, setStudyTab] = createSignal<StudyTab>("notes")
-  const [studyFocused, setStudyFocused] = createSignal(false)
+  const [studyFocused, setStudyFocusedSignal] = createSignal(false)
+  // Focus mode hides the pane, so the pane taking the keyboard always leaves focus mode
+  // (otherwise nothing would be listening and the keyboard would freeze).
+  const setStudyFocused = (v: boolean) => {
+    if (v) setFocusSignal(false)
+    setStudyFocusedSignal(v)
+  }
   const [celebration, setCelebration] = createSignal<{ streak: number; anim: Anim } | undefined>()
   // The last read recorded, so the reader can play its completion beam.
   const [lastRead, setLastRead] = createSignal<{ book: number; chapter: number; anim: Anim } | undefined>()
@@ -396,6 +408,7 @@ const AppContext = createContext<App>()
 
 export function AppProvider(props: ParentProps<{ deps: Deps }>) {
   const app = init(props.deps)
+  props.deps.onApp?.(app)
   return <AppContext.Provider value={app}>{props.children}</AppContext.Provider>
 }
 

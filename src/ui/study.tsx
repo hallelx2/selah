@@ -25,6 +25,8 @@ export function StudyPane(props: { overlay?: boolean }) {
   const width = () => Math.max(40, Math.min(app.config.studyWidth, dims().width - 40))
   const focused = app.studyFocused
   const [editing, setEditing] = createSignal<"verse" | "journal" | undefined>()
+  // A tab switch (keyboard or mouse) ends any edit, so the new tab gets its keys.
+  createEffect(on(app.studyTab, () => setEditing(undefined), { defer: true }))
 
   app.useKeys((key) => {
     if (!focused()) return false
@@ -129,7 +131,7 @@ function NotesTab(props: {
             <Editor
               title={`${app.ip("note")}${formatRef({ book: b, chapter: c, verseStart: v })}`}
               hint="e to write"
-              initial={app.deps.store.note({ book: b, chapter: c, verse: v })?.body ?? ""}
+              load={() => app.deps.store.note({ book: b, chapter: c, verse: v })?.body ?? ""}
               placeholder="What is this verse saying to you?"
               height={8}
               active={props.editing === "verse" && app.studyFocused()}
@@ -148,7 +150,7 @@ function NotesTab(props: {
             <Editor
               title={`${app.ip("book")}${bookById(b).name} ${c} journal`}
               hint="w to write"
-              initial={app.deps.store.journal(b, c)}
+              load={() => app.deps.store.journal(b, c)}
               placeholder="Thoughts on the whole chapter: what stood out, what to pray, what to do."
               grow
               active={props.editing === "journal" && app.studyFocused()}
@@ -179,7 +181,8 @@ function NotesTab(props: {
 function Editor(props: {
   title: string
   hint: string
-  initial: string
+  /** Reads the saved text. Re-read whenever notes change elsewhere and this editor is idle. */
+  load: () => string
   placeholder: string
   height?: number
   grow?: boolean
@@ -190,12 +193,16 @@ function Editor(props: {
   const t = () => app.theme()
   let area: TextareaRenderable | undefined
   let timer: ReturnType<typeof setTimeout> | undefined
-  let last = props.initial
+  const initial = props.load()
+  let last = initial
   const [state, setState] = createSignal<"" | "editing" | "saved">("")
+  // The latest text, captured on every change: by the time an unmount saves, the textarea
+  // may already be destroyed, and reading it then would throw and lose the edit.
+  let current = initial
   const flush = () => {
     clearTimeout(timer)
     timer = undefined
-    const body = area?.plainText ?? last
+    const body = current
     if (body !== last) {
       props.onSave(body)
       last = body
@@ -203,11 +210,34 @@ function Editor(props: {
     }
   }
   onCleanup(flush)
+  // Someone else (the note dialog, a re-import) saved: show it, so an edit here never
+  // starts from stale text and overwrites theirs.
+  createEffect(
+    on(
+      app.rev,
+      () => {
+        if (props.active || !area || area.isDestroyed) return
+        const fresh = props.load()
+        if (fresh !== last && fresh !== current) {
+          area.setText(fresh)
+          last = fresh
+          current = fresh
+        }
+      },
+      { defer: true },
+    ),
+  )
   createEffect(() => {
     if (!area || area.isDestroyed) return
     // Focus on the next tick: focusing inside the key event that asked for it would hand that
     // very key ("e") to the textarea as typed text.
-    if (props.active) setTimeout(() => area && !area.isDestroyed && area.focus(), 0)
+    if (props.active)
+      setTimeout(() => {
+        if (!area || area.isDestroyed) return
+        area.focus()
+        // continue writing where the note ends
+        area.cursorOffset = area.plainText.length
+      }, 0)
     else {
       area.blur()
       flush()
@@ -225,7 +255,7 @@ function Editor(props: {
       </box>
       <textarea
         ref={(r: TextareaRenderable) => (area = r)}
-        initialValue={props.initial}
+        initialValue={initial}
         placeholder={props.placeholder}
         placeholderColor={t().textMuted}
         textColor={t().text}
@@ -238,6 +268,7 @@ function Editor(props: {
         minHeight={props.grow ? 4 : undefined}
         wrapMode="word"
         onContentChange={() => {
+          if (area && !area.isDestroyed) current = area.plainText
           setState("editing")
           clearTimeout(timer)
           timer = setTimeout(flush, 600)
