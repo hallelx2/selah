@@ -1,6 +1,6 @@
 # Installs Selah on Windows from the GitHub release.
 #
-#   irm https://selah.hallelx2.com/install.ps1 | iex
+#   irm https://raw.githubusercontent.com/hallelx2/selah/main/install.ps1 | iex
 #
 # Environment:
 #   SELAH_VERSION        a release tag such as v0.3.1 (default: the latest release)
@@ -75,12 +75,22 @@ function Install-Selah {
 
   if ($env:SELAH_NO_PATH -ne '1') {
     if ($onWindows) {
-      $userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
-      $parts = @($userPath -split ';' | Where-Object { $_ })
+      # Read and write the raw registry value: [Environment]::GetEnvironmentVariable expands
+      # entries like %USERPROFILE%\.dotnet\tools, and writing that back would freeze them.
+      $key = [Microsoft.Win32.Registry]::CurrentUser.OpenSubKey('Environment', $true)
+      $raw = [string]$key.GetValue('Path', '', [Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames)
+      $parts = @($raw -split ';' | Where-Object { $_ })
       if ($parts -notcontains $dir) {
-        [Environment]::SetEnvironmentVariable('Path', (@($parts) + $dir) -join ';', 'User')
+        # keep the value's kind; a profile with no PATH of its own yet gets an expandable one
+        $kind = [Microsoft.Win32.RegistryValueKind]::ExpandString
+        if ($key.GetValueNames() -contains 'Path') { $kind = $key.GetValueKind('Path') }
+        $key.SetValue('Path', ((@($parts) + $dir) -join ';'), $kind)
+        # tell running programs (Explorer, new terminals) that the environment changed
+        [Environment]::SetEnvironmentVariable('SELAH_PATH_REFRESH', '1', 'User')
+        [Environment]::SetEnvironmentVariable('SELAH_PATH_REFRESH', $null, 'User')
         Write-Host "  added $dir to your PATH"
       }
+      $key.Close()
       # this window too, so selah works without opening a new one
       if (($env:Path -split ';') -notcontains $dir) { $env:Path = "$env:Path;$dir" }
     } else {

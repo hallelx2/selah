@@ -12,7 +12,8 @@ import { parseCli } from "./cli"
 import { bookById } from "./data/books"
 import { Commentary, installCommentary } from "./data/commentary"
 import { Concordance, installConcordance } from "./data/concordance"
-import { paths } from "./data/paths"
+import { paths, resolveRoot } from "./data/paths"
+import { join } from "node:path"
 import { formatRef } from "./data/ref"
 import { bookProgress, consistency, currentStreak, firstDay, longestStreak, trackedDays, verdict } from "./data/stats"
 import { ReadingTracker } from "./data/tracker"
@@ -41,7 +42,7 @@ Options
   -h, --help                show this help
   -v, --version             show the version
 
-Data lives in $XDG_DATA_HOME/selah, settings in $XDG_CONFIG_HOME/selah/config.json.`
+Data lives in ${resolveRoot("data")}, settings in ${join(resolveRoot("config"), "config.json")}.`
 
 /** Verse text without KJV brackets or search marks, for plain-text output. */
 const plain = (text: string) => text.replace(/[[\]\u0001\u0002]/g, "")

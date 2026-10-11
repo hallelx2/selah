@@ -103,10 +103,18 @@ export const CODEX_TOOLS_OFF = [
 const PATH_VARS = ["SELAH_HOME", "SELAH_SOURCES", "XDG_DATA_HOME", "XDG_CONFIG_HOME", "XDG_CACHE_HOME"]
 
 /** Points `link` at the reader's auth.json, repairing a dangling or stale link, never touching a real file. */
-export function linkAuth(target: string, link: string, symlink: (t: string, l: string) => void = symlinkSync, platform = process.platform) {
+export function linkAuth(
+  target: string,
+  link: string,
+  symlink: (t: string, l: string) => void = symlinkSync,
+  platform = process.platform,
+  hardlink: (t: string, l: string) => void = linkSync,
+) {
   // Windows refuses symlinks without Developer Mode or admin rights; there the login is shared
-  // through a hard link instead, remade on every run (Codex replaces auth.json when it refreshes
-  // the token, which would leave an old hard link behind). The marker says the link is ours.
+  // through a hard link instead. Codex saves auth.json in place (OpenOptions truncate+write, in
+  // codex-rs/login/src/auth/storage.rs, read 2026-10-11), so a refreshed token lands in the one
+  // file both names share. The link is remade each run so that a logout (the reader's file
+  // deleted) or a fresh login elsewhere is followed. The marker says the link is ours.
   const marker = `${link}.selah-hardlink`
   if (existsSync(marker)) {
     rmSync(link, { force: true })
@@ -126,9 +134,16 @@ export function linkAuth(target: string, link: string, symlink: (t: string, l: s
   try {
     symlink(target, link)
   } catch (e) {
-    if (platform !== "win32" && (e as { code?: string }).code !== "EPERM") throw e
-    linkSync(target, link)
-    writeFileSync(marker, target)
+    // only Windows refusing the symlink itself falls back; anything else is a real error
+    const code = (e as { code?: string }).code
+    if (platform !== "win32" || (code !== "EPERM" && code !== "EACCES")) throw e
+    try {
+      hardlink(target, link)
+      writeFileSync(marker, target)
+    } catch {
+      // a hard link cannot cross drives (Selah's data on D:, the login on C:); Codex then asks
+      // the reader to sign in inside Ask rather than every question failing
+    }
   }
 }
 

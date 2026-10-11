@@ -115,3 +115,18 @@ test("where symlinks are refused (Windows without admin), the login is shared by
   expect(readFileSync(link, "utf8")).toBe("v2")
   rmSync(d, { recursive: true, force: true })
 })
+
+test("a hard link that cannot be made (another drive) leaves Ask to sign in, instead of failing every question", () => {
+  const d = mkdtempSync(join(tmpdir(), "selah-link-"))
+  const target = join(d, "auth.json")
+  writeFileSync(target, "v1")
+  const refuse = (code: string) => () => {
+    throw Object.assign(new Error(code), { code })
+  }
+  expect(() => linkAuth(target, join(d, "a.json"), refuse("EPERM"), "win32", refuse("EXDEV"))).not.toThrow()
+  expect(existsSync(join(d, "a.json"))).toBe(false)
+  // and only Windows refusing a symlink falls back: elsewhere, or for another error, it is real
+  expect(() => linkAuth(target, join(d, "b.json"), refuse("EPERM"), "linux")).toThrow("EPERM")
+  expect(() => linkAuth(target, join(d, "c.json"), refuse("EEXIST"), "win32")).toThrow("EEXIST")
+  rmSync(d, { recursive: true, force: true })
+})

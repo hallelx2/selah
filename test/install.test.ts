@@ -131,3 +131,10 @@ test("both installers name exactly the assets the release build produces", async
   expect(sh).toContain('asset="selah-$os-$arch$libc"')
   chmodSync(join(root, "install.sh"), 0o755)
 })
+
+test("the build names this machine's target the way Bun does (win32 → windows)", async () => {
+  const { bunTarget } = await import("../scripts/build")
+  expect(bunTarget("win32", "x64")).toBe("bun-windows-x64")
+  expect(bunTarget("linux", "arm64")).toBe("bun-linux-arm64")
+  expect(bunTarget("darwin", "arm64")).toBe("bun-darwin-arm64")
+})

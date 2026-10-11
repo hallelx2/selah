@@ -232,7 +232,8 @@ All are public domain, taken from [scrollmapper/bible_databases](https://github.
 
 ## Files
 
-On Windows, data lives in `%LOCALAPPDATA%\selah` and settings in `%APPDATA%\selah`; elsewhere:
+On Windows, the texts, notes and study packs live in `%LOCALAPPDATA%\selah\data`, caches in
+`%LOCALAPPDATA%\selah\cache`, and settings in `%APPDATA%\selah\config.json`. Elsewhere:
 
 - `$XDG_DATA_HOME/selah/bible.db`: the texts and their search index.
 - `$XDG_DATA_HOME/selah/study.db`: study packs (Matthew Henry, the Hebrew and Greek words and
