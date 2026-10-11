@@ -33,6 +33,9 @@ export function StudyPane(props: { overlay?: boolean }) {
   const width = () => Math.max(40, Math.min(app.config.studyWidth, dims().width - 40))
   const focused = app.studyFocused
   const [editing, setEditing] = createSignal<"verse" | "journal" | undefined>()
+  // Text typed into Notes before the editor has the keyboard. The first key opens the editor;
+  // keys that arrive before it takes focus (a fast typist, a paste) are added here, not lost.
+  const [seed, setSeed] = createSignal<string | undefined>()
   // A tab switch (keyboard or mouse) ends any edit, so the new tab gets its keys.
   createEffect(on(app.studyTab, () => setEditing(undefined), { defer: true }))
 
@@ -49,6 +52,11 @@ export function StudyPane(props: { overlay?: boolean }) {
       return !key.ctrl
     }
     if (editing()) {
+      if (seed() !== undefined && !key.ctrl && !key.meta) {
+        if (key.name === "backspace") return setSeed((s) => (s ?? "").slice(0, -1)), true
+        if (key.name === "return") return setSeed((s) => `${s ?? ""}\n`), true
+        if (key.sequence && [...key.sequence].length === 1 && key.name !== "escape" && key.name !== "tab") return setSeed((s) => `${s ?? ""}${key.sequence}`), true
+      }
       // While typing, only escape and ctrl chords are ours; every other key belongs to the textarea.
       if (key.name === "escape") return setEditing(undefined), true
       if (key.ctrl && key.name === "c") return false
@@ -117,7 +125,7 @@ export function StudyPane(props: { overlay?: boolean }) {
       </box>
       <box flexGrow={1} flexDirection="column" paddingLeft={2} paddingRight={1} paddingTop={1}>
         <Show when={app.studyTab() === "notes"}>
-          <NotesTab editing={editing()} setEditing={setEditing} register={(fn) => ((paneKey = fn), (captures = undefined), (paneKeyEvent = undefined))} />
+          <NotesTab editing={editing()} setEditing={setEditing} seed={seed} setSeed={setSeed} register={(fn) => ((paneKey = fn), (captures = undefined), (paneKeyEvent = undefined))} />
         </Show>
         <Show when={app.studyTab() === "commentary"}>
           <CommentaryTab register={(fn) => ((paneKey = fn), (captures = undefined), (paneKeyEvent = undefined))} />
@@ -144,6 +152,8 @@ export function StudyPane(props: { overlay?: boolean }) {
 function NotesTab(props: {
   editing: "verse" | "journal" | undefined
   setEditing: (v: "verse" | "journal" | undefined) => void
+  seed: () => string | undefined
+  setSeed: (v: string | undefined) => void
   register: (fn: (name: string, sequence: string) => boolean) => void
 }) {
   const app = useApp()
@@ -157,12 +167,11 @@ function NotesTab(props: {
     return `${p.book}:${p.chapter}`
   })
   // a newcomer types straight away: any ordinary character starts the verse note with it
-  const [seed, setSeed] = createSignal<string | undefined>()
   props.register((name, sequence) => {
     if (name === "e" || name === "return") return props.setEditing("verse"), true
     if (name === "w") return props.setEditing("journal"), true
     if (sequence && [...sequence].length === 1 && /[\p{L}\p{N}\p{P}\p{S} ]/u.test(sequence)) {
-      setSeed(sequence)
+      props.setSeed(sequence)
       props.setEditing("verse")
       return true
     }
@@ -182,8 +191,8 @@ function NotesTab(props: {
               height={8}
               active={props.editing === "verse" && app.studyFocused()}
               seed={() => {
-                const s = seed()
-                setSeed(undefined)
+                const s = props.seed()
+                props.setSeed(undefined)
                 return s
               }}
               onSave={(body) => {

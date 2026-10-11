@@ -185,7 +185,7 @@ function init(deps: Deps) {
 
   // keys -------------------------------------------------------------------------
 
-  const handlers: { fn: KeyHandler; modal: boolean }[] = []
+  const handlers: { fn: KeyHandler; modal: boolean; first: boolean }[] = []
   /**
    * Gives a text box the keyboard back whenever nothing covers it: a dialog or a scene takes
    * the keyboard while open, and without this the box underneath stays deaf after it closes.
@@ -201,8 +201,9 @@ function init(deps: Deps) {
     )
   }
 
-  function useKeys(fn: KeyHandler, opts: { modal?: boolean } = {}) {
-    const entry = { fn, modal: !!opts.modal }
+  /** `first`: ahead of every other handler whenever it was registered (a card that must have the keyboard). */
+  function useKeys(fn: KeyHandler, opts: { modal?: boolean; first?: boolean } = {}) {
+    const entry = { fn, modal: !!opts.modal, first: !!opts.first }
     handlers.push(entry)
     onCleanup(() => {
       const i = handlers.indexOf(entry)
@@ -213,8 +214,8 @@ function init(deps: Deps) {
     // Pick up a date rollover on the first key press after midnight, not up to 30s later.
     const d = dayKey(now())
     if (d !== today()) setToday(d)
-    for (let i = handlers.length - 1; i >= 0; i--) {
-      const h = handlers[i]!
+    // newest first, with `first` handlers ahead of all the rest
+    for (const h of [...handlers.filter((x) => x.first).reverse(), ...handlers.filter((x) => !x.first).reverse()]) {
       if (h.fn(key) === true) return true
       if (h.modal) return false
     }

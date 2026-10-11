@@ -118,7 +118,7 @@ describe("tracking, end to end", () => {
   test("a skim does not count; reading to the end with real time does, and the streak starts", async () => {
     h = await harness({ initial: { route: "reader", book: 19, chapter: 1 } }) // Psalm 1: short
     await h.press("G", { shift: true }) // straight to the end
-    expect(h.frame()).toContain("more to count as read")
+    expect(h.frame()).toMatch(/○ (read to the end|\d+s more)/)
     expect(h.store.chapterReads()).toHaveLength(0)
     for (let i = 0; i < 10; i++) {
       h.advance(4_000)

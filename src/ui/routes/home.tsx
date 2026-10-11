@@ -45,9 +45,9 @@ export function Home() {
     const ref = parseGoTo(text)
     if (ref) return app.goTo(ref)
     // the words a newcomer tries when nothing else is obvious
-    const word = text.toLowerCase().replace(/[^a-z ]/g, "").trim()
-    if (["quit", "exit", "close", "bye", "q"].includes(word)) return app.deps.tracker.activity(), app.deps.quit()
-    if (["help", "keys", "keyboard", "how", "how to use", "commands", "menu"].includes(word)) return openHelp(app)
+    // the whole box must be the word, so "close 3" or "q1" still search
+    if (/^(quit|exit|close|bye|q|:q)[.!]?$/i.test(text)) return app.deps.tracker.activity(), app.deps.quit()
+    if (/^(help|keys|keyboard|shortcuts|how to use( this| selah)?|menu)[.?!]?$/i.test(text)) return openHelp(app)
     openSearch(app, text)
   }
 

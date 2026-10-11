@@ -390,7 +390,7 @@ export function Reader() {
     const day = app.readDay()
     const readToday = store.readOn(pos().book, pos().chapter, day)
     const required = minimumReadMs(app.words().get(chapterKey()) ?? 0)
-    return { readToday, day, active: tracker.activeMs, required, everRead: store.isRead(pos().book, pos().chapter) }
+    return { readToday, day, active: tracker.activeMs, required, reachedEnd: !!tracker.active?.reachedEnd, everRead: store.isRead(pos().book, pos().chapter) }
   })
 
   return (
@@ -427,10 +427,19 @@ export function Reader() {
               when={status().readToday}
               fallback={
                 <text wrapMode="none">
-                  {/* a countdown says what the time is for: this chapter counts once it reaches zero */}
-                  <span style={{ fg: t().textMuted }}>{app.i("reading")} </span>
-                  <span style={{ fg: t().text }}>{formatMinutes(Math.max(0, status().required - status().active) / 60_000)}</span>
-                  <span style={{ fg: t().textMuted }}>{dims().width >= 100 ? " more to count as read" : " to count"}</span>
+                  {/* a countdown says what the time is for; once the time is in, what is left is the end */}
+                  <Show
+                    when={status().active < status().required}
+                    fallback={
+                      <span style={{ fg: t().textMuted }}>
+                        {app.i("reading")} {dims().width >= 100 ? "read to the end to count it" : "read to the end"}
+                      </span>
+                    }
+                  >
+                    <span style={{ fg: t().textMuted }}>{app.i("reading")} </span>
+                    <span style={{ fg: t().text }}>{formatMinutes((status().required - status().active) / 60_000)}</span>
+                    <span style={{ fg: t().textMuted }}>{dims().width >= 100 ? (status().reachedEnd ? " more and it counts" : " more to count as read") : " to count"}</span>
+                  </Show>
                 </text>
               }
             >
@@ -785,7 +794,7 @@ function Welcome() {
   const app = useApp()
   const t = () => app.theme()
   const dims = useTerminalDimensions()
-  app.useKeys(() => (app.setConfig("welcomed", true), true), { modal: true })
+  app.useKeys(() => (app.setConfig("welcomed", true), true), { modal: true, first: true })
   const rows: [string, string][] = [
     ["↑ ↓", "move verse by verse"],
     ["← →", "previous and next chapter"],

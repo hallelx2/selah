@@ -238,3 +238,52 @@ describe("writing a note without knowing about e (HAL-2634)", () => {
     expect(h.frame()).toContain("1 John 5 · KJV")
   })
 })
+
+describe("review of the audit fixes", () => {
+  test("a burst of typing into Notes keeps every key, not just the first", async () => {
+    const { UserStore } = await import("../src/data/user")
+    const store = UserStore.memory()
+    h = await harness({ width: 200, height: 46, store, initial: { route: "reader", book: 62, chapter: 4, verse: 8 } })
+    await h.press("tab")
+    await h.type("God is love") // all at once, as a paste or a fast typist delivers it
+    await wait(20)
+    await h.settle()
+    await h.press("escape")
+    expect(store.note({ book: 62, chapter: 4, verse: 8 })?.body).toBe("God is love")
+  })
+
+  test("the welcome card keeps the keyboard even when a study tool opened the reader", async () => {
+    h = await harness({ width: 200, height: 46, config: { welcomed: false } })
+    await h.press("p", { ctrl: true })
+    await h.type("commentary")
+    await h.press("return")
+    expect(h.frame()).toContain("Welcome to the reader")
+    await h.press("tab") // closes the card only
+    expect(h.frame()).not.toContain("Welcome to the reader")
+    expect(h.app().studyFocused()).toBe(true)
+    expect(h.app().studyTab()).toBe("commentary")
+  })
+
+  test("once the time is in, the header says the end is what remains", async () => {
+    // Psalm 119 is far longer than the screen, so its end is not reached by looking at it
+    h = await harness({ width: 140, height: 40, initial: { route: "reader", book: 19, chapter: 119, verse: 1 } })
+    for (let i = 0; i < 12; i++) {
+      h.advance(5_000)
+      await h.press("j")
+      await h.press("k")
+    }
+    expect(h.frame()).toContain("read to the end to count it")
+    expect(h.frame()).not.toContain("0s more")
+  })
+
+  test("only the whole word quits: 'q1' and 'close 3' search instead", async () => {
+    for (const typed of ["q1", "close 3", "exit strategy"]) {
+      h = await harness({ width: 120, height: 40 })
+      await h.type(typed)
+      await h.press("return")
+      expect(h.quit.called).toBe(false)
+      h.destroy()
+      h = undefined
+    }
+  })
+})
