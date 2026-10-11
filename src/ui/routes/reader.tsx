@@ -9,7 +9,7 @@ import { formatMinutes } from "../../data/stats"
 import { minimumReadMs } from "../../data/tracker"
 import { Footer, LeftBar, LineBar, TRANSPARENT, fit } from "../components/primitives"
 import { plain, VerseText } from "../components/verse"
-import { openBookmarks, openBooks, openHelp, openNote, openPalette, openSearch, openTranslations } from "../dialogs"
+import { openBookmarks, openBooks, openHelp, openNote, openPalette, openSearch, openToday, openTranslations } from "../dialogs"
 import { ease, mixColor } from "../motion"
 import { useApp } from "../state"
 import { StudyPane } from "../study"
@@ -252,6 +252,8 @@ export function Reader() {
       return true
     }
     if (ctrl && k === "p") return openPalette(app), true
+    // today's reading, from anywhere in the reader, as help and the plan toast say
+    if (ctrl && k === "o") return openToday(app), true
     if (ctrl && k === "b") {
       // closed: open it with the keyboard in it; open: take the keyboard; in it: close it.
       // Where it cannot be drawn (too narrow, focus mode) it is a plain on/off switch.

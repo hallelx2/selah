@@ -211,7 +211,7 @@ function resume(app: App) {
   else app.openChapter({ book: 43, chapter: 1 })
 }
 
-function openToday(app: App) {
+export function openToday(app: App) {
   const p = app.activePlan()
   if (!p) return openPlans(app)
   const first = p.status.next.chapters[0]
