@@ -63,7 +63,7 @@ describe("never under a dialog", () => {
     await h.press("return") // closes the palette and opens Help in the same tick
     await wait(20)
     await h.settle()
-    expect(h.frame()).toContain("Keyboard")
+    expect(h.frame()).toContain("How to use Selah")
     await h.type("xyz")
     await h.press("escape")
     await wait(20)

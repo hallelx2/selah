@@ -11,7 +11,7 @@ import { Inline } from "./components/inline"
 import { Markdown } from "./components/markdown"
 import { mixColor } from "./motion"
 import { useApp, type StudyTab } from "./state"
-import { openPalette } from "./dialogs"
+import { openHelp, openPalette } from "./dialogs"
 
 const TABS: { id: StudyTab; label: string; key: string }[] = [
   { id: "notes", label: "Notes", key: "1" },
@@ -33,6 +33,9 @@ export function StudyPane(props: { overlay?: boolean }) {
   const width = () => Math.max(40, Math.min(app.config.studyWidth, dims().width - 40))
   const focused = app.studyFocused
   const [editing, setEditing] = createSignal<"verse" | "journal" | undefined>()
+  // Text typed into Notes before the editor has the keyboard. The first key opens the editor;
+  // keys that arrive before it takes focus (a fast typist, a paste) are added here, not lost.
+  const [seed, setSeed] = createSignal<string | undefined>()
   // A tab switch (keyboard or mouse) ends any edit, so the new tab gets its keys.
   createEffect(on(app.studyTab, () => setEditing(undefined), { defer: true }))
 
@@ -49,6 +52,11 @@ export function StudyPane(props: { overlay?: boolean }) {
       return !key.ctrl
     }
     if (editing()) {
+      if (seed() !== undefined && !key.ctrl && !key.meta) {
+        if (key.name === "backspace") return setSeed((s) => (s ?? "").slice(0, -1)), true
+        if (key.name === "return") return setSeed((s) => `${s ?? ""}\n`), true
+        if (key.sequence && [...key.sequence].length === 1 && key.name !== "escape" && key.name !== "tab") return setSeed((s) => `${s ?? ""}${key.sequence}`), true
+      }
       // While typing, only escape and ctrl chords are ours; every other key belongs to the textarea.
       if (key.name === "escape") return setEditing(undefined), true
       if (key.ctrl && key.name === "c") return false
@@ -57,6 +65,8 @@ export function StudyPane(props: { overlay?: boolean }) {
     // escape steps back inside a tab first (a word study back to the verse's words)
     if (key.name === "escape" && paneKey?.("escape", key.sequence)) return true
     if (key.name === "tab" || key.name === "escape") return app.setStudyFocused(false), true
+    // help works here as everywhere (outside a text box): ? is never the start of a note
+    if (key.sequence === "?") return openHelp(app), true
     if (key.ctrl && key.name === "l") return app.setStudyOpen(false), app.setStudyFocused(false), true
     const tab = TABS.find((x) => x.key === key.name)
     if (tab) return app.setStudyTab(tab.id), true
@@ -65,7 +75,9 @@ export function StudyPane(props: { overlay?: boolean }) {
       return true
     }
     // reading keys still move the cursor, so the pane can follow along
-    if (key.name === "n" || key.name === "p") return (key.name === "n" ? app.next() : app.prev()), true
+    // ← → change chapter from any tab; n and p too, except in Notes, where they are letters to write
+    if (key.name === "left" || key.name === "right") return (key.name === "right" ? app.next() : app.prev()), true
+    if ((key.name === "n" || key.name === "p") && app.studyTab() !== "notes") return (key.name === "n" ? app.next() : app.prev()), true
     return paneKey?.(key.name, key.sequence) ?? false
   })
   let paneKey: ((name: string, sequence: string) => boolean) | undefined
@@ -105,13 +117,15 @@ export function StudyPane(props: { overlay?: boolean }) {
             }}
           </For>
         </box>
-        <text fg={t().textMuted} wrapMode="none" paddingRight={1}>
-          {focused() ? "tab reader" : "tab study"}
-        </text>
+        <Show when={width() >= 52}>
+          <text fg={t().textMuted} wrapMode="none" paddingRight={1}>
+            {focused() ? "tab back to text" : "tab study"}
+          </text>
+        </Show>
       </box>
       <box flexGrow={1} flexDirection="column" paddingLeft={2} paddingRight={1} paddingTop={1}>
         <Show when={app.studyTab() === "notes"}>
-          <NotesTab editing={editing()} setEditing={setEditing} register={(fn) => ((paneKey = fn), (captures = undefined), (paneKeyEvent = undefined))} />
+          <NotesTab editing={editing()} setEditing={setEditing} seed={seed} setSeed={setSeed} register={(fn) => ((paneKey = fn), (captures = undefined), (paneKeyEvent = undefined))} />
         </Show>
         <Show when={app.studyTab() === "commentary"}>
           <CommentaryTab register={(fn) => ((paneKey = fn), (captures = undefined), (paneKeyEvent = undefined))} />
@@ -138,6 +152,8 @@ export function StudyPane(props: { overlay?: boolean }) {
 function NotesTab(props: {
   editing: "verse" | "journal" | undefined
   setEditing: (v: "verse" | "journal" | undefined) => void
+  seed: () => string | undefined
+  setSeed: (v: string | undefined) => void
   register: (fn: (name: string, sequence: string) => boolean) => void
 }) {
   const app = useApp()
@@ -150,9 +166,15 @@ function NotesTab(props: {
     const p = app.position()
     return `${p.book}:${p.chapter}`
   })
-  props.register((name) => {
+  // a newcomer types straight away: any ordinary character starts the verse note with it
+  props.register((name, sequence) => {
     if (name === "e" || name === "return") return props.setEditing("verse"), true
     if (name === "w") return props.setEditing("journal"), true
+    if (sequence && [...sequence].length === 1 && /[\p{L}\p{N}\p{P}\p{S} ]/u.test(sequence)) {
+      props.setSeed(sequence)
+      props.setEditing("verse")
+      return true
+    }
     return false
   })
   return (
@@ -163,11 +185,16 @@ function NotesTab(props: {
           return (
             <Editor
               title={`${app.ip("note")}${formatRef({ book: b, chapter: c, verseStart: v })}`}
-              hint="e to write"
+              hint="type to write"
               load={() => app.deps.store.note({ book: b, chapter: c, verse: v })?.body ?? ""}
               placeholder="What is this verse saying to you?"
               height={8}
               active={props.editing === "verse" && app.studyFocused()}
+              seed={() => {
+                const s = props.seed()
+                props.setSeed(undefined)
+                return s
+              }}
               onSave={(body) => {
                 app.deps.store.saveNote({ book: b, chapter: c, verse: v }, body)
                 app.bump()
@@ -198,7 +225,7 @@ function NotesTab(props: {
             props.editing
               ? [{ key: "esc", label: "done" }]
               : [
-                  { key: "e", label: "verse note" },
+                  { key: "type", label: "verse note" },
                   { key: "w", label: "journal" },
                   { key: "1-4", label: "tabs" },
                   { key: "[ ]", label: "width" },
@@ -220,6 +247,8 @@ function Editor(props: {
   height?: number
   grow?: boolean
   active: boolean
+  /** Text typed before the editor opened (the key that opened it), added at the end on opening. */
+  seed?: () => string | undefined
   onSave: (body: string) => void
 }) {
   const app = useApp()
@@ -280,6 +309,8 @@ function Editor(props: {
       // continue writing where the note ends, the first time; after a dialog, where the cursor was
       if (!placed) area.cursorOffset = area.plainText.length
       placed = true
+      const s = props.seed?.()
+      if (s) area.insertText(s)
     },
     () => props.active,
   )

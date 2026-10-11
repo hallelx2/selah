@@ -50,11 +50,48 @@ export function fuzzy(query: string, text: string): FuzzyMatch | null {
   const q = query.toLowerCase().replace(/\s+/g, "")
   if (!q) return { score: 0, indices: [] }
   const t = text.toLowerCase()
-  const a = pass(q, t, true)
-  const b = pass(q, t, false)
-  if (!a) return b
-  if (!b) return a
-  return a.score >= b.score ? a : b
+  const a = coherent(pass(q, t, true), t)
+  const b = coherent(pass(q, t, false), t)
+  const c = substring(q, t)
+  const best = [a, b, c].reduce<FuzzyMatch | null>((x, y) => (!y ? x : !x || y.score > x.score ? y : x), null)
+  if (!best) return null
+  // a query that is a whole word of the text ("ai", "help", "greek") outranks any partial match
+  const words = query.toLowerCase().trim().split(/\s+/)
+  if (words.every((w) => new RegExp(`(^|[^a-z0-9])${w.replace(/[^a-z0-9]/g, "")}([^a-z0-9]|$)`).test(t))) best.score += 40
+  return best
+}
+
+/**
+ * The query as one unbroken run of the text, at a word start when it occurs at one. Greedy
+ * left-to-right matching can miss it: "ai" takes the "a" of "ask" before reaching "ai".
+ */
+function substring(q: string, t: string): FuzzyMatch | null {
+  let at = -1
+  for (let i = t.indexOf(q); i !== -1; i = t.indexOf(q, i + 1)) {
+    if (isBoundary(t, i)) {
+      at = i
+      break
+    }
+    if (at === -1) at = i
+  }
+  if (at === -1) return null
+  const indices = Array.from(q, (_, k) => at + k)
+  let score = q.length * 6 + (isBoundary(t, at) ? 8 : 0) - Math.min(at, 6) * 0.5 - t.length * 0.05
+  if (t.startsWith(q)) score += 20
+  return { score, indices }
+}
+
+/**
+ * Letters scattered through a phrase are noise, not intent: "greek" picked out of
+ * "pro*g*ress and st*reak*s", "chat" out of "*cha*p*t*er". A match counts when it is one
+ * unbroken run of the text, or when every run starts a word ("gtb" → Go To Book).
+ */
+function coherent(m: FuzzyMatch | null, t: string): FuzzyMatch | null {
+  if (!m || m.indices.length < 2) return m
+  const runs: number[] = [m.indices[0]!]
+  for (let i = 1; i < m.indices.length; i++) if (m.indices[i] !== m.indices[i - 1]! + 1) runs.push(m.indices[i]!)
+  if (runs.length === 1) return m
+  return runs.every((start) => isBoundary(t, start)) ? m : null
 }
 
 export function fuzzyFilter<T>(query: string, items: T[], text: (item: T) => string): { item: T; match: FuzzyMatch }[] {

@@ -6,7 +6,7 @@ import { fuzzyFilter, type FuzzyMatch } from "../../data/fuzzy"
 import { useApp } from "../state"
 import { Hints, TRANSPARENT, type Hint } from "./primitives"
 
-const WIDTHS = { medium: 60, large: 88, xlarge: 116 }
+export const WIDTHS = { medium: 60, large: 88, xlarge: 116 }
 
 /** The modal layer: dims everything behind it and centres the panel a quarter of the way down. */
 export function DialogLayer() {

@@ -118,7 +118,7 @@ describe("tracking, end to end", () => {
   test("a skim does not count; reading to the end with real time does, and the streak starts", async () => {
     h = await harness({ initial: { route: "reader", book: 19, chapter: 1 } }) // Psalm 1: short
     await h.press("G", { shift: true }) // straight to the end
-    expect(h.frame()).toContain("○ reading")
+    expect(h.frame()).toMatch(/○ (read to the end|\d+s more)/)
     expect(h.store.chapterReads()).toHaveLength(0)
     for (let i = 0; i < 10; i++) {
       h.advance(4_000)
@@ -221,8 +221,8 @@ describe("dialogs", () => {
   test("help lists the keys", async () => {
     h = await harness({ initial: { route: "reader", book: 43, chapter: 3 } })
     await h.press("?", { shift: true })
-    expect(h.frame()).toContain("Keyboard")
-    expect(h.frame()).toContain("mark chapter read")
+    expect(h.frame()).toContain("How to use Selah")
+    expect(h.frame()).toContain("mark the chapter read")
   })
 })
 
@@ -246,7 +246,7 @@ describe("first run", () => {
     expect(h.frame()).toContain("verse of the day")
     await h.type("ps 23")
     await h.press("return")
-    expect(h.frame()).toMatch(/of [5-9]s/)
+    expect(h.frame()).toMatch(/○ [5-9]s more to count as read/)
   }, 30_000)
 })
 

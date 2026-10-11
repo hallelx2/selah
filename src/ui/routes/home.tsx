@@ -6,7 +6,7 @@ import { formatMinutes } from "../../data/stats"
 import { Bar, Footer, LeftBar, fit } from "../components/primitives"
 import { Logo } from "../components/logo"
 import { VerseText } from "../components/verse"
-import { openPalette, openPlans, openSearch, openTranslations } from "../dialogs"
+import { openHelp, openPalette, openPlans, openSearch, openTranslations } from "../dialogs"
 import { ease } from "../motion"
 import { useApp } from "../state"
 
@@ -44,6 +44,10 @@ export function Home() {
     }
     const ref = parseGoTo(text)
     if (ref) return app.goTo(ref)
+    // the words a newcomer tries when nothing else is obvious
+    // the whole box must be the word, so "close 3" or "q1" still search
+    if (/^(quit|exit|close|bye|q|:q)[.!]?$/i.test(text)) return app.deps.tracker.activity(), app.deps.quit()
+    if (/^(help|keys|keyboard|shortcuts|how to use( this| selah)?|menu)[.?!]?$/i.test(text)) return openHelp(app)
     openSearch(app, text)
   }
 
@@ -64,6 +68,8 @@ export function Home() {
       return true
     }
     if (key.ctrl && key.name === "t") return openTranslations(app), true
+    // with nothing typed, ? is help rather than a question mark in the box
+    if (key.sequence === "?" && !value().trim()) return openHelp(app), true
     if (key.name === "escape" && value()) {
       input?.setText?.("")
       setValue("")
@@ -213,7 +219,9 @@ export function Home() {
         icon="home"
         hints={[
           { key: "enter", label: "open" },
+          { key: "?", label: "help" },
           { key: "ctrl+p", label: "commands" },
+          { key: "ctrl+c", label: "quit" },
           { key: "ctrl+o", label: "today's reading" },
           { key: "ctrl+s", label: "progress" },
         ]}
