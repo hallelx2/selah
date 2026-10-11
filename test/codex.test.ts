@@ -4,7 +4,7 @@ import { afterAll, beforeAll, describe, expect, test } from "bun:test"
 import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readlinkSync, rmSync, symlinkSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
-import { codexHome, codexProvider } from "../src/agent/codex"
+import { codexHome, codexProvider, linkAuth } from "../src/agent/codex"
 import { EventType, type AgentEvent, type AskInput } from "../src/agent/provider"
 
 const saved = { ...process.env }
@@ -94,4 +94,39 @@ test("Codex's own machine tools are off in Selah's Codex home", () => {
   const toml = readFileSync(join(codexHome(), "config.toml"), "utf8")
   expect(toml).toContain("[features]\nshell_tool = false\n")
   for (const f of ["unified_exec", "view_image", "browser_use", "computer_use", "plugins", "multi_agent"]) expect(toml).toContain(`\n${f} = false\n`)
+})
+
+test("where symlinks are refused (Windows without admin), the login is shared by a hard link, remade every run", () => {
+  const d = mkdtempSync(join(tmpdir(), "selah-link-"))
+  const target = join(d, "auth.json")
+  const link = join(d, "home-auth.json")
+  writeFileSync(target, "v1")
+  const refuse = () => {
+    throw Object.assign(new Error("EPERM"), { code: "EPERM" })
+  }
+  linkAuth(target, link, refuse, "win32")
+  expect(readFileSync(link, "utf8")).toBe("v1")
+  expect(existsSync(`${link}.selah-hardlink`)).toBe(true)
+  // Codex refreshes its token by replacing auth.json; the next run links the new file
+  rmSync(target)
+  writeFileSync(target, "v2")
+  expect(readFileSync(link, "utf8")).toBe("v1") // the old hard link still holds the old token
+  linkAuth(target, link, refuse, "win32")
+  expect(readFileSync(link, "utf8")).toBe("v2")
+  rmSync(d, { recursive: true, force: true })
+})
+
+test("a hard link that cannot be made (another drive) leaves Ask to sign in, instead of failing every question", () => {
+  const d = mkdtempSync(join(tmpdir(), "selah-link-"))
+  const target = join(d, "auth.json")
+  writeFileSync(target, "v1")
+  const refuse = (code: string) => () => {
+    throw Object.assign(new Error(code), { code })
+  }
+  expect(() => linkAuth(target, join(d, "a.json"), refuse("EPERM"), "win32", refuse("EXDEV"))).not.toThrow()
+  expect(existsSync(join(d, "a.json"))).toBe(false)
+  // and only Windows refusing a symlink falls back: elsewhere, or for another error, it is real
+  expect(() => linkAuth(target, join(d, "b.json"), refuse("EPERM"), "linux")).toThrow("EPERM")
+  expect(() => linkAuth(target, join(d, "c.json"), refuse("EEXIST"), "win32")).toThrow("EEXIST")
+  rmSync(d, { recursive: true, force: true })
 })

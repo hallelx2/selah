@@ -145,10 +145,22 @@ codex mcp add selah -- selah mcp
 curl -fsSL https://raw.githubusercontent.com/hallelx2/selah/main/install.sh | sh
 ```
 
-The installer picks the build for your system (Linux x64 or arm64, glibc or musl; macOS Apple
-silicon or Intel), checks its SHA-256 against the release, and puts `selah` in `~/.local/bin`.
-Set `SELAH_INSTALL_DIR` to install elsewhere, or `SELAH_VERSION=v0.1.0` to pin a release.
-Binaries are also on the [releases page](https://github.com/hallelx2/selah/releases).
+On Windows, in PowerShell:
+
+```powershell
+irm https://raw.githubusercontent.com/hallelx2/selah/main/install.ps1 | iex
+```
+
+The installer picks the build for your system and checks its SHA-256 against the release:
+
+- **Builds:** Linux x64 or arm64 (glibc or musl), macOS Apple silicon or Intel, and Windows x64 or ARM64.
+- **Where it goes:** `selah` lands in `~/.local/bin`. On Windows, `selah.exe` lands in
+  `%LOCALAPPDATA%\Programs\selah`, which is added to your PATH.
+- **Options:** set `SELAH_INSTALL_DIR` to install elsewhere, or `SELAH_VERSION=v0.3.1` to pin a
+  release.
+
+Binaries are also on the [releases page](https://github.com/hallelx2/selah/releases). Windows
+Terminal shows Selah best.
 
 The first launch downloads the King James Version and the Berean Standard Bible (about 8 MB each).
 After that, Selah needs no network.
@@ -219,6 +231,9 @@ All are public domain, taken from [scrollmapper/bible_databases](https://github.
 | NHEB | New Heart English Bible | 2010 |
 
 ## Files
+
+On Windows, the texts, notes and study packs live in `%LOCALAPPDATA%\selah\data`, caches in
+`%LOCALAPPDATA%\selah\cache`, and settings in `%APPDATA%\selah\config.json`. Elsewhere:
 
 - `$XDG_DATA_HOME/selah/bible.db`: the texts and their search index.
 - `$XDG_DATA_HOME/selah/study.db`: study packs (Matthew Henry, the Hebrew and Greek words and

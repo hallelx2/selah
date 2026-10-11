@@ -43,6 +43,6 @@ export const toolName = (name: string) => name.replace(/^mcp__selah__/, "")
 /** How to launch `selah mcp` from wherever this process is running (compiled binary or source). */
 export function selahMcpCommand(): { command: string; args: string[] } {
   const exe = process.execPath
-  const compiled = !/\/bun(\.exe)?$/.test(exe)
+  const compiled = !/[\\/]bun(\.exe)?$/i.test(exe)
   return compiled ? { command: exe, args: ["mcp"] } : { command: exe, args: [Bun.main, "mcp"] }
 }
