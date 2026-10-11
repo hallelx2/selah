@@ -2,8 +2,10 @@
 // looks like a terminal window. Shared by the screenshot and GIF scripts.
 import type { CapturedFrame, RGBA } from "@opentui/core"
 
-const CW = 9.6
-const CH = 20
+export const CW = 9.6
+export const CH = 20
+/** Where the cell grid starts inside the window the SVG draws. */
+export const ORIGIN = { x: 24, y: 44 }
 export const hex = (c: RGBA) => `#${[c.r, c.g, c.b].map((x) => Math.round(x * 255).toString(16).padStart(2, "0")).join("")}`
 const graphemes = new Intl.Segmenter("en", { granularity: "grapheme" })
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
