@@ -103,7 +103,7 @@ export const CODEX_TOOLS_OFF = [
 const PATH_VARS = ["SELAH_HOME", "SELAH_SOURCES", "XDG_DATA_HOME", "XDG_CONFIG_HOME", "XDG_CACHE_HOME"]
 
 /** Points `link` at the reader's auth.json, repairing a dangling or stale link, never touching a real file. */
-function linkAuth(target: string, link: string) {
+export function linkAuth(target: string, link: string, symlink: (t: string, l: string) => void = symlinkSync, platform = process.platform) {
   // Windows refuses symlinks without Developer Mode or admin rights; there the login is shared
   // through a hard link instead, remade on every run (Codex replaces auth.json when it refreshes
   // the token, which would leave an old hard link behind). The marker says the link is ours.
@@ -124,9 +124,9 @@ function linkAuth(target: string, link: string) {
   if (current !== undefined) unlinkSync(link)
   if (!existsSync(target)) return
   try {
-    symlinkSync(target, link)
+    symlink(target, link)
   } catch (e) {
-    if (process.platform !== "win32" && (e as { code?: string }).code !== "EPERM") throw e
+    if (platform !== "win32" && (e as { code?: string }).code !== "EPERM") throw e
     linkSync(target, link)
     writeFileSync(marker, target)
   }
