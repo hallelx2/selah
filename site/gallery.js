@@ -73,7 +73,10 @@ function start() {
   })
   const step = (d) => {
     const ids = visible()
+    if (!ids.length) return
     const at = ids.indexOf(plates[current].id)
+    // the open plate may be one the filter hides (opened from a link): start from an end
+    if (at < 0) return open(d > 0 ? ids[0] : ids[ids.length - 1])
     open(ids[(at + d + ids.length) % ids.length])
   }
   for (const li of items)

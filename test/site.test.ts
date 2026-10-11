@@ -115,6 +115,13 @@ describe("the site", () => {
     }
   })
 
+  test("/download offers what the installers install: never a pre-release", async () => {
+    const { latestRelease } = await import("../site/pages")
+    const r = (tag: string, prerelease = false) => ({ tag, name: tag, date: "2026-10-11T00:00:00Z", html: "", url: "", prerelease, assets: [] })
+    expect(latestRelease([r("v0.4.0-rc1", true), r("v0.3.1"), r("v0.3.0")]).tag).toBe("v0.3.1")
+    expect(() => latestRelease([r("v0.4.0-rc1", true)])).toThrow("no published release")
+  })
+
   test("every download link answers", async () => {
     const html = read("download.html")
     const links = [...html.matchAll(/href="(https:\/\/github\.com\/hallelx2\/selah\/releases\/download\/[^"]+)"/g)].map((m) => m[1]!)

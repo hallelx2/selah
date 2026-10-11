@@ -21,7 +21,7 @@ import { KEYS } from "../src/ui/keys"
 import { fixtureBible } from "../test/fixture"
 import { home } from "./home"
 import { layout, ORIGIN, type Page } from "./layout"
-import { changelogPage, downloadPage, engravingsPage, keyboard, keysPage, markdownPage, notFoundPage, type Plate, type Release } from "./pages"
+import { changelogPage, downloadPage, engravingsPage, keyboard, keysPage, latestRelease, markdownPage, notFoundPage, type Plate, type Release } from "./pages"
 
 const root = join(import.meta.dir, "..")
 const out = join(import.meta.dir, "dist")
@@ -138,7 +138,7 @@ async function releases(): Promise<Release[]> {
     const res = await fetch("https://api.github.com/repos/hallelx2/selah/releases?per_page=100", { headers: { accept: "application/vnd.github+json", "user-agent": "selah-site-build" } })
     if (!res.ok) throw new Error(`GitHub answered ${res.status}`)
     type Asset = { name: string; size: number; browser_download_url: string }
-    const raw = (await res.json()) as { tag_name: string; name: string; published_at: string; body: string; html_url: string; draft: boolean; assets: Asset[] }[]
+    const raw = (await res.json()) as { tag_name: string; name: string; published_at: string; body: string; html_url: string; draft: boolean; prerelease: boolean; assets: Asset[] }[]
     const list: Release[] = []
     for (const r of raw.filter((r) => !r.draft)) {
       const sumsAsset = r.assets.find((a) => a.name === "SHA256SUMS")
@@ -156,6 +156,7 @@ async function releases(): Promise<Release[]> {
         date: r.published_at,
         html: Bun.markdown.html(r.body ?? ""),
         url: r.html_url,
+        prerelease: r.prerelease,
         assets: r.assets.map((a) => ({ name: a.name, size: a.size, url: a.browser_download_url, sha256: sums.get(a.name) })),
       })
     }
@@ -168,7 +169,7 @@ async function releases(): Promise<Release[]> {
   }
 }
 const allReleases = await releases()
-const latest = allReleases[0]!
+const latest = latestRelease(allReleases)
 
 // --- the engravings: the app's own installer fetches and checks each plate --------------------
 const dore = join(cache, "dore")

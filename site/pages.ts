@@ -153,7 +153,15 @@ export interface Release {
   date: string
   html: string
   url: string
+  prerelease?: boolean
   assets: { name: string; size: number; url: string; sha256?: string }[]
+}
+
+/** The release /download offers: the one the installers fetch (releases/latest, never a pre-release). */
+export function latestRelease(releases: Release[]): Release {
+  const latest = releases.find((r) => !r.prerelease)
+  if (!latest) throw new Error("no published release on GitHub to offer on /download")
+  return latest
 }
 
 const PLATFORM: Record<string, [os: string, label: string]> = {
@@ -232,7 +240,7 @@ export function changelogPage(releases: Release[]): string {
       ${releases
         .map(
           (r) => `<section class="block release" id="${esc(r.tag)}">
-        <div class="release-head"><h2 class="big"><a href="#${esc(r.tag)}">${esc(r.name || r.tag)}</a></h2><time datetime="${esc(r.date)}">${date(r.date)}</time></div>
+        <div class="release-head"><h2 class="big"><a href="#${esc(r.tag)}">${esc(r.name || r.tag)}</a>${r.prerelease ? ` <span class="pre">pre-release</span>` : ""}</h2><time datetime="${esc(r.date)}">${date(r.date)}</time></div>
         <div class="prose">${r.html}</div>
       </section>`,
         )
