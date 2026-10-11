@@ -1,7 +1,7 @@
 #!/bin/sh
 # Installs the Selah binary for this machine from the GitHub release.
 #
-#   curl -fsSL https://raw.githubusercontent.com/hallelx2/selah/main/install.sh | sh
+#   curl -fsSL https://selah.hallelx2.com/install | sh
 #
 # Environment:
 #   SELAH_VERSION      a release tag such as v0.1.0 (default: the latest release)

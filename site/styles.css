@@ -1,0 +1,535 @@
+/* selah.hallelx2.com: opencode.ai's structure and type (IBM Plex Mono, a hairline-bordered
+   column on a near-black ground), with Selah's own colours from its default theme. */
+
+:root {
+  --bg: hsl(0, 9%, 7%);
+  --bg-weak: hsl(0, 6%, 10%);
+  --bg-weak-hover: hsl(0, 6%, 15%);
+  --bg-strong: hsl(0, 15%, 94%);
+  --text: hsl(0, 4%, 71%);
+  --text-weak: hsl(0, 2%, 49%);
+  --text-weaker: hsl(0, 3%, 28%);
+  --text-strong: hsl(0, 15%, 94%);
+  --text-inverted: hsl(0, 9%, 7%);
+  --border: hsl(0, 3%, 28%);
+  --border-weak: hsl(0, 4%, 23%);
+  /* Selah's opencode theme: primary and accent, the logo's gradient */
+  --primary: #fab283;
+  --accent: #9d7cd8;
+  --font: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --pad: 5rem;
+  --vpad: 4rem;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: hsl(0, 20%, 99%);
+    --bg-weak: hsl(0, 8%, 97%);
+    --bg-weak-hover: hsl(0, 8%, 94%);
+    --bg-strong: hsl(0, 5%, 12%);
+    --text: hsl(0, 1%, 39%);
+    --text-weak: hsl(0, 1%, 60%);
+    --text-weaker: hsl(30, 2%, 81%);
+    --text-strong: hsl(0, 5%, 12%);
+    --text-inverted: hsl(0, 20%, 99%);
+    --border: hsl(30, 2%, 81%);
+    --border-weak: hsla(0, 100%, 3%, 0.12);
+    --primary: #c4612a;
+    --accent: #6d4fb3;
+    color-scheme: light;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+a {
+  color: inherit;
+}
+
+code {
+  font-family: var(--font);
+}
+
+.frame {
+  max-width: 1080px;
+  margin: 0 auto;
+  border-left: 1px solid var(--border-weak);
+  border-right: 1px solid var(--border-weak);
+  min-height: 100vh;
+}
+
+/* nav */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.25rem var(--pad);
+  border-bottom: 1px solid var(--border-weak);
+}
+.brand {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+}
+/* one wordmark per colour scheme; the media query comes last so it wins */
+.logo-dark {
+  display: contents;
+}
+.logo-light {
+  display: none;
+}
+@media (prefers-color-scheme: light) {
+  .logo-dark {
+    display: none;
+  }
+  .logo-light {
+    display: contents;
+  }
+}
+.brand svg {
+  height: 27px;
+  width: auto;
+  display: block;
+}
+.nav nav {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.25rem 1.75rem;
+}
+.nav nav a {
+  text-decoration: none;
+  color: var(--text-strong);
+  font-size: 14px;
+  padding: 0.6rem 0;
+}
+.nav nav a:hover {
+  color: var(--primary);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-strong);
+  color: var(--text-inverted) !important;
+  border-radius: 4px;
+  padding: 0.45rem 0.9rem !important;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  min-height: 36px;
+}
+.button svg {
+  width: 14px;
+  height: 14px;
+}
+.button:hover {
+  opacity: 0.9;
+}
+
+/* hero */
+.hero {
+  padding: var(--vpad) var(--pad);
+}
+h1 {
+  color: var(--text-strong);
+  font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.25rem);
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0 0 1rem;
+  letter-spacing: -0.01em;
+}
+.lede {
+  max-width: 60ch;
+  margin: 0 0 2rem;
+}
+.note {
+  font-size: 13px;
+  color: var(--text-weak);
+  max-width: 70ch;
+  margin: 1rem 0 0;
+}
+
+/* install */
+.install {
+  border: 1px solid var(--border-weak);
+  border-radius: 6px;
+  background: var(--bg-weak);
+  overflow: hidden;
+}
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.75rem;
+  padding: 0 1rem;
+  border-bottom: 1px solid var(--border-weak);
+}
+.tabs button {
+  appearance: none;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--text-weak);
+  font: inherit;
+  font-size: 14px;
+  padding: 0.7rem 0 0.6rem;
+  min-height: 44px;
+  cursor: pointer;
+}
+.tabs button[aria-selected="true"] {
+  color: var(--text-strong);
+  border-bottom-color: var(--text-strong);
+}
+.tabs button:hover {
+  color: var(--text-strong);
+}
+.tabs button:focus-visible,
+.copy:focus-visible,
+summary:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.panel {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.15rem 1rem;
+}
+.panel[hidden] {
+  display: none;
+}
+.panel code {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+}
+.dim {
+  color: var(--text-weak);
+}
+.strong {
+  color: var(--text-strong);
+}
+.copy {
+  appearance: none;
+  background: none;
+  border: 1px solid var(--border-weak);
+  border-radius: 4px;
+  color: var(--text-weak);
+  font: inherit;
+  font-size: 12px;
+  padding: 0.2rem 0.6rem;
+  min-height: 32px;
+  min-width: 56px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.copy:hover {
+  color: var(--text-strong);
+  border-color: var(--border);
+}
+.copy[data-copied] {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* the recording, framed like a terminal window */
+.screen {
+  border-top: 1px solid var(--border-weak);
+  border-bottom: 1px solid var(--border-weak);
+  background: #0a0a0a;
+  padding: 2.5rem var(--pad) 1.5rem;
+}
+.window {
+  border: 1px solid hsl(0, 3%, 22%);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #0a0a0a;
+  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.8);
+}
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 30px;
+  padding: 0 12px;
+  border-bottom: 1px solid hsl(0, 3%, 18%);
+  background: hsl(0, 5%, 9%);
+  font-size: 12px;
+  color: hsl(0, 2%, 49%);
+}
+.bar i {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: hsl(0, 3%, 28%);
+}
+.bar span {
+  margin-left: auto;
+  margin-right: auto;
+  transform: translateX(-24px);
+}
+video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1440 / 840;
+  background: #0a0a0a;
+}
+.caption {
+  font-size: 12px;
+  color: hsl(0, 2%, 49%);
+  margin: 1rem 0 0;
+  text-align: center;
+}
+
+/* sections */
+.block {
+  padding: var(--vpad) var(--pad);
+  border-bottom: 1px solid var(--border-weak);
+}
+h2 {
+  color: var(--text-strong);
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+.block > p {
+  margin: 0 0 1.5rem;
+}
+.points {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem;
+  display: grid;
+  gap: 0.85rem;
+}
+.points li {
+  display: grid;
+  grid-template-columns: 2.25rem auto 1fr;
+  column-gap: 0.75rem;
+  align-items: baseline;
+}
+.points li span {
+  color: var(--text-weaker);
+}
+.points li b {
+  color: var(--text-strong);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.points li em {
+  font-style: normal;
+}
+.indent {
+  display: grid;
+  grid-template-columns: 2.25rem 1fr;
+  column-gap: 0.75rem;
+  max-width: 78ch;
+}
+.indent > span {
+  color: var(--text-weaker);
+}
+.button.light {
+  margin-top: 0.25rem;
+}
+
+/* figures */
+.figures {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2.5rem;
+  margin-top: 2.5rem;
+  color: var(--text-strong);
+}
+figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+figure svg {
+  width: 100%;
+  max-width: 220px;
+  height: 140px;
+}
+figcaption {
+  font-size: 13px;
+  color: var(--text-weak);
+  text-align: center;
+}
+figcaption span {
+  color: var(--text-weaker);
+}
+figcaption b {
+  color: var(--text-strong);
+  font-weight: 500;
+}
+
+/* FAQ */
+.faq details {
+  border-top: 1px solid var(--border-weak);
+}
+.faq details:last-of-type {
+  border-bottom: 1px solid var(--border-weak);
+}
+.faq summary {
+  list-style: none;
+  cursor: pointer;
+  color: var(--text-strong);
+  padding: 0.85rem 0 0.85rem 1.75rem;
+  position: relative;
+  min-height: 44px;
+}
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+.faq summary::before {
+  content: "+";
+  position: absolute;
+  left: 0;
+  color: var(--text-weak);
+}
+.faq details[open] summary::before {
+  content: "−";
+}
+.faq details p {
+  margin: 0 0 1.1rem 1.75rem;
+  max-width: 72ch;
+}
+.faq code {
+  color: var(--text-strong);
+  background: var(--bg-weak);
+  padding: 0 0.3em;
+  border-radius: 3px;
+  overflow-wrap: anywhere;
+}
+
+/* footer */
+.footer {
+  padding: 2.5rem var(--pad) 3rem;
+}
+.footer .links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.75rem;
+  margin-bottom: 1.25rem;
+}
+.footer .links a {
+  color: var(--text-strong);
+  text-decoration: none;
+  font-size: 14px;
+  padding: 0.6rem 0;
+}
+.footer .links a:hover {
+  color: var(--primary);
+}
+.credits {
+  font-size: 12px;
+  color: var(--text-weak);
+  margin: 0;
+  max-width: 90ch;
+}
+
+/* tablets in portrait and phones: one column, smaller padding */
+@media (max-width: 860px) {
+  :root {
+    --pad: 1.5rem;
+    --vpad: 3rem;
+  }
+  .figures {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .screen {
+    padding: 1.5rem 0.75rem 1rem;
+  }
+}
+@media (max-width: 560px) {
+  :root {
+    --pad: 1rem;
+    --vpad: 2.25rem;
+  }
+  body {
+    font-size: 14px;
+  }
+  .nav {
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+  }
+  .nav nav {
+    gap: 0.25rem 1.1rem;
+  }
+  .points li {
+    grid-template-columns: 2rem 1fr;
+  }
+  .points li b {
+    grid-column: 2;
+  }
+  .points li em {
+    grid-column: 2;
+  }
+  .indent {
+    grid-template-columns: 2rem 1fr;
+  }
+  .panel {
+    flex-direction: column;
+  }
+  .copy {
+    align-self: flex-end;
+  }
+  .frame {
+    border: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+  }
+}
+
+/* on touch screens, every target is at least 44px each way (WCAG 2.5.5); a mouse keeps the
+   compact desktop sizes */
+@media (pointer: coarse) {
+  .nav nav a,
+  .footer .links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    min-width: 44px;
+    justify-content: center;
+    padding: 0.5rem 0.25rem;
+  }
+  .button,
+  .copy {
+    min-height: 44px;
+  }
+  .copy {
+    min-width: 64px;
+  }
+  .tabs button {
+    min-width: 44px;
+  }
+}
