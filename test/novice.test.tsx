@@ -158,7 +158,7 @@ describe("the words people type into the command palette (HAL-2630)", () => {
 describe("help that a newcomer can read (HAL-2631)", () => {
   for (const [w, hh] of [[80, 24], [120, 40], [200, 60]] as const) {
     test(`at ${w}×${hh}, every description is whole (scrolling as needed)`, async () => {
-      const { KEYS } = await import("../src/ui/dialogs")
+      const { KEYS } = await import("../src/ui/keys")
       h = await harness({ width: w, height: hh, initial: { route: "reader", book: 43, chapter: 3, verse: 1 } })
       await h.press("?")
       // collect what is shown while scrolling through
