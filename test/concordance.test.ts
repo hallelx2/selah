@@ -169,7 +169,8 @@ describe("morphology in plain English", () => {
     const codes = c.db.query<{ grammar: string; book: number }, []>(`SELECT grammar, min(book) AS book FROM words GROUP BY grammar`).all()
     const raw = codes.filter((x) => x.grammar && (x.book <= 39 ? describeHebrew(x.grammar) : describeGreek(x.grammar)) === x.grammar)
     expect(raw.map((x) => x.grammar)).toEqual([])
-  })
+    // a GROUP BY over all 447,744 words: it checks the decoding, not the speed (HAL-2595)
+  }, 60_000)
 })
 
 describe("Hebrew in the terminal", () => {

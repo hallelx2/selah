@@ -119,7 +119,9 @@ describe("the words people type into the command palette (HAL-2630)", () => {
         h = undefined
       }
       expect(misses).toEqual([])
-    })
+      // 22 apps started in one test: it asserts what the palette finds, not how fast, so a
+      // busy machine (load 30+, HAL-2595) must not fail it
+    }, 60_000)
   }
 
   test("reader-only actions: highlight, copy, bookmark", async () => {
