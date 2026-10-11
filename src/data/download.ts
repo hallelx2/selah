@@ -79,7 +79,10 @@ export async function download(url: string, opts: DownloadOptions): Promise<Uint
         if (Number.isFinite(after) && after > 0) retryAfter = Math.min(after * 1000, 60_000)
         continue
       }
-      const total = Number(res.headers.get("content-length")) || undefined
+      // Content-Length counts the bytes as sent; fetch hands back a gzip body decompressed, so
+      // for an encoded answer it is no total at all (KJV: 1,458,623 sent, 8,400,187 read)
+      const encoding = res.headers.get("content-encoding")
+      const total = !encoding || encoding === "identity" ? Number(res.headers.get("content-length")) || undefined : undefined
       const chunks: Uint8Array[] = []
       let received = 0
       onProgress?.(0, total)
@@ -116,5 +119,5 @@ export async function download(url: string, opts: DownloadOptions): Promise<Uint
       clearTimeout(idle)
     }
   }
-  throw new DownloadError(`Could not download ${label} from ${host}: ${last}. Tried ${attempts} times.`)
+  throw new DownloadError(`Could not download ${label} from ${host}: ${last}. Tried ${attempts === 1 ? "once" : `${attempts} times`}.`)
 }

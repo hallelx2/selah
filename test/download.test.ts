@@ -99,6 +99,28 @@ describe("download", () => {
     expect(b.calls).toHaveLength(1)
   })
 
+  // review of #18: Bun decompresses a gzip body but leaves Content-Length at the compressed size,
+  // and raw.githubusercontent.com gzips the Bible texts (KJV: 1,458,623 sent, 8,400,187 read)
+  test("a compressed answer is not mistaken for a cut-short one", async () => {
+    const gz = () => new Response(bytes, { headers: { "content-length": "2", "content-encoding": "gzip" } })
+    const { calls, fetcher } = server([gz])
+    const progress: [number, number | undefined][] = []
+    expect(await download(URL_, { label: "x", fetcher, sleep: async () => {}, onProgress: (n, t) => progress.push([n, t]) })).toEqual(bytes)
+    expect(calls).toHaveLength(1)
+    // the compressed length is no total for the decompressed bytes
+    expect(progress.every(([, t]) => t === undefined)).toBe(true)
+  })
+
+  test("live: a real gzip-served file from GitHub downloads whole, in one try", async () => {
+    const data = await download("https://raw.githubusercontent.com/hallelx2/selah/main/README.md", { label: "the README", attempts: 1 })
+    expect(new TextDecoder().decode(data)).toContain("# Selah")
+  }, 30_000)
+
+  test("one attempt is reported as once", async () => {
+    const { fetcher } = server([status(503)])
+    await expect(download(URL_, { label: "x", fetcher, attempts: 1 })).rejects.toThrow("the server is busy (HTTP 503). Tried once.")
+  })
+
   test("bytes that fail verification are fetched again, and the reason is in the message if they never pass", async () => {
     const { calls, fetcher } = server([ok])
     const e = await download(URL_, {
