@@ -139,6 +139,21 @@ describe("Ask tab", () => {
     expect(h.frame()).not.toContain("thinking")
   })
 
+  // the Words header's sibling: a narrow pane must not paint "thinking" over the agent's name
+  test.each([64, 80])("mid-answer, the header keeps the agent's name and the thinking line whole at %i columns", async (width) => {
+    let release!: () => void
+    const gate = new Promise<void>((r) => (release = r))
+    h = await openAsk({ agents: [fakeAgent(answer, [], gate)], width, height: 36 })
+    await h.type("Who is Nicodemus?")
+    await h.press("return")
+    await tick(h, 60)
+    const f = h.frame()
+    expect(f).toContain("Fake Claude on John 3")
+    expect(f).toMatch(/thinking \d+s · esc stop/)
+    release()
+    await tick(h, 60)
+  })
+
   test("ctrl+x mid-answer clears the thread and Ask keeps working", async () => {
     let release!: () => void
     const gate = new Promise<void>((r) => (release = r))
