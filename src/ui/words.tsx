@@ -206,7 +206,8 @@ export function WordsTab(props: { register: (fn: (name: string, sequence: string
         when={study()}
         fallback={
           <>
-            <box flexDirection="row" justifyContent="space-between" flexShrink={0} paddingBottom={1}>
+            {/* wraps rather than letting the text's name paint over the reference in a narrow pane */}
+            <box flexDirection="row" flexWrap="wrap" columnGap={2} justifyContent="space-between" flexShrink={0} paddingBottom={1}>
               <text wrapMode="none" fg={t().textMuted}>
                 {formatRef({ book: here().book, chapter: here().chapter, verseStart: here().verse })}
               </text>

@@ -363,7 +363,8 @@ export function AskTab(props: { register: (r: { key: (k: KeyEvent) => boolean; c
 
   return (
     <box flexDirection="column" flexGrow={1}>
-      <box flexDirection="row" justifyContent="space-between" flexShrink={0} paddingBottom={1}>
+      {/* wraps rather than letting "thinking" paint over the agent's name in a narrow pane */}
+      <box flexDirection="row" flexWrap="wrap" columnGap={2} justifyContent="space-between" flexShrink={0} paddingBottom={1}>
         <text wrapMode="none" fg={t().textMuted}>
           {app.ip("light")}
           {agent() ? `${agent()!.label} on ${bookById(chapter().book).name} ${chapter().chapter}` : "Ask"}

@@ -34,6 +34,14 @@ describe("Words tab", () => {
     expect(h.frame()).toContain("verb · aorist active indicative · 3rd person singular")
   })
 
+  // in a narrow terminal the pane's header painted the text's name over the reference
+  test.each([64, 80, 100])("the header keeps the reference and the text's name whole at %i columns", async (width) => {
+    h = await openWords({ book: 43, chapter: 3, verse: 3 }, { width, height: 36 })
+    const f = h.frame()
+    expect(f).toContain("John 3:3")
+    expect(f).toContain("Greek · Textus Receptus, as KJV")
+  })
+
   test("Hebrew is drawn right to left, without cantillation", async () => {
     h = await openWords({ book: 1, chapter: 1, verse: 1 })
     const f = h.frame()
