@@ -18,7 +18,7 @@ On Linux and macOS they are under `~/.local/share/selah` and `~/.config/selah`. 
 
 ## Every request Selah makes
 
-Selah only goes online to download something you asked for. Each download is a plain file from a public source. The texts are pinned to a fixed commit of their source, and every one of Doré's plates is checked against a pinned SHA-256. Nothing about you is sent with a download. As with any download, the server sees your IP address.
+Selah only goes online to download something you asked for. Each download is a plain file from a public source. The texts are pinned to a fixed commit of their source, and every one of Doré's plates is checked against a pinned SHA-256. A download that fails for a moment is tried again, up to four times, with a pause between tries. Nothing about you is sent with a download. As with any download, the server sees your IP address.
 
 ### The Bible texts
 
@@ -41,10 +41,10 @@ Selah only goes online to download something you asked for. Each download is a p
 ### Doré's engravings
 
 - **When:** `selah install scenes`, or the first time you open an engraving
-- **From:** `www.gutenberg.org`, Project Gutenberg #8710
+- **From:** `selah.hallelx2.com/scenes`, a copy of the plates on this site, and for any plate it cannot give, `www.gutenberg.org` (Project Gutenberg #8710). Every plate is checked against its pinned SHA-256 whichever one it came from.
 - **In the code:** `src/data/scenes.ts`
 
-That is all of them.
+That is all of them. Each goes through `src/data/download.ts`, the one place Selah fetches anything, which is where the retries live.
 
 ## Ask, and your own agent
 

@@ -77,7 +77,7 @@ describe("the site", () => {
       const named = f === "src/ui/scene.tsx" ? "src/data/scenes.ts" : f
       expect(privacy).toContain(named)
     }
-    for (const host of ["raw.githubusercontent.com", "codeload.github.com", "www.gutenberg.org"]) expect(privacy).toContain(host)
+    for (const host of ["raw.githubusercontent.com", "codeload.github.com", "www.gutenberg.org", "selah.hallelx2.com/scenes"]) expect(privacy).toContain(host)
   })
 
   test("the tours are whole: every step has its screen, and every step but the last a key", () => {
@@ -112,6 +112,14 @@ describe("the site", () => {
         if (page === "engravings.html" && /^\d{3}$/.test(hash!)) continue
         expect(ids(html).has(hash!), `${page} links to #${hash}`).toBe(true)
       }
+    }
+  })
+
+  test("the site mirrors every plate byte for byte, so the app can fetch them from here", async () => {
+    const { createHash } = await import("node:crypto")
+    for (const p of PLATES) {
+      const data = readFileSync(join(dist, "scenes", p.image.file))
+      expect(createHash("sha256").update(data).digest("hex"), p.id).toBe(p.image.sha256)
     }
   })
 

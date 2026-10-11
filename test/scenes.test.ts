@@ -6,7 +6,7 @@ import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { parseCaptionRef, titleCase } from "../scripts/dore-catalogue"
 import { bookById } from "../src/data/books"
-import { installScenes, PLATES, sceneAt, sceneFile, scenesFor, scenesInstalled } from "../src/data/scenes"
+import { installScenes, PLATES, sceneAt, sceneFile, scenesFor, scenesInstalled, scenesSources } from "../src/data/scenes"
 import { fixtureBible } from "./fixture"
 
 const PLATE_DIR = join(import.meta.dir, "..", ".selah-test-sources", "dore-8710")
@@ -130,7 +130,7 @@ describe("install", () => {
     expect(scenesInstalled(dir)).toBe(true)
   })
 
-  test("the first failure stops the install, reports nothing after, and a retry finishes it", async () => {
+  test("a plate every source keeps failing stops the install, reports nothing after, and a later run finishes it", async () => {
     const dir = mkdtempSync(join(tmpdir(), "selah-scenes-"))
     const calls: string[] = []
     const ok = serve(calls)
@@ -141,19 +141,61 @@ describe("install", () => {
       return ok(url as never)
     }) as unknown as typeof fetch
     const seen: number[] = []
-    await expect(installScenes(dir, (e) => seen.push(e.done), flaky)).rejects.toThrow("Download of plate 005 failed: HTTP 503")
+    // the mirror twice and Gutenberg four times, then a sentence naming both
+    await expect(installScenes(dir, (e) => seen.push(e.done), flaky, { sleep: async () => {} })).rejects.toThrow(
+      "Could not download plate 005 from selah.hallelx2.com: the server is busy (HTTP 503). Tried 2 times. Then: Could not download plate 005 from www.gutenberg.org: the server is busy (HTTP 503). Tried 4 times.",
+    )
     const after = seen.length
     await new Promise((r) => setTimeout(r, 60))
     expect(seen.length).toBe(after) // nothing reported once it has failed
     expect(calls.length).toBeLessThan(20) // the others stopped instead of fetching the rest
     failing = false
-    const r = await installScenes(dir, undefined, flaky)
+    const r = await installScenes(dir, undefined, flaky, { sleep: async () => {} })
     expect(r.total).toBe(100)
     expect(scenesInstalled(dir)).toBe(true)
   })
 
+  // the founder's report, 2026-10-11: Gutenberg answered 504 for plate 001 and the install died
+  test("a server that times out once does not stop the install", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "selah-scenes-"))
+    const calls: string[] = []
+    const ok = serve(calls)
+    const failed = new Set<string>()
+    const busy = (async (url: string) => {
+      const file = String(url).split("/").at(-1)!
+      if (!failed.has(file)) {
+        failed.add(file)
+        return new Response("gateway timeout", { status: 504 })
+      }
+      return ok(url as never)
+    }) as unknown as typeof fetch
+    const r = await installScenes(dir, undefined, busy, { sleep: async () => {} })
+    expect(r).toEqual({ downloaded: 100, total: 100 })
+    expect(scenesInstalled(dir)).toBe(true)
+  })
+
+  test("the mirror comes first, and a plate it cannot give comes from Gutenberg", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "selah-scenes-"))
+    const urls: string[] = []
+    const ok = serve([])
+    const mirrorMissing007 = (async (url: string) => {
+      urls.push(String(url))
+      if (String(url).startsWith("https://selah.hallelx2.com/") && String(url).endsWith("007.jpg")) return new Response("not here", { status: 404 })
+      return ok(url as never)
+    }) as unknown as typeof fetch
+    await installScenes(dir, undefined, mirrorMissing007, { sleep: async () => {} })
+    expect(scenesInstalled(dir)).toBe(true)
+    expect(urls.filter((u) => u.includes("gutenberg"))).toEqual(["https://www.gutenberg.org/cache/epub/8710/images/007.jpg"])
+    expect(urls.filter((u) => u.startsWith("https://selah.hallelx2.com/scenes/"))).toHaveLength(100)
+  })
+
+  test("SELAH_SCENES_SOURCE replaces both sources", () => {
+    expect(scenesSources({ SELAH_SCENES_SOURCE: "https://example.org/dore" })).toEqual(["https://example.org/dore/"])
+    expect(scenesSources({})).toEqual(["https://selah.hallelx2.com/scenes/", "https://www.gutenberg.org/cache/epub/8710/images/"])
+  })
+
   test("a plate that does not match its checksum is refused", async () => {
     const dir = mkdtempSync(join(tmpdir(), "selah-scenes-"))
-    await expect(installScenes(dir, undefined, serve([], "042.jpg"))).rejects.toThrow("Plate 042 did not match its pinned checksum")
+    await expect(installScenes(dir, undefined, serve([], "042.jpg"), { sleep: async () => {} })).rejects.toThrow("plate 042 did not match its pinned checksum")
   })
 })

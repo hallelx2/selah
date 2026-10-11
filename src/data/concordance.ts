@@ -370,7 +370,13 @@ export class Concordance {
 export type ConcordanceProgress = (e: { phase: "download" | "import"; fraction: number; file?: string }) => void
 
 /** Downloads (or reuses the cached) pinned STEPBible files, then imports them into study.db. */
-export async function installConcordance(db: Database, cacheDir: string, onProgress?: ConcordanceProgress, fetcher: typeof fetch = fetch) {
+export async function installConcordance(
+  db: Database,
+  cacheDir: string,
+  onProgress?: ConcordanceProgress,
+  fetcher: typeof fetch = fetch,
+  opts: { sleep?: (ms: number) => Promise<void> } = {},
+) {
   const { join } = await import("node:path")
   const { existsSync, mkdirSync, renameSync, statSync } = await import("node:fs")
   const dir = join(cacheDir, `stepbible-${STEP_COMMIT.slice(0, 12)}`)
@@ -384,18 +390,17 @@ export async function installConcordance(db: Database, cacheDir: string, onProgr
       onProgress?.({ phase: "download", fraction: done / total, file: f.name })
       continue
     }
-    const res = await fetcher(stepUrl(f.path))
-    if (!res.ok || !res.body) throw new Error(`Download of ${f.name} failed: HTTP ${res.status}`)
-    const chunks: Uint8Array[] = []
-    let got = 0
-    for await (const chunk of res.body) {
-      chunks.push(chunk)
-      got += chunk.length
-      onProgress?.({ phase: "download", fraction: (done + Math.min(got, f.bytes)) / total, file: f.name })
-    }
-    const data = Buffer.concat(chunks)
-    // a pinned commit never changes, so a different size is a broken download, not an update
-    if (data.length !== f.bytes) throw new Error(`Download of ${f.name} was ${data.length} bytes, expected ${f.bytes}`)
+    const { download } = await import("./download")
+    const data = await download(stepUrl(f.path), {
+      label: f.name,
+      fetcher,
+      sleep: opts.sleep,
+      onProgress: (got) => onProgress?.({ phase: "download", fraction: (done + Math.min(got, f.bytes)) / total, file: f.name }),
+      // a pinned commit never changes, so a different size is a broken download, not an update
+      verify: (d) => {
+        if (d.length !== f.bytes) throw new Error(`${f.name} was ${d.length} bytes, expected ${f.bytes}`)
+      },
+    })
     const tmp = `${file}.${process.pid}.part`
     await Bun.write(tmp, data)
     renameSync(tmp, file)

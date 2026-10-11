@@ -194,6 +194,10 @@ for (let i = 0; i < PLATES.length; i += 12)
     }),
   )
 cpSync(webp, join(out, "engravings"), { recursive: true })
+// the app's first source for the plates (SCENES_MIRROR): the pinned JPEGs, byte for byte, each
+// already checked against its SHA-256 by installScenes above
+mkdirSync(join(out, "scenes"), { recursive: true })
+for (const p of PLATES) copyFileSync(join(dore, p.image.file), join(out, "scenes", p.image.file))
 const plateList: Plate[] = PLATES.map((p) => ({
   id: p.id,
   title: p.title,
@@ -329,6 +333,8 @@ write(
   Cache-Control: public, max-age=604800
 /engravings/*
   Cache-Control: public, max-age=2592000
+/scenes/*
+  Cache-Control: public, max-age=31536000, immutable
 /*.mp4
   Cache-Control: public, max-age=604800
 /*.webm
