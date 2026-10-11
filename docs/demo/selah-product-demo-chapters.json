@@ -1,0 +1,90 @@
+[
+ {
+  "name": "welcome",
+  "start": 0
+ },
+ {
+  "name": "install",
+  "start": 6.5
+ },
+ {
+  "name": "home",
+  "start": 12.5
+ },
+ {
+  "name": "open",
+  "start": 19.8
+ },
+ {
+  "name": "reading",
+  "start": 28
+ },
+ {
+  "name": "goto",
+  "start": 40.8
+ },
+ {
+  "name": "search",
+  "start": 46.3
+ },
+ {
+  "name": "palette",
+  "start": 53.2
+ },
+ {
+  "name": "parallel",
+  "start": 59.7
+ },
+ {
+  "name": "notes",
+  "start": 66.5
+ },
+ {
+  "name": "henry",
+  "start": 76
+ },
+ {
+  "name": "words",
+  "start": 81.8
+ },
+ {
+  "name": "ask",
+  "start": 90.8
+ },
+ {
+  "name": "dore",
+  "start": 115.5
+ },
+ {
+  "name": "books",
+  "start": 128.7
+ },
+ {
+  "name": "streak",
+  "start": 136.9
+ },
+ {
+  "name": "progress",
+  "start": 146.2
+ },
+ {
+  "name": "plans",
+  "start": 153.4
+ },
+ {
+  "name": "themes",
+  "start": 163
+ },
+ {
+  "name": "help",
+  "start": 171.9
+ },
+ {
+  "name": "cli",
+  "start": 177.4
+ },
+ {
+  "name": "outro",
+  "start": 194.4
+ }
+]
