@@ -3,6 +3,8 @@
 A Bible for the terminal, built on the same TUI stack as [opencode](https://github.com/anomalyco/opencode)
 (OpenTUI and Solid on Bun), with a reading tracker that tells you honestly whether you are consistent.
 
+**[selah.hallelx2.com](https://selah.hallelx2.com)**: the site, with a recording of a real session ([MP4](docs/demo/selah-demo.mp4)).
+
 ![A beam of light crossing the logo](docs/screenshots/beam.gif)
 
 ## What it does
@@ -142,13 +144,13 @@ codex mcp add selah -- selah mcp
 ## Install
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/hallelx2/selah/main/install.sh | sh
+curl -fsSL https://selah.hallelx2.com/install | sh
 ```
 
 On Windows, in PowerShell:
 
 ```powershell
-irm https://raw.githubusercontent.com/hallelx2/selah/main/install.ps1 | iex
+irm https://selah.hallelx2.com/install.ps1 | iex
 ```
 
 The installer picks the build for your system and checks its SHA-256 against the release:

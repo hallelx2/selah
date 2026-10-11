@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Selah, a Bible for the terminal</title>
+    <meta name="description" content="Read the Bible in your terminal. Notes, Matthew Henry, the Hebrew and Greek, Doré's engravings, an honest reading streak, and your own Claude or Codex to ask. Open source." />
+    <meta name="theme-color" content="#0a0a0a" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:title" content="Selah, a Bible for the terminal" />
+    <meta property="og:description" content="Read, study and keep a streak in a quiet terminal app. Open source." />
+    <meta property="og:image" content="https://selah.hallelx2.com/selah-demo-poster.png" />
+    <meta property="og:url" content="https://selah.hallelx2.com/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="frame">
+      <header class="nav">
+        <a class="brand" href="/" aria-label="Selah home">{{logo}}</a>
+        <nav>
+          <a href="https://github.com/hallelx2/selah">GitHub</a>
+          <a href="https://github.com/hallelx2/selah#readme">Docs</a>
+          <a href="https://github.com/hallelx2/selah/releases">Releases</a>
+          <a class="button" href="#install">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v8m0 0L4.5 6.5M8 10l3.5-3.5M3 13h10" fill="none" stroke="currentColor" stroke-width="1.5" /></svg>
+            Install
+          </a>
+        </nav>
+      </header>
+
+      <section class="hero" id="install">
+        <h1>A Bible for the terminal</h1>
+        <p class="lede">
+          Read in a quiet, fast terminal app. Keep notes, open Matthew Henry, look at the Hebrew and Greek behind every verse, and ask your own Claude or
+          Codex about what you are reading.
+        </p>
+
+        <div class="install" data-tabs>
+          <div class="tabs" role="tablist" aria-label="Install with">
+            <button role="tab" aria-selected="true" data-tab="curl">curl</button>
+            <button role="tab" aria-selected="false" data-tab="powershell">PowerShell</button>
+            <button role="tab" aria-selected="false" data-tab="source">from source</button>
+          </div>
+          <div class="panel" role="tabpanel" data-panel="curl">
+            <code><span class="dim">curl -fsSL https://</span><span class="strong">selah.hallelx2.com/install</span><span class="dim"> | sh</span></code>
+            <button class="copy" data-copy="curl -fsSL https://selah.hallelx2.com/install | sh" aria-label="Copy the command">copy</button>
+          </div>
+          <div class="panel" role="tabpanel" data-panel="powershell" hidden>
+            <code><span class="dim">irm https://</span><span class="strong">selah.hallelx2.com/install.ps1</span><span class="dim"> | iex</span></code>
+            <button class="copy" data-copy="irm https://selah.hallelx2.com/install.ps1 | iex" aria-label="Copy the command">copy</button>
+          </div>
+          <div class="panel" role="tabpanel" data-panel="source" hidden>
+            <code><span class="dim">git clone https://github.com/hallelx2/selah && cd selah && </span><span class="strong">bun install && bun run build</span><span class="dim"> && mkdir -p ~/.local/bin && cp dist/selah ~/.local/bin/</span></code>
+            <button class="copy" data-copy="git clone https://github.com/hallelx2/selah && cd selah && bun install && bun run build && mkdir -p ~/.local/bin && cp dist/selah ~/.local/bin/" aria-label="Copy the command">copy</button>
+          </div>
+        </div>
+        <p class="note">
+          Linux, macOS and Windows. Version {{version}}. The installer checks every download against its SHA-256, then the first launch fetches the King
+          James and the Berean Standard (16 MB). After that, Selah works offline.
+        </p>
+      </section>
+
+      <section class="screen" aria-label="Selah being used">
+        <div class="window">
+          <div class="bar"><i></i><i></i><i></i><span>selah</span></div>
+          <video autoplay muted loop playsinline preload="metadata" poster="/selah-demo-poster.png" aria-label="A recording of Selah: opening John 3:16, writing a note, Matthew Henry, the Greek word study of agapao, asking Claude, a Doré engraving, and the progress screen">
+            <source src="/selah-demo.webm" type="video/webm" />
+            <source src="/selah-demo.mp4" type="video/mp4" />
+          </video>
+        </div>
+        <p class="caption">A real session, recorded frame by frame from the app. The answer in Ask is Claude Code answering live, shown at three times speed.</p>
+      </section>
+
+      <section class="block">
+        <h2>What is Selah?</h2>
+        <p>Selah is an open source Bible reader for the terminal. Everything you need to read closely is one key away.</p>
+        <ul class="points">
+          <li><span>[*]</span><b>Read</b><em>Five public-domain translations, side by side if you like, with prose or verse layout</em></li>
+          <li><span>[*]</span><b>Write</b><em>A note on any verse and a journal for every chapter, saved as you type</em></li>
+          <li><span>[*]</span><b>Commentary</b><em>Matthew Henry's complete commentary, opened at the verse you are on</em></li>
+          <li><span>[*]</span><b>Hebrew and Greek</b><em>Every original word, its meaning and grammar, and every verse that uses it</em></li>
+          <li><span>[*]</span><b>Ask</b><em>Questions answered by your own Claude Code or Codex, citing the text</em></li>
+          <li><span>[*]</span><b>Engravings</b><em>Gustave Doré's 100 Bible engravings, each at the passage it shows</em></li>
+          <li><span>[*]</span><b>Streaks</b><em>A reading streak that only counts chapters you actually read</em></li>
+          <li><span>[*]</span><b>Search</b><em>Every verse, ranked, with phrases and book filters</em></li>
+        </ul>
+        <a class="button light" href="https://github.com/hallelx2/selah#readme">Read the docs <span aria-hidden="true">→</span></a>
+      </section>
+
+      <section class="block">
+        <h2>Made for reading slowly</h2>
+        <p class="indent"><span>[*]</span>Selah means a pause. The app stays out of the way: no ads, no account, nothing to sign in to.</p>
+        <div class="figures">
+          <figure>
+            {{fig-heatmap}}
+            <figcaption><span>Fig 1.</span> A year of reading (an example)</figcaption>
+          </figure>
+          <figure>
+            {{fig-words}}
+            <figcaption><span>Fig 2.</span> <b>{{words-total}}</b> Hebrew and Greek words, by book</figcaption>
+          </figure>
+          <figure>
+            {{fig-plates}}
+            <figcaption><span>Fig 3.</span> <b>100</b> engravings by Doré</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="block">
+        <h2>Yours, on your machine</h2>
+        <p class="indent">
+          <span>[*]</span>Your notes, highlights and reading history live in a file on your computer and nowhere else. Selah has no telemetry and reports
+          nothing about you; it only downloads what you ask it to install. Ask uses the Claude Code or Codex you already have, with your own login,
+          and Selah holds no keys.
+        </p>
+      </section>
+
+      <section class="block faq">
+        <h2>FAQ</h2>
+        <details>
+          <summary>Is it free?</summary>
+          <p>Yes. Selah is open source under the MIT license, and the Bible texts are in the public domain.</p>
+        </details>
+        <details>
+          <summary>How do I use it if I have never used a terminal app?</summary>
+          <p>
+            Run <code>selah</code>, type a passage like <code>john 3</code> and press enter. The arrow keys move through the text, <code>tab</code> opens
+            the study tools, and <code>?</code> shows every key in plain words. The first time you open the reader, it shows you the ones that matter.
+          </p>
+        </details>
+        <details>
+          <summary>Which translations are there?</summary>
+          <p>
+            The King James Version and the Berean Standard Bible come with it. The American Standard Version, Young's Literal Translation and the New
+            Heart English Bible are one command away: <code>selah install ASV YLT NHEB</code>.
+          </p>
+        </details>
+        <details>
+          <summary>Does it need the internet?</summary>
+          <p>
+            Only to download things once: the translations, and if you want them, the commentary (14 MB), the Hebrew and Greek (108 MB) and the
+            engravings (17 MB). Ask uses your agent's own connection.
+          </p>
+        </details>
+        <details>
+          <summary>Does Ask cost anything?</summary>
+          <p>
+            Selah charges nothing. Ask runs the Claude Code or Codex you already have, under your own plan, so it costs whatever that does. Without
+            either, everything else works and Ask says how to get one.
+          </p>
+        </details>
+        <details>
+          <summary>Does it work on Windows?</summary>
+          <p>
+            Yes, from version 0.3.1, on x64 and ARM64. Install it from PowerShell with the command above, and use Windows Terminal for the best colours.
+          </p>
+        </details>
+        <details>
+          <summary>Can my own coding agent use it?</summary>
+          <p>
+            Yes. <code>selah mcp</code> serves Selah's tools (passages, search, Henry, the original words and your notes) to Claude Code, Codex or any MCP
+            client: <code>claude mcp add selah -- selah mcp</code>.
+          </p>
+        </details>
+        <details>
+          <summary>How do I remove it?</summary>
+          <p>
+            Delete the <code>selah</code> binary (in <code>~/.local/bin</code>, or <code>%LOCALAPPDATA%\Programs\selah</code> on Windows). Your notes stay in
+            Selah's data folder until you delete that too; <code>selah --help</code> prints where it is.
+          </p>
+        </details>
+      </section>
+
+      <footer class="footer">
+        <div class="links">
+          <a href="https://github.com/hallelx2/selah">GitHub</a>
+          <a href="https://github.com/hallelx2/selah/releases">Releases</a>
+          <a href="https://github.com/hallelx2/selah/blob/main/LICENSE">MIT license</a>
+        </div>
+        <p class="credits">
+          Commentary: Matthew Henry (1706–1721), via lyteword/mhenry-complete, CC0. Hebrew and Greek: STEPBible.org, Tyndale House, Cambridge, CC BY 4.0.
+          Engravings: Gustave Doré (1866), Project Gutenberg #8710, public domain. Interface built on OpenTUI.
+        </p>
+      </footer>
+    </div>
+    <script src="/site.js" defer></script>
+  </body>
+</html>

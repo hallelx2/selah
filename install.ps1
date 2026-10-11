@@ -1,6 +1,6 @@
 # Installs Selah on Windows from the GitHub release.
 #
-#   irm https://raw.githubusercontent.com/hallelx2/selah/main/install.ps1 | iex
+#   irm https://selah.hallelx2.com/install.ps1 | iex
 #
 # Environment:
 #   SELAH_VERSION        a release tag such as v0.3.1 (default: the latest release)
