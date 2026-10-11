@@ -277,3 +277,61 @@ export function notFoundPage(): string {
         <p><a class="button" href="/">Go home</a> <a class="button light" href="/docs">Getting started</a></p>
       </section>`
 }
+
+// --- /demo: the product demo, with its chapters ------------------------------------------------
+const CHAPTER_TITLES: Record<string, string> = {
+  welcome: "Welcome to Selah",
+  install: "Install in one line",
+  home: "Home",
+  open: "Open any passage by typing it",
+  reading: "Read like a book: highlights, bookmarks, prose, focus",
+  goto: "Go anywhere",
+  search: "Search every verse",
+  palette: "Commands in plain words, light and dark",
+  parallel: "Two translations side by side",
+  notes: "The study desk and your notes",
+  henry: "Matthew Henry at your verse",
+  words: "The Hebrew and Greek, and a word study",
+  ask: "Ask your own Claude Code (live, 3x speed)",
+  dore: "Doré's engravings and the gallery",
+  books: "Every book, and your bookmarks",
+  streak: "An honest streak",
+  progress: "Progress",
+  plans: "Reading plans and today's reading",
+  themes: "Themes, with live preview",
+  help: "Help",
+  cli: "The command line, and your own agent",
+  outro: "Pause, and consider",
+}
+const clock = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`
+
+export function demoPage(chapters: { name: string; start: number }[], minutes: string): string {
+  return `
+      <section class="hero slim">
+        <p class="kicker">[ the tour ]</p>
+        <h1>Welcome to Selah</h1>
+        <p class="lede">Your terminal app for studying the Scriptures, in ${minutes}: every screen and what you can do on it. Every frame is the real app, recorded as it ran; the keys appear as they are pressed.</p>
+      </section>
+      <section class="screen demo-film" aria-label="The product demo">
+        <div class="window"><div class="bar"><i></i><i></i><i></i><span>Selah, the tour</span></div>
+          <video controls playsinline preload="metadata" poster="/selah-product-demo-poster.png" data-film aria-label="Selah's product demo">
+            <!-- H.264 first: every browser plays it, and at 1080p it is the smaller file here -->
+            <source src="/selah-product-demo.mp4" type="video/mp4" />
+            <source src="/selah-product-demo.webm" type="video/webm" />
+          </video>
+        </div>
+        <p class="caption">The Ask chapter is Claude Code answering live, shown at three times speed.</p>
+      </section>
+      <section class="block">
+        <h2 class="big">Chapters</h2>
+        <ol class="chapters">
+          ${chapters
+            .map(
+              (c, i) =>
+                `<li><button type="button" data-seek="${c.start}"><span class="t">${clock(c.start)}</span><span class="n">${String(i + 1).padStart(2, "0")}</span><span>${esc(CHAPTER_TITLES[c.name] ?? c.name)}</span></button></li>`,
+            )
+            .join("\n          ")}
+        </ol>
+        <p><a class="button" href="/download">Install Selah</a> <a class="button light" href="/#tour">Try it on the page</a></p>
+      </section>`
+}

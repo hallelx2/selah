@@ -123,6 +123,17 @@ describe("the site", () => {
     }
   })
 
+  test("/demo lists every chapter of the film, in order, each within it", () => {
+    const marks = JSON.parse(readFileSync(join(root, "docs/demo/selah-product-demo-chapters.json"), "utf8")) as { name: string; start: number }[]
+    const html = read("demo.html")
+    const seeks = [...html.matchAll(/data-seek="([\d.]+)"/g)].map((m) => Number(m[1]))
+    expect(seeks).toEqual(marks.map((m) => m.start))
+    expect(seeks.every((t, i) => i === 0 || t > seeks[i - 1]!)).toBe(true)
+    // every chapter has a human title, not its file name
+    for (const m of marks) expect(html).not.toContain(`<span>${m.name}</span>`)
+    expect(existsSync(join(dist, "selah-product-demo.mp4"))).toBe(true)
+  })
+
   test("/download offers what the installers install: never a pre-release", async () => {
     const { latestRelease } = await import("../site/pages")
     const r = (tag: string, prerelease = false) => ({ tag, name: tag, date: "2026-10-11T00:00:00Z", html: "", url: "", prerelease, assets: [] })

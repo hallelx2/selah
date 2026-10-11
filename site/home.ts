@@ -147,6 +147,7 @@ export function home(d: HomeData): string {
           </video>`,
         )}
         <p class="caption">A real session, recorded frame by frame from the app. The answer in Ask is Claude Code answering live, shown at three times speed.</p>
+        <p class="watch"><a class="button light" href="/demo">Watch the full tour: every screen, chapter by chapter <span aria-hidden="true">→</span></a></p>
       </section>
 
       <section class="numbers" aria-label="Selah in numbers">

@@ -1743,3 +1743,56 @@ h3 {
   padding: 0 0.5rem;
   vertical-align: middle;
 }
+
+/* ===== /demo ================================================================================= */
+.demo-film video {
+  aspect-ratio: 16 / 9;
+}
+.chapters {
+  list-style: none;
+  padding: 0;
+  margin: 1.25rem 0 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 0.25rem 1.5rem;
+}
+.chapters button {
+  appearance: none;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 3.5rem 2rem 1fr;
+  gap: 0.5rem;
+  align-items: baseline;
+  text-align: left;
+  font: inherit;
+  font-size: 14px;
+  color: var(--text);
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--border-weak);
+  padding: 0.6rem 0.25rem;
+  min-height: 44px;
+  cursor: pointer;
+}
+.chapters button:hover,
+.chapters button[aria-current] {
+  color: var(--text-strong);
+}
+.chapters button[aria-current] .n {
+  color: var(--primary);
+}
+.chapters .t {
+  color: var(--text-weak);
+  font-variant-numeric: tabular-nums;
+}
+.chapters .n {
+  color: var(--text-weaker);
+}
+.chapters button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.watch {
+  text-align: center;
+  margin: 1.25rem 0 0;
+}
