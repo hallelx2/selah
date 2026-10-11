@@ -8,7 +8,7 @@ import { dayKey } from "./data/dates"
 import { openBibleDb } from "./data/db"
 import { importTranslation } from "./data/importer"
 import { Database } from "bun:sqlite"
-import { parseCli } from "./cli"
+import { installFailed, installTarget, parseCli, unknownInstall } from "./cli"
 import { bookById } from "./data/books"
 import { Commentary, installCommentary } from "./data/commentary"
 import { Concordance, installConcordance } from "./data/concordance"
@@ -76,7 +76,13 @@ async function ensureTranslation(id: string) {
     process.exit(1)
   }
   process.stderr.write(`Downloading ${id}… `)
-  await importTranslation(bible.db, id)
+  try {
+    await importTranslation(bible.db, id)
+  } catch (e) {
+    process.stderr.write("\n")
+    console.error(installFailed(id, { translation: id }, e))
+    process.exit(1)
+  }
   process.stderr.write("done\n")
 }
 
@@ -85,28 +91,38 @@ const commentary = new Commentary(studyDb)
 const concordance = new Concordance(studyDb)
 
 if (action.kind === "install") {
+  const ids = CATALOG.map((c) => c.id)
+  // every name is checked before anything downloads, so a typo costs nothing
+  for (const id of action.ids)
+    if (!installTarget(id, ids)) {
+      console.error(unknownInstall(id, ids))
+      process.exit(1)
+    }
   for (const id of action.ids) {
-    if (id === "COMMENTARY" || id === "HENRY") {
-      process.stderr.write("Installing Matthew Henry's Commentary… ")
-      const stats = await installCommentary(commentary.db, paths.sources)
-      process.stderr.write(`done: ${stats.chapters} chapters, ${stats.paragraphs} paragraphs\n`)
-      continue
+    const target = installTarget(id, ids)!
+    try {
+      if ("translation" in target) {
+        await ensureTranslation(target.translation)
+      } else if (target.pack === "commentary") {
+        process.stderr.write("Installing Matthew Henry's Commentary… ")
+        const stats = await installCommentary(commentary.db, paths.sources)
+        process.stderr.write(`done: ${stats.chapters} chapters, ${stats.paragraphs} paragraphs\n`)
+      } else if (target.pack === "scenes") {
+        const { installScenes, PLATES, SCENES_BYTES } = await import("./data/scenes")
+        process.stderr.write(`Installing Doré's engravings (${PLATES.length} plates, ${(SCENES_BYTES / 1e6).toFixed(0)} MB)… `)
+        const stats = await installScenes(paths.scenes)
+        process.stderr.write(`done: ${stats.downloaded} downloaded, ${stats.total - stats.downloaded} already here\n`)
+      } else {
+        process.stderr.write("Installing the Hebrew and Greek concordance (STEPBible)… ")
+        const started = performance.now()
+        const stats = await installConcordance(concordance.db, paths.sources)
+        process.stderr.write(`done: ${stats.words} words in ${stats.verses} verses, ${stats.entries} lexicon entries (${((performance.now() - started) / 1000).toFixed(1)}s)\n`)
+      }
+    } catch (e) {
+      process.stderr.write("\n")
+      console.error(installFailed(id, target, e))
+      process.exit(1)
     }
-    if (id === "SCENES" || id === "DORE") {
-      const { installScenes, PLATES, SCENES_BYTES } = await import("./data/scenes")
-      process.stderr.write(`Installing Doré's engravings (${PLATES.length} plates, ${(SCENES_BYTES / 1e6).toFixed(0)} MB)… `)
-      const stats = await installScenes(paths.scenes)
-      process.stderr.write(`done: ${stats.downloaded} downloaded, ${stats.total - stats.downloaded} already here\n`)
-      continue
-    }
-    if (id === "CONCORDANCE" || id === "STRONGS" || id === "WORDS") {
-      process.stderr.write("Installing the Hebrew and Greek concordance (STEPBible)… ")
-      const started = performance.now()
-      const stats = await installConcordance(concordance.db, paths.sources)
-      process.stderr.write(`done: ${stats.words} words in ${stats.verses} verses, ${stats.entries} lexicon entries (${((performance.now() - started) / 1000).toFixed(1)}s)\n`)
-      continue
-    }
-    await ensureTranslation(id)
   }
   process.exit(0)
 }

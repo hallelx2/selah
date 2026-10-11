@@ -132,19 +132,21 @@ describe("scenes in the reader", () => {
     let failing = true
     const local = (async (url: string) => {
       const file = String(url).split("/").at(-1)!
-      if (failing && file === "010.jpg") return new Response("busy", { status: 503 })
+      // a 404 is reported at once (a 503 would be retried, which the scenes unit tests cover)
+      if (failing && file === "010.jpg") return new Response("missing", { status: 404 })
       await wait(2)
       return new Response(readFileSync(join(import.meta.dir, "..", ".selah-test-sources", "dore-8710", file)))
     }) as unknown as typeof fetch
     h = await openScene({ scenesDir: dir, fetch: local })
     await h.press("i")
-    for (let i = 0; i < 60 && !h.frame().includes("HTTP 503"); i++) {
+    for (let i = 0; i < 60 && !h.frame().includes("HTTP 404"); i++) {
       await wait(50)
       await h.settle()
     }
     await wait(100) // the other downloads wind down
     await h.settle()
-    expect(h.frame()).toContain("Download of plate 010 failed: HTTP 503")
+    expect(h.frame()).toContain("Could not download plate 010")
+    expect(h.frame()).toContain("it is not there (HTTP 404)")
     expect(h.frame()).toContain("press i to install") // not a frozen bar
     failing = false
     await h.press("i")

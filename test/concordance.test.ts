@@ -237,9 +237,14 @@ describe("install", () => {
 
   test("a truncated download is refused, not imported", async () => {
     const dir = mkdtempSync(join(tmpdir(), "selah-step-"))
-    const short = (async () => new Response("only a little")) as never
-    await expect(installConcordance(new Database(":memory:"), dir, undefined, short)).rejects.toThrow(`Download of ${STEP_FILES[0]!.name} was 13 bytes`)
+    // a short file is fetched again, every attempt, then refused with the reason
+    let calls = 0
+    const short = (async () => (calls++, new Response("only a little"))) as never
+    await expect(installConcordance(new Database(":memory:"), dir, undefined, short, { sleep: async () => {} })).rejects.toThrow(
+      `${STEP_FILES[0]!.name} was 13 bytes, expected ${STEP_FILES[0]!.bytes}. Tried 4 times.`,
+    )
+    expect(calls).toBe(4)
     const failing = (async () => new Response("nope", { status: 404 })) as never
-    await expect(installConcordance(new Database(":memory:"), dir, undefined, failing)).rejects.toThrow("HTTP 404")
+    await expect(installConcordance(new Database(":memory:"), dir, undefined, failing)).rejects.toThrow("it is not there (HTTP 404)")
   })
 })

@@ -105,8 +105,10 @@ chapter you are reading has one, the header says so (✦), and `i` opens it full
 
 ![Doré's engraving of Jesus and the woman of Samaria, surfacing like ink](docs/screenshots/scene.gif)
 
-`selah install scenes` downloads the plates once, about 17 MB, from Project Gutenberg. Each
-plate is checked against its pinned SHA-256.
+`selah install scenes` downloads the plates once, about 17 MB, from a copy on selah.hallelx2.com,
+falling back to Project Gutenberg for any plate the copy cannot give. Each plate is checked
+against its pinned SHA-256 whichever source it came from, and a download that fails for a moment
+is retried. `SELAH_SCENES_SOURCE` points it at your own copy instead.
 
 The image is drawn as the terminal allows: kitty graphics in kitty and ghostty, sixel in foot,
 and half-blocks everywhere else, including tmux. With reduced motion the engraving appears at

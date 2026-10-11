@@ -310,8 +310,8 @@ function Scene(props: { plate: Plate }) {
               {plate().title}
             </text>
             <text fg={t().textMuted} wrapMode="word" width={Math.min(70, dims().width - 8)}>
-              Doré's {PLATES.length} Bible engravings, each opening at the passage it shows. About {Math.round(SCENES_BYTES / 1e6)} MB, downloaded once from
-              Project Gutenberg, then offline.
+              Doré's {PLATES.length} Bible engravings, each opening at the passage it shows. About {Math.round(SCENES_BYTES / 1e6)} MB, downloaded once, then
+              offline.
             </text>
             <Show
               when={progress() !== undefined}

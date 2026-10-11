@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto"
 import { existsSync, mkdirSync, renameSync, statSync } from "node:fs"
 import { join } from "node:path"
+import { download, DownloadError } from "./download"
 import catalogue from "./scenes.json"
 
 /**
@@ -21,6 +22,17 @@ export interface Plate {
 
 export const PLATES: readonly Plate[] = (catalogue as { plates: Plate[] }).plates
 export const SCENES_SOURCE = (catalogue as { images: string }).images
+/**
+ * The same files, byte for byte, served by Selah's own site (built from a verified install by
+ * site/build.ts). Tried first: Project Gutenberg asks automated clients to use mirrors, and it is
+ * sometimes slow or failing (504 after 70s on 2026-10-11). Every plate is checked against its
+ * pinned SHA-256 whichever source it came from. SELAH_SCENES_SOURCE replaces both, for your own.
+ */
+export const SCENES_MIRROR = "https://selah.hallelx2.com/scenes/"
+export function scenesSources(env: Record<string, string | undefined> = process.env): string[] {
+  const own = env.SELAH_SCENES_SOURCE
+  return own ? [own.endsWith("/") ? own : `${own}/`] : [SCENES_MIRROR, SCENES_SOURCE]
+}
 export const SCENES_BYTES = PLATES.reduce((n, p) => n + p.image.bytes, 0)
 export const SCENE_ATTRIBUTION = "Engravings by Gustave Doré (1866), from The Doré Bible Gallery, Project Gutenberg #8710. Public domain."
 
@@ -58,7 +70,12 @@ let inflight: { dir: string; promise: Promise<{ downloaded: number; total: numbe
  * Only one install runs at a time; a call while one is running joins it. The first failure
  * stops the others, and no progress is reported once the install has settled.
  */
-export function installScenes(dir: string, onProgress?: ScenesProgress, fetcher: typeof fetch = fetch): Promise<{ downloaded: number; total: number }> {
+export function installScenes(
+  dir: string,
+  onProgress?: ScenesProgress,
+  fetcher: typeof fetch = fetch,
+  opts: { sources?: string[]; sleep?: (ms: number) => Promise<void> } = {},
+): Promise<{ downloaded: number; total: number }> {
   if (inflight && inflight.dir === dir) {
     if (onProgress) inflight.listeners.add(onProgress)
     return inflight.promise
@@ -68,6 +85,7 @@ export function installScenes(dir: string, onProgress?: ScenesProgress, fetcher:
   const report = (e: { done: number; total: number; bytes: number }) => {
     if (!settled) for (const l of listeners) l(e)
   }
+  const sources = opts.sources ?? scenesSources()
   const run = async () => {
     mkdirSync(dir, { recursive: true })
     const todo = PLATES.filter((p) => {
@@ -82,11 +100,7 @@ export function installScenes(dir: string, onProgress?: ScenesProgress, fetcher:
     const worker = async () => {
       for (let p = queue.shift(); p && !failed; p = queue.shift()) {
         try {
-          const res = await fetcher(`${SCENES_SOURCE}${p.image.file}`)
-          if (!res.ok) throw new Error(`Download of plate ${p.id} failed: HTTP ${res.status}`)
-          const data = new Uint8Array(await res.arrayBuffer())
-          const sha = createHash("sha256").update(data).digest("hex")
-          if (data.length !== p.image.bytes || sha !== p.image.sha256) throw new Error(`Plate ${p.id} did not match its pinned checksum`)
+          const data = await fetchPlate(p, sources, fetcher, opts.sleep)
           if (failed) return
           const file = sceneFile(dir, p)
           const tmp = `${file}.${process.pid}.${Math.random().toString(36).slice(2)}.part`
@@ -110,4 +124,28 @@ export function installScenes(dir: string, onProgress?: ScenesProgress, fetcher:
   })
   inflight = { dir, promise, listeners }
   return promise
+}
+
+/** One plate, from the first source that gives the right bytes; each source retries on its own. */
+async function fetchPlate(p: Plate, sources: string[], fetcher: typeof fetch, sleep?: (ms: number) => Promise<void>): Promise<Uint8Array> {
+  const failures: string[] = []
+  for (const [i, base] of sources.entries()) {
+    try {
+      return await download(`${base}${p.image.file}`, {
+        label: `plate ${p.id}`,
+        fetcher,
+        sleep,
+        // the mirror is a fast CDN: one retry, then on to the next source
+        attempts: i < sources.length - 1 ? 2 : 4,
+        verify: (data) => {
+          const sha = createHash("sha256").update(data).digest("hex")
+          if (data.length !== p.image.bytes || sha !== p.image.sha256) throw new Error(`plate ${p.id} did not match its pinned checksum`)
+        },
+      })
+    } catch (e) {
+      if (!(e instanceof DownloadError)) throw e
+      failures.push(e.message)
+    }
+  }
+  throw new DownloadError(failures.length === 1 ? failures[0]! : failures.join(" Then: "))
 }

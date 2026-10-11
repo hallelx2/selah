@@ -238,18 +238,13 @@ export async function installCommentary(db: Database, cacheDir: string, onProgre
   const { existsSync, renameSync } = await import("node:fs")
   const file = join(cacheDir, `mhenry-complete-${COMMENTARY_COMMIT.slice(0, 12)}.tar.gz`)
   if (!existsSync(file)) {
-    const res = await fetch(COMMENTARY_URL)
-    if (!res.ok || !res.body) throw new Error(`Download failed: HTTP ${res.status}`)
-    const total = Number(res.headers.get("content-length")) || 14_100_000
-    const chunks: Uint8Array[] = []
-    let got = 0
-    for await (const chunk of res.body) {
-      chunks.push(chunk)
-      got += chunk.length
-      onProgress?.({ phase: "download", fraction: Math.min(1, got / total) })
-    }
+    const { download } = await import("./download")
+    const data = await download(COMMENTARY_URL, {
+      label: "Matthew Henry's Commentary",
+      onProgress: (got, total) => onProgress?.({ phase: "download", fraction: Math.min(1, got / (total ?? 14_100_000)) }),
+    })
     const tmp = `${file}.${process.pid}.part`
-    await Bun.write(tmp, Buffer.concat(chunks))
+    await Bun.write(tmp, data)
     renameSync(tmp, file)
   }
   onProgress?.({ phase: "import", fraction: 0 })
