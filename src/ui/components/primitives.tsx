@@ -77,10 +77,11 @@ export interface Hint {
   label: string
 }
 
+/** Key hints that wrap onto another line rather than run off the edge: each hint stays whole. */
 export function Hints(props: { hints: Hint[] }) {
   const { theme } = useApp()
   return (
-    <box flexDirection="row" gap={2}>
+    <box flexDirection="row" flexWrap="wrap" columnGap={2}>
       <For each={props.hints}>
         {(h) => (
           <text wrapMode="none" selectable={false}>

@@ -30,6 +30,8 @@ export interface Config {
    * right (nearly all); "logical" leaves it to a terminal that applies bidi itself.
    */
   hebrew: "visual" | "logical"
+  /** Set once the first-visit orientation in the reader has been seen. */
+  welcomed?: boolean
 }
 
 export const DEFAULT_CONFIG: Config = {

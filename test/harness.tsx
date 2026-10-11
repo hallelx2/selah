@@ -73,7 +73,8 @@ export async function harness(opts: {
   const tracker = new ReadingTracker(store, clock)
   // Frames are compared as text, so tests default to reduced motion and plain icons;
   // animation tests opt back in with config: { motion: "full" }.
-  let config: Config = { ...DEFAULT_CONFIG, motion: "reduced", icons: "unicode", ...opts.config }
+  // tests start past the one-time orientation unless they ask for it (welcomed: false)
+  let config: Config = { ...DEFAULT_CONFIG, motion: "reduced", icons: "unicode", welcomed: true, ...opts.config }
   const copied: string[] = []
   const painted: string[] = []
   let appRef: import("../src/ui/state").App | undefined

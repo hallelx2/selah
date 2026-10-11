@@ -71,7 +71,7 @@ describe("4. marking read across midnight", () => {
     expect(h.frame()).toContain("● read")
     await h.press("m")
     expect(h.store.readOn(1, 1, "2026-10-08")).toBe(false)
-    expect(h.frame()).toContain("○ reading")
+    expect(h.frame()).toContain("more to count as read")
     await h.press("m")
     expect(h.store.readOn(1, 1, "2026-10-08")).toBe(true)
   })

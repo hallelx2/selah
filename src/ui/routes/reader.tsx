@@ -1,4 +1,4 @@
-import { TextAttributes, type ScrollBoxRenderable } from "@opentui/core"
+import { RGBA, TextAttributes, type ScrollBoxRenderable } from "@opentui/core"
 import { useTerminalDimensions } from "@opentui/solid"
 import { createEffect, createMemo, createSignal, For, on, onCleanup, Show } from "solid-js"
 import type { Verse } from "../../data/bible"
@@ -395,6 +395,9 @@ export function Reader() {
 
   return (
     <box flexDirection="column" flexGrow={1}>
+      <Show when={!app.config.welcomed}>
+        <Welcome />
+      </Show>
       <Show when={!focus()}>
         <box flexDirection="row" height={1} flexShrink={0} backgroundColor={t().backgroundPanel} justifyContent="space-between" paddingLeft={1} paddingRight={1}>
           <text wrapMode="none">
@@ -424,9 +427,10 @@ export function Reader() {
               when={status().readToday}
               fallback={
                 <text wrapMode="none">
-                  <span style={{ fg: t().textMuted }}>{app.i("reading")} reading </span>
-                  <span style={{ fg: t().text }}>{formatMinutes(Math.min(status().active, status().required) / 60_000)}</span>
-                  <span style={{ fg: t().textMuted }}> of {formatMinutes(status().required / 60_000)}</span>
+                  {/* a countdown says what the time is for: this chapter counts once it reaches zero */}
+                  <span style={{ fg: t().textMuted }}>{app.i("reading")} </span>
+                  <span style={{ fg: t().text }}>{formatMinutes(Math.max(0, status().required - status().active) / 60_000)}</span>
+                  <span style={{ fg: t().textMuted }}>{dims().width >= 100 ? " more to count as read" : " to count"}</span>
                 </text>
               }
             >
@@ -608,10 +612,16 @@ export function Reader() {
         }
       >
         <Footer
-          mode={sidebarFocused() ? "BOOKS" : anchor() !== undefined ? "SELECT" : count() ? `:${count()}` : prose() ? "PROSE" : "READ"}
-          icon={sidebarFocused() ? "library" : anchor() !== undefined ? "copy" : "book"}
+          mode={app.studyFocused() ? "STUDY" : sidebarFocused() ? "BOOKS" : anchor() !== undefined ? "SELECT" : count() ? `:${count()}` : prose() ? "PROSE" : "READ"}
+          icon={app.studyFocused() ? "note" : sidebarFocused() ? "library" : anchor() !== undefined ? "copy" : "book"}
           hints={
-            sidebarFocused()
+            app.studyFocused()
+              ? [
+                  { key: "tab", label: "back to the text" },
+                  { key: "1-4", label: "notes · commentary · words · ask" },
+                  { key: "ctrl+p", label: "commands" },
+                ]
+              : sidebarFocused()
               ? [
                   { key: "j/k", label: "move" },
                   { key: "enter", label: "chapters / open" },
@@ -766,6 +776,57 @@ const GRID = 7
  * through the books, enter shows a book's chapters, h/j/k/l move in the grid, enter opens one,
  * esc steps back out.
  */
+/**
+ * The first time someone opens the reader: the handful of keys that make it usable, because
+ * here letters are shortcuts, not typing. Any key closes it (and does nothing else); it never
+ * comes back.
+ */
+function Welcome() {
+  const app = useApp()
+  const t = () => app.theme()
+  const dims = useTerminalDimensions()
+  app.useKeys(() => (app.setConfig("welcomed", true), true), { modal: true })
+  const rows: [string, string][] = [
+    ["↑ ↓", "move verse by verse"],
+    ["← →", "previous and next chapter"],
+    ["o", "go to a book: type romans 8, then enter"],
+    ["/", "search the Bible for words"],
+    ["tab", "study tools: notes, commentary, Hebrew and Greek, Ask"],
+    ["i", "a picture of the passage, when there is one"],
+    ["?", "every key"],
+    ["esc", "back to the home screen"],
+  ]
+  return (
+    <box position="absolute" left={0} top={0} width={dims().width} height={dims().height} zIndex={2000} alignItems="center" justifyContent="center" backgroundColor={RGBA.fromInts(0, 0, 0, 120)}>
+      <box width={Math.min(66, dims().width - 4)} backgroundColor={t().backgroundPanel} paddingLeft={3} paddingRight={3} paddingTop={1} paddingBottom={1} flexDirection="column" gap={1} {...LeftBar} borderColor={t().primary}>
+        <text fg={t().text} attributes={TextAttributes.BOLD} wrapMode="word">
+          Welcome to the reader
+        </text>
+        <text fg={t().textMuted} wrapMode="word">
+          Here, letters are shortcuts rather than typing. These are the ones to know:
+        </text>
+        <box flexDirection="column">
+          <For each={rows}>
+            {([k, d]) => (
+              <box flexDirection="row">
+                <text width={6} flexShrink={0} fg={t().primary} attributes={TextAttributes.BOLD} wrapMode="none">
+                  {k}
+                </text>
+                <text fg={t().text} wrapMode="word" flexGrow={1}>
+                  {d}
+                </text>
+              </box>
+            )}
+          </For>
+        </box>
+        <text fg={t().textMuted} wrapMode="word">
+          Press any key to start reading.
+        </text>
+      </box>
+    </box>
+  )
+}
+
 function Sidebar(props: { focused: boolean; setFocused: (v: boolean) => void }) {
   const app = useApp()
   const t = () => app.theme()

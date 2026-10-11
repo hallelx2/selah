@@ -12,7 +12,7 @@ import type { Goal } from "../data/stats"
 import { CATALOG } from "../data/translations"
 import type { VerseKey } from "../data/user"
 import { THEME_NAMES, themeLabel } from "../theme"
-import { DialogHeader, SelectDialog, type SelectItem } from "./components/dialog"
+import { DialogHeader, SelectDialog, WIDTHS, type SelectItem } from "./components/dialog"
 import { Hints, LeftBar, TRANSPARENT, fit } from "./components/primitives"
 import { plain, VerseText } from "./components/verse"
 import type { App } from "./state"
@@ -835,7 +835,8 @@ export function openIcons(app: App, first = false) {
     <SelectDialog
       title={first ? "One question" : "Icons"}
       placeholder="Do you see a book here →  ?"
-      initial={app.config.icons ?? "nerd"}
+      // unanswered, the safe choice is highlighted: enter without reading must not fill the screen with boxes
+      initial={app.config.icons ?? "unicode"}
       header={
         <text fg={app.theme().textMuted} wrapMode="word" paddingTop={1}>
           Selah can draw Nerd Font icons ({"\uf02d \uf06d \uf02e \uf073"}). If those look like a book, a flame, a bookmark and a calendar, choose Nerd Font. If they look like boxes or question marks, choose simple symbols.
@@ -857,44 +858,66 @@ export function openIcons(app: App, first = false) {
 
 // help -----------------------------------------------------------------------------------
 
-const KEYS: [string, [string, string][]][] = [
+/** Every key, in words a newcomer understands. Shared with the README's key table in spirit. */
+export const KEYS: [string, [string, string][]][] = [
   [
-    "Reading",
+    "Getting around",
     [
-      ["j k ↑ ↓", "previous / next verse"],
-      ["space ^d ^u", "page, half page"],
-      ["n p ← →", "next / previous chapter"],
-      ["g G", "first / last verse"],
+      ["↑ ↓  j k", "previous / next verse"],
+      ["← →  n p", "previous / next chapter"],
+      ["space", "next page (ctrl+d / ctrl+u half a page)"],
+      ["g  G", "first / last verse"],
       ["16 enter", "jump to verse 16"],
-      ["o", "go to book and chapter"],
-      ["/", "search"],
-      ["esc", "home"],
+      ["o", "go to a book and chapter (type: romans 8)"],
+      ["/", "search the Bible for words"],
+      ["esc", "back, and home from the reader"],
     ],
   ],
   [
-    "Study",
+    "Study tools",
     [
-      ["h", "highlight (cycles 4 colours)"],
-      ["b  B", "bookmark / list bookmarks"],
-      ["a", "note on this verse"],
-      ["v  y", "select verses / copy"],
-      ["t  T", "translation / parallel view"],
-      ["ctrl+b", "sidebar: j/k books, enter chapters"],
-      ["tab  ctrl+l", "study pane / toggle"],
-      ["-  =", "narrow / widen text"],
-      ["z", "focus mode"],
-      ["w", "prose / verse layout"],
-      ["i", "Doré's engraving of the scene"],
+      ["tab", "open the study pane beside the text, and move between it and the text"],
+      ["1", "Notes: your note on this verse, and a journal for the chapter"],
+      ["2", "Commentary: Matthew Henry on this verse"],
+      ["3", "Words: the Hebrew or Greek behind this verse, with meanings"],
+      ["4", "Ask: questions answered by Claude Code or Codex, if you have one"],
+      ["i", "Doré's engraving of this passage, when there is one"],
+      ["ctrl+l", "show or hide the study pane"],
     ],
   ],
   [
-    "Tracking",
+    "Marking the text",
     [
-      ["m", "mark chapter read (or unmark)"],
+      ["h", "highlight the verse (press again for another colour)"],
+      ["b  B", "bookmark the verse / list your bookmarks"],
+      ["a", "write a note on the verse"],
+      ["v  y", "select several verses / copy them"],
+    ],
+  ],
+  [
+    "Your reading",
+    [
+      ["m", "mark the chapter read (again to unmark)"],
       ["s", "progress and streaks"],
-      ["ctrl+o", "today's reading (home)"],
-      ["ctrl+p", "commands, anywhere"],
-      ["q", "quit"],
+      ["ctrl+o", "today's reading from your plan"],
+    ],
+  ],
+  [
+    "How it looks",
+    [
+      ["t  T", "change translation / two side by side"],
+      ["-  =", "narrower / wider text"],
+      ["w", "flowing paragraphs or one verse per line"],
+      ["z", "focus mode: only the text"],
+      ["ctrl+b", "books sidebar (j/k, enter, esc)"],
+    ],
+  ],
+  [
+    "Anywhere",
+    [
+      ["ctrl+p", "commands: type what you want, like 'commentary' or 'dark'"],
+      ["?", "this help"],
+      ["q  ctrl+c", "quit (ctrl+c on the home screen)"],
     ],
   ],
 ]
@@ -902,33 +925,85 @@ const KEYS: [string, [string, string][]][] = [
 export function openHelp(app: App) {
   app.openDialog(() => {
     const t = () => app.theme()
-    app.useKeys((key) => (key.name === "escape" || key.name === "q" || key.sequence === "?" ? (app.closeDialog(), true) : true), { modal: true })
+    const dims = useTerminalDimensions()
+    let scroll: ScrollBoxRenderable | undefined
+    app.useKeys(
+      (key) => {
+        if (key.name === "escape" || key.name === "q" || key.sequence === "?") return app.closeDialog(), true
+        if (!scroll) return true
+        if (key.name === "j" || key.name === "down") return scroll.scrollBy(1), true
+        if (key.name === "k" || key.name === "up") return scroll.scrollBy(-1), true
+        if (key.name === "space" || key.name === "pagedown") return scroll.scrollBy(Math.max(3, scroll.viewport.height - 2)), true
+        if (key.name === "pageup") return scroll.scrollBy(-Math.max(3, scroll.viewport.height - 2)), true
+        return true
+      },
+      { modal: true },
+    )
+    // as many columns as fit without crushing the words; descriptions wrap, never cut
+    const inner = () => Math.min(WIDTHS.xlarge, dims().width - 2) - 8
+    const columns = () => (inner() >= 140 ? 3 : inner() >= 90 ? 2 : 1)
+    const split = () => {
+      const n = columns()
+      const out: (typeof KEYS)[] = Array.from({ length: n }, () => [])
+      // balance by row count, keeping each group whole
+      const load = Array(n).fill(0)
+      for (const g of KEYS) {
+        const i = load.indexOf(Math.min(...load))
+        out[i]!.push(g)
+        load[i] += g[1].length + 2
+      }
+      return out
+    }
+    const keyWidth = Math.max(...KEYS.flatMap(([, ks]) => ks.map(([k]) => k.length))) + 2
     return (
       <box flexDirection="column" gap={1}>
-        <DialogHeader title="Keyboard" />
-        <box flexDirection="row" paddingLeft={4} paddingRight={4} gap={4}>
-          <For each={KEYS}>
-            {([group, keys]) => (
-              <box flexDirection="column" flexGrow={1} flexBasis={0}>
-                <text fg={t().accent} attributes={TextAttributes.BOLD}>
-                  {group}
-                </text>
-                <For each={keys}>
-                  {([k, d]) => (
-                    <text wrapMode="none">
-                      <span style={{ fg: t().text }}>{fit(k, Math.max(...keys.map(([x]) => x.length)) + 2)}</span>
-                      <span style={{ fg: t().textMuted }}>{d}</span>
-                    </text>
-                  )}
-                </For>
-              </box>
-            )}
-          </For>
-        </box>
+        <DialogHeader title="How to use Selah" />
         <box paddingLeft={4} paddingRight={4}>
-          <text fg={t().textMuted} wrapMode="word">
-            A chapter counts as read once you reach its end and have spent real time on it (about 30% of the time it takes to read, up to 30 seconds). Time away from the keyboard for more than 3 minutes is not counted.
+          <text fg={t().text} wrapMode="word">
+            In the reader, letters are shortcuts, not typing. To go somewhere, press o and type a book, press / to search, or press ctrl+p and type what you
+            want.
           </text>
+        </box>
+        {/* the dialog opens a sixth of the way down; header, intro, hints and padding take 13 rows */}
+        <scrollbox ref={(r: ScrollBoxRenderable) => (scroll = r)} maxHeight={Math.max(4, dims().height - Math.floor(dims().height / 6) - 13)} scrollbarOptions={{ visible: false }}>
+          <box flexDirection="row" paddingLeft={4} paddingRight={4} gap={4}>
+            <For each={split()}>
+              {(groups) => (
+                <box flexDirection="column" flexGrow={1} flexBasis={0} gap={1}>
+                  <For each={groups}>
+                    {([group, keys]) => (
+                      <box flexDirection="column">
+                        <text fg={t().accent} attributes={TextAttributes.BOLD}>
+                          {group}
+                        </text>
+                        <For each={keys}>
+                          {([k, d]) => (
+                            <box flexDirection="row">
+                              <text wrapMode="none" width={keyWidth} flexShrink={0} fg={t().text}>
+                                {k}
+                              </text>
+                              <text wrapMode="word" flexGrow={1} flexShrink={1} fg={t().textMuted}>
+                                {d}
+                              </text>
+                            </box>
+                          )}
+                        </For>
+                      </box>
+                    )}
+                  </For>
+                </box>
+              )}
+            </For>
+          </box>
+          <box paddingLeft={4} paddingRight={4} paddingTop={1}>
+            <text fg={t().textMuted} wrapMode="word">
+              A chapter counts as read once you reach its end and have spent real time on it (about 30% of the time it takes to read, up to 30 seconds). Time
+              away from the keyboard for more than 3 minutes is not counted.
+            </text>
+          </box>
+        </scrollbox>
+        <box paddingLeft={4} paddingRight={4}>
+          <Hints hints={[{ key: "↑↓", label: "scroll" }, { key: "esc", label: "close" }]} />
         </box>
       </box>
     )

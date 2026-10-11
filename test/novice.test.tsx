@@ -58,7 +58,7 @@ describe("help and quitting from home (HAL-2629)", () => {
   test("? with an empty box opens help; with text, it is just a character", async () => {
     h = await harness({ width: 140, height: 40 })
     await h.type("?")
-    expect(h.frame()).toContain("Keyboard")
+    expect(h.frame()).toContain("How to use Selah")
     await h.press("escape")
     await wait(20)
     await h.settle()
@@ -78,7 +78,7 @@ describe("help and quitting from home (HAL-2629)", () => {
     h = await harness({ width: 120, height: 40 })
     await h.type("help")
     await h.press("return")
-    expect(h.frame()).toContain("Keyboard")
+    expect(h.frame()).toContain("How to use Selah")
   })
 })
 
@@ -152,5 +152,89 @@ describe("the words people type into the command palette (HAL-2630)", () => {
     await h.press("p", { ctrl: true })
     await h.type("greek")
     expect(h.frame()).not.toMatch(/Progress and streaks/)
+  })
+})
+
+describe("help that a newcomer can read (HAL-2631)", () => {
+  for (const [w, hh] of [[80, 24], [120, 40], [200, 60]] as const) {
+    test(`at ${w}×${hh}, every description is whole (scrolling as needed)`, async () => {
+      const { KEYS } = await import("../src/ui/dialogs")
+      h = await harness({ width: w, height: hh, initial: { route: "reader", book: 43, chapter: 3, verse: 1 } })
+      await h.press("?")
+      // collect what is shown while scrolling through
+      let seen = ""
+      for (let i = 0; i < 40; i++) {
+        seen += `\n${h.frame()}`
+        await h.press("down")
+      }
+      const text = seen.replace(/\s+/g, " ")
+      const missing: string[] = []
+      for (const [, keys] of KEYS) for (const [, d] of keys) for (const word of d.split(/\s+/)) if (!text.includes(word)) missing.push(`${word} (in "${d}")`)
+      expect(missing).toEqual([])
+      expect(text).toContain("letters are shortcuts")
+    })
+  }
+
+  test("help explains the study pane's tabs", async () => {
+    h = await harness({ width: 200, height: 60 })
+    await h.press("?")
+    const f = h.frame()
+    // descriptions wrap in two columns; the phrases that matter are each on one line
+    expect(f).toContain("Study tools")
+    expect(f).toContain("Matthew Henry")
+    expect(f).toContain("Hebrew or Greek")
+    expect(f).toContain("Claude Code or")
+  })
+})
+
+describe("the first visit to the reader (HAL-2632)", () => {
+  test("shows the keys once; the first key only closes it; it never returns", async () => {
+    let saved: Record<string, unknown> | undefined
+    h = await harness({ width: 120, height: 40, config: { welcomed: false } })
+    await h.press("return") // home → reader
+    expect(h.frame()).toContain("Welcome to the reader")
+    expect(h.frame()).toContain("go to a book: type romans 8")
+    await h.press("j") // closes the card, does not move
+    expect(h.frame()).not.toContain("Welcome to the reader")
+    expect(h.app().position().verse).toBe(1)
+    expect(h.app().config.welcomed).toBe(true)
+    saved = { ...h.app().config }
+    await h.press("j")
+    expect(h.app().position().verse).toBe(2)
+    await h.press("escape") // home and back: no card
+    await h.press("return")
+    expect(h.frame()).not.toContain("Welcome to the reader")
+    expect(saved.welcomed).toBe(true)
+  })
+})
+
+describe("writing a note without knowing about e (HAL-2634)", () => {
+  test("typing in the Notes tab starts the verse note with what was typed", async () => {
+    const { UserStore } = await import("../src/data/user")
+    const store = UserStore.memory()
+    h = await harness({ width: 200, height: 46, store, initial: { route: "reader", book: 62, chapter: 4, verse: 8 } })
+    await h.press("tab")
+    expect(h.frame()).toContain("type to write")
+    await typeSlowly(h, "God is love, and n and p are letters")
+    await h.press("escape")
+    expect(store.note({ book: 62, chapter: 4, verse: 8 })?.body).toBe("God is love, and n and p are letters")
+    expect(h.app().position()).toMatchObject({ book: 62, chapter: 4 }) // n and p did not turn the chapter
+  })
+
+  test("? in the Notes tab opens help, not a note", async () => {
+    const { UserStore } = await import("../src/data/user")
+    const store = UserStore.memory()
+    h = await harness({ width: 200, height: 46, store, initial: { route: "reader", book: 62, chapter: 4, verse: 8 } })
+    await h.press("tab")
+    await h.type("?")
+    expect(h.frame()).toContain("How to use Selah")
+    expect(store.note({ book: 62, chapter: 4, verse: 8 })).toBeUndefined()
+  })
+
+  test("← and → still change chapter from the pane", async () => {
+    h = await harness({ width: 200, height: 46, initial: { route: "reader", book: 62, chapter: 4, verse: 8 } })
+    await h.press("tab")
+    await h.press("right")
+    expect(h.frame()).toContain("1 John 5 · KJV")
   })
 })

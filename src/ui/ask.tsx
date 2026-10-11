@@ -6,7 +6,7 @@ import { bookById } from "../data/books"
 import { findBook, formatRef, type Ref } from "../data/ref"
 import { SelectDialog } from "./components/dialog"
 import { Inline } from "./components/inline"
-import { LeftBar, TRANSPARENT } from "./components/primitives"
+import { Hints, LeftBar, TRANSPARENT } from "./components/primitives"
 import { plain } from "./components/verse"
 import { mixColor } from "./motion"
 import { useApp } from "./state"
@@ -484,9 +484,15 @@ export function AskTab(props: { register: (r: { key: (k: KeyEvent) => boolean; c
                 )) as never}
             />
           </box>
-          <text fg={t().textMuted} wrapMode="none">
-            enter ask · ctrl+r refs · ctrl+k keep note · ctrl+s save answer · ctrl+x clear
-          </text>
+          <Hints
+            hints={[
+              { key: "enter", label: "ask" },
+              { key: "ctrl+r", label: "open a reference" },
+              { key: "ctrl+k", label: "keep the note" },
+              { key: "ctrl+s", label: "save the answer" },
+              { key: "ctrl+x", label: "clear" },
+            ]}
+          />
         </box>
       </Show>
     </box>
