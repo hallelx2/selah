@@ -1,5 +1,5 @@
 import type { KeyEvent, RGBA, TerminalColors } from "@opentui/core"
-import { batch, createContext, createMemo, createSignal, onCleanup, useContext, type JSX, type ParentProps } from "solid-js"
+import { batch, createContext, createEffect, createMemo, createSignal, on, onCleanup, useContext, type JSX, type ParentProps } from "solid-js"
 import { createStore, produce } from "solid-js/store"
 import type { Bible } from "../data/bible"
 import type { Commentary } from "../data/commentary"
@@ -186,6 +186,21 @@ function init(deps: Deps) {
   // keys -------------------------------------------------------------------------
 
   const handlers: { fn: KeyHandler; modal: boolean }[] = []
+  /**
+   * Gives a text box the keyboard back whenever nothing covers it: a dialog or a scene takes
+   * the keyboard while open, and without this the box underneath stays deaf after it closes.
+   */
+  function useReturnFocus(focus: () => void, active: () => boolean = () => true) {
+    const free = () => active() && dialogs.length === 0 && !scene()
+    createEffect(
+      on(free, (isFree: boolean) => {
+        // checked again when it runs: a dialog closed and another opened in the same tick
+        // (palette → Keyboard shortcuts, gallery → scene) must not get the box focused under it
+        if (isFree) setTimeout(() => free() && focus(), 0)
+      }),
+    )
+  }
+
   function useKeys(fn: KeyHandler, opts: { modal?: boolean } = {}) {
     const entry = { fn, modal: !!opts.modal }
     handlers.push(entry)
@@ -371,6 +386,7 @@ function init(deps: Deps) {
     setPreview,
     mode,
     useKeys,
+    useReturnFocus,
     dispatch,
     dialogs,
     openDialog,

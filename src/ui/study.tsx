@@ -11,6 +11,7 @@ import { Inline } from "./components/inline"
 import { Markdown } from "./components/markdown"
 import { mixColor } from "./motion"
 import { useApp, type StudyTab } from "./state"
+import { openPalette } from "./dialogs"
 
 const TABS: { id: StudyTab; label: string; key: string }[] = [
   { id: "notes", label: "Notes", key: "1" },
@@ -38,6 +39,8 @@ export function StudyPane(props: { overlay?: boolean }) {
   app.useKeys((key) => {
     if (!focused()) return false
     app.deps.tracker.activity()
+    // commands work anywhere, as help promises, even mid-note or mid-question
+    if (key.ctrl && key.name === "p") return openPalette(app), true
     // A tab with a text input (Ask) takes every key except moving focus away and its ctrl chords.
     if (captures?.()) {
       if (paneKeyEvent?.(key)) return true
@@ -262,20 +265,25 @@ function Editor(props: {
   )
   createEffect(() => {
     if (!area || area.isDestroyed) return
-    // Focus on the next tick: focusing inside the key event that asked for it would hand that
-    // very key ("e") to the textarea as typed text.
-    if (props.active)
-      setTimeout(() => {
-        if (!area || area.isDestroyed) return
-        area.focus()
-        // continue writing where the note ends
-        area.cursorOffset = area.plainText.length
-      }, 0)
-    else {
+    if (!props.active) {
       area.blur()
       flush()
     }
   })
+  // Focus on the next tick (focusing inside the key event that asked for it would hand that very
+  // key, "e", to the textarea as typed text), and again whenever a dialog over it closes.
+  let placed = false
+  app.useReturnFocus(
+    () => {
+      if (!area || area.isDestroyed || !props.active) return
+      area.focus()
+      // continue writing where the note ends, the first time; after a dialog, where the cursor was
+      if (!placed) area.cursorOffset = area.plainText.length
+      placed = true
+    },
+    () => props.active,
+  )
+  createEffect(() => !props.active && (placed = false))
   return (
     <box flexDirection="column" flexGrow={props.grow ? 1 : 0} flexShrink={props.grow ? 1 : 0}>
       <box flexDirection="row" justifyContent="space-between">
