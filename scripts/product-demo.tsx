@@ -5,6 +5,7 @@
 //   bun scripts/product-demo.tsx              (rsvg-convert, ffmpeg; the Ask chapter needs Claude Code)
 //   CHAPTERS=reading,ask bun scripts/product-demo.tsx   re-record only those, then stitch with the rest
 //   FRESH=1 bun scripts/product-demo.tsx      start from nothing
+//   MARKS_ONLY=1 bun scripts/product-demo.tsx only rewrite the chapter marks from the parts
 //
 // Nothing in a chapter is mocked: each drives the app through the test harness key by key, and
 // every frame is what the renderer drew, paced to the real clock so the app's own timers keep
@@ -255,10 +256,16 @@ async function finish(c: Chapter) {
 // --- the chapters ------------------------------------------------------------------------------
 const bible = await fixtureBible()
 const LOOK = { icons: "nerd", motion: "full", theme: "opencode", welcomed: true } as const
-const want = (name: string) => !only || only.includes(name)
+// MARKS_ONLY=1 rewrites the chapter marks from the parts on disk, recording and encoding nothing
+const marksOnly = !!process.env.MARKS_ONLY
+const want = (name: string) => !marksOnly && (!only || only.includes(name))
 let index = 0
+/** Every chapter of this film, in order, as its part's file name: the stitch uses exactly these. */
+const expected: string[] = []
+const part = (name: string) => (expected.push(`${String(index).padStart(2, "0")}-${name}.mp4`), name)
 async function chapter(name: string, title: string, setup: Parameters<typeof harness>[0] | null, run: (c: Chapter) => Promise<void>) {
   index++
+  part(name)
   if (!want(name)) return
   const h = setup ? await harness({ width: COLS, height: ROWS, store: seededStore("2026-10-11"), start: at, bible, ...setup, config: { ...LOOK, ...setup.config } }) : undefined
   const c = new Chapter(name, title, h)
@@ -271,6 +278,7 @@ async function chapter(name: string, title: string, setup: Parameters<typeof har
 // a full-frame card: the wordmark, a headline, and lines under it, each surfacing in turn
 async function card(name: string, lines: { text: string; size: number; color: string; at: number; mono?: boolean }[], seconds: number, markAt = 0) {
   index++
+  part(name)
   if (!want(name)) return
   const c = new Chapter(name, "")
   c.index = index
@@ -494,7 +502,7 @@ if (want("ask")) {
       await c.hold(3.5)
     },
   )
-} else index++
+} else (index++, part("ask"))
 
 await chapter("dore", "selah · Doré", { config: { theme: "gruvbox" }, initial: { route: "reader", book: 43, chapter: 4, verse: 7 } }, async (c) => {
   c.say("Doré's engravings, at the passage they show", "All 100 of Doré's engravings. Drawn here in half-blocks; kitty, Ghostty and sixel terminals show the full engraving")
@@ -590,6 +598,7 @@ await chapter("help", "selah · help", { initial: { route: "reader", book: 43, c
 // the command line: real commands, their real output, typed into a shell
 async function shellChapter() {
   index++
+  part("cli")
   if (!want("cli")) return
   const home = join(work, "cli-home")
   // a home with the King James in it, so the output is what anyone would see
@@ -655,27 +664,30 @@ await card(
   6,
 )
 
-// --- stitch: every part on disk, in order ---------------------------------------------------
-const parts = [...new Bun.Glob("[0-9][0-9]-*.mp4").scanSync(work)].sort()
-if (parts.length !== index) {
-  console.log(`${parts.length} of ${index} chapters recorded; run the rest before the film can be stitched`)
+// --- stitch: exactly this film's chapters, in order -----------------------------------------
+const missing = expected.filter((p) => !Bun.file(join(work, p)).size)
+if (missing.length) {
+  console.log(`not recorded yet: ${missing.join(", ")}; record them before the film can be stitched`)
 } else {
-  const list = join(work, "parts.txt")
-  writeFileSync(list, parts.map((p) => `file '${join(work, p)}'`).join("\n"))
   const out = "docs/demo/selah-product-demo"
-  await Bun.$`ffmpeg -y -loglevel error -f concat -safe 0 -i ${list} -c:v libx264 -preset slow -crf 22 -pix_fmt yuv420p -movflags +faststart ${out}.mp4`
-  await Bun.$`ffmpeg -y -loglevel error -i ${out}.mp4 -c:v libvpx-vp9 -b:v 0 -crf 40 -deadline good -cpu-used 4 -row-mt 1 -pix_fmt yuv420p ${out}.webm`
-  // the poster: the opening card at full light
-  await Bun.$`ffmpeg -y -loglevel error -ss 4.5 -i ${out}.mp4 -frames:v 1 -vf scale=1280:-2 ${out}-poster.png`
-  // chapter marks, from each part's own length
+  if (!marksOnly) {
+    const list = join(work, "parts.txt")
+    writeFileSync(list, expected.map((p) => `file '${join(work, p)}'`).join("\n"))
+    await Bun.$`ffmpeg -y -loglevel error -f concat -safe 0 -i ${list} -c:v libx264 -preset slow -crf 22 -pix_fmt yuv420p -movflags +faststart ${out}.mp4`
+    await Bun.$`ffmpeg -y -loglevel error -i ${out}.mp4 -c:v libvpx-vp9 -b:v 0 -crf 40 -deadline good -cpu-used 4 -row-mt 1 -pix_fmt yuv420p ${out}.webm`
+    // the poster: the opening card at full light
+    await Bun.$`ffmpeg -y -loglevel error -ss 4.5 -i ${out}.mp4 -frames:v 1 -vf scale=1280:-2 ${out}-poster.png`
+  }
+  // chapter marks from each part's own length, and the film's, so the site needs no ffprobe
   let t = 0
-  const marks: { name: string; start: number }[] = []
-  for (const p of parts) {
-    marks.push({ name: p.replace(/^\d+-|\.mp4$/g, ""), start: Math.round(t * 10) / 10 })
+  const chapters: { name: string; start: number }[] = []
+  for (const p of expected) {
+    chapters.push({ name: p.replace(/^\d+-|\.mp4$/g, ""), start: Math.round(t * 10) / 10 })
     t += Number((await Bun.$`ffprobe -v error -show_entries format=duration -of csv=p=0 ${join(work, p)}`.text()).trim())
   }
-  writeFileSync(`${out}-chapters.json`, JSON.stringify(marks, null, 1))
-  console.log(`\n${parts.length} chapters, ${Math.floor(t / 60)}m${Math.round(t % 60)}s`)
-  for (const f of [`${out}.mp4`, `${out}.webm`]) console.log(f, `${(statSync(f).size / 1e6).toFixed(1)} MB`)
+  const duration = Number((await Bun.$`ffprobe -v error -show_entries format=duration -of csv=p=0 ${out}.mp4`.text()).trim())
+  writeFileSync(`${out}-chapters.json`, JSON.stringify({ duration: Math.round(duration * 10) / 10, chapters }, null, 1))
+  console.log(`\n${expected.length} chapters, ${Math.floor(duration / 60)}m${Math.round(duration % 60)}s`)
+  if (!marksOnly) for (const f of [`${out}.mp4`, `${out}.webm`]) console.log(f, `${(statSync(f).size / 1e6).toFixed(1)} MB`)
 }
 process.exit(0)

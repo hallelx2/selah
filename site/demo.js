@@ -16,5 +16,10 @@ if (film) {
   })
   // a link to /demo#t=95 starts there
   const t = /#t=(\d+)/.exec(location.hash)
-  if (t) film.addEventListener("loadedmetadata", () => (film.currentTime = Number(t[1])), { once: true })
+  if (t) {
+    const seek = () => (film.currentTime = Number(t[1]))
+    // the metadata may already be here (cached) before this deferred script runs
+    if (film.readyState >= 1) seek()
+    else film.addEventListener("loadedmetadata", seek, { once: true })
+  }
 }

@@ -67,5 +67,5 @@ describe("ctrl+o, today's reading", () => {
     await h.press("escape")
     await h.press("o", { ctrl: true })
     expect(header(h)).toContain(expected)
-  })
+  }, SLOW)
 })

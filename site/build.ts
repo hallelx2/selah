@@ -20,6 +20,7 @@ import { LOGO } from "../src/ui/components/logo"
 import { BG, css, mix, ACCENT, PRIMARY, wordmark } from "./wordmark"
 import { KEYS } from "../src/ui/keys"
 import { fixtureBible } from "../test/fixture"
+import { filmLength } from "./film"
 import { home } from "./home"
 import { layout, ORIGIN, type Page } from "./layout"
 import { changelogPage, demoPage, downloadPage, engravingsPage, keyboard, keysPage, latestRelease, markdownPage, notFoundPage, type Plate, type Release } from "./pages"
@@ -219,11 +220,10 @@ const pages: Page[] = [
   ...(() => {
     // the product demo (scripts/product-demo.tsx), when it has been recorded
     const marks = join(root, "docs/demo/selah-product-demo-chapters.json")
-    if (!existsSync(marks)) return []
-    const chapters = JSON.parse(readFileSync(marks, "utf8")) as { name: string; start: number; end?: number }[]
-    const length = (Bun.spawnSync(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", join(root, "docs/demo/selah-product-demo.mp4")]).stdout.toString().trim())
-    const seconds = Math.round(Number(length))
-    const minutes = `${Math.floor(seconds / 60)} minutes ${seconds % 60 ? `and ${seconds % 60} seconds` : ""}`.trim()
+    if (!existsSync(marks) || !existsSync(join(root, "docs/demo/selah-product-demo.mp4"))) return []
+    // written by the recorder with the film's own length, so the build needs no ffprobe
+    const { duration, chapters } = JSON.parse(readFileSync(marks, "utf8")) as { duration: number; chapters: { name: string; start: number }[] }
+    const minutes = filmLength(duration)
     return [
       {
         path: "/demo",

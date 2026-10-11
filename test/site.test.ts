@@ -124,7 +124,11 @@ describe("the site", () => {
   })
 
   test("/demo lists every chapter of the film, in order, each within it", () => {
-    const marks = JSON.parse(readFileSync(join(root, "docs/demo/selah-product-demo-chapters.json"), "utf8")) as { name: string; start: number }[]
+    const { chapters: marks, duration } = JSON.parse(readFileSync(join(root, "docs/demo/selah-product-demo-chapters.json"), "utf8")) as {
+      duration: number
+      chapters: { name: string; start: number }[]
+    }
+    expect(marks.at(-1)!.start).toBeLessThan(duration)
     const html = read("demo.html")
     const seeks = [...html.matchAll(/data-seek="([\d.]+)"/g)].map((m) => Number(m[1]))
     expect(seeks).toEqual(marks.map((m) => m.start))
@@ -132,6 +136,14 @@ describe("the site", () => {
     // every chapter has a human title, not its file name
     for (const m of marks) expect(html).not.toContain(`<span>${m.name}</span>`)
     expect(existsSync(join(dist, "selah-product-demo.mp4"))).toBe(true)
+  })
+
+  test("the film's length reads as a person would say it", async () => {
+    const { filmLength } = await import("../site/film")
+    expect(filmLength(200)).toBe("3 minutes and 20 seconds")
+    expect(filmLength(60)).toBe("1 minute")
+    expect(filmLength(61)).toBe("1 minute and 1 second")
+    expect(filmLength(45)).toBe("45 seconds")
   })
 
   test("/download offers what the installers install: never a pre-release", async () => {
