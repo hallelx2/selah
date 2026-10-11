@@ -18,6 +18,8 @@ export const RELEASE_TARGETS = [
   "bun-linux-arm64-musl",
   "bun-darwin-arm64",
   "bun-darwin-x64",
+  "bun-windows-x64",
+  "bun-windows-arm64",
 ]
 
 const args = process.argv.slice(2)
@@ -31,6 +33,8 @@ const targets = release ? RELEASE_TARGETS : named.length ? named : [`bun-${proce
 const built: string[] = []
 
 for (const target of targets) {
+  // Bun names a Windows executable .exe itself; the release asset carries the same name.
+  const exe = target.includes("windows") ? ".exe" : ""
   const outfile = release || named.length ? `${outDir}/selah-${target.replace(/^bun-/, "")}` : "dist/selah"
   const result = await Bun.build({
     entrypoints: ["./src/index.tsx"],
@@ -45,8 +49,8 @@ for (const target of targets) {
     for (const log of result.logs) console.error(log)
     process.exit(1)
   }
-  built.push(outfile)
-  console.log(`built ${outfile}`)
+  built.push(outfile + exe)
+  console.log(`built ${outfile + exe}`)
 }
 
 if (release) {

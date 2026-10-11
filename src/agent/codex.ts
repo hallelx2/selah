@@ -1,4 +1,4 @@
-import { existsSync, lstatSync, mkdirSync, readlinkSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs"
+import { existsSync, linkSync, lstatSync, mkdirSync, readlinkSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs"
 import { homedir } from "node:os"
 import { join } from "node:path"
 import { paths } from "../data/paths"
@@ -104,6 +104,14 @@ const PATH_VARS = ["SELAH_HOME", "SELAH_SOURCES", "XDG_DATA_HOME", "XDG_CONFIG_H
 
 /** Points `link` at the reader's auth.json, repairing a dangling or stale link, never touching a real file. */
 function linkAuth(target: string, link: string) {
+  // Windows refuses symlinks without Developer Mode or admin rights; there the login is shared
+  // through a hard link instead, remade on every run (Codex replaces auth.json when it refreshes
+  // the token, which would leave an old hard link behind). The marker says the link is ours.
+  const marker = `${link}.selah-hardlink`
+  if (existsSync(marker)) {
+    rmSync(link, { force: true })
+    rmSync(marker, { force: true })
+  }
   let current: string | undefined
   try {
     const st = lstatSync(link)
@@ -114,7 +122,14 @@ function linkAuth(target: string, link: string) {
   }
   if (current === target && existsSync(target)) return
   if (current !== undefined) unlinkSync(link)
-  if (existsSync(target)) symlinkSync(target, link)
+  if (!existsSync(target)) return
+  try {
+    symlinkSync(target, link)
+  } catch (e) {
+    if (process.platform !== "win32" && (e as { code?: string }).code !== "EPERM") throw e
+    linkSync(target, link)
+    writeFileSync(marker, target)
+  }
 }
 
 /** Codex has no session to resume in ephemeral mode, so earlier turns ride along in the prompt. */
