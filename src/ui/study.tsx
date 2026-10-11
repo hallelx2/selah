@@ -11,7 +11,7 @@ import { Inline } from "./components/inline"
 import { Markdown } from "./components/markdown"
 import { mixColor } from "./motion"
 import { useApp, type StudyTab } from "./state"
-import { openHelp, openPalette } from "./dialogs"
+import { openHelp, openPalette, openToday } from "./dialogs"
 
 const TABS: { id: StudyTab; label: string; key: string }[] = [
   { id: "notes", label: "Notes", key: "1" },
@@ -42,8 +42,9 @@ export function StudyPane(props: { overlay?: boolean }) {
   app.useKeys((key) => {
     if (!focused()) return false
     app.deps.tracker.activity()
-    // commands work anywhere, as help promises, even mid-note or mid-question
+    // commands and today's reading work anywhere, as help promises, even mid-note or mid-question
     if (key.ctrl && key.name === "p") return openPalette(app), true
+    if (key.ctrl && key.name === "o") return openToday(app), true
     // A tab with a text input (Ask) takes every key except moving focus away and its ctrl chords.
     if (captures?.()) {
       if (paneKeyEvent?.(key)) return true

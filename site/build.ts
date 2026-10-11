@@ -17,11 +17,13 @@ import { installScenes, PLATES } from "../src/data/scenes"
 import { IDLE_MS, minimumReadMs } from "../src/data/tracker"
 import { CATALOG } from "../src/data/translations"
 import { LOGO } from "../src/ui/components/logo"
+import { BG, css, mix, ACCENT, PRIMARY, wordmark } from "./wordmark"
 import { KEYS } from "../src/ui/keys"
 import { fixtureBible } from "../test/fixture"
+import { filmLength } from "./film"
 import { home } from "./home"
 import { layout, ORIGIN, type Page } from "./layout"
-import { changelogPage, downloadPage, engravingsPage, keyboard, keysPage, latestRelease, markdownPage, notFoundPage, type Plate, type Release } from "./pages"
+import { changelogPage, demoPage, downloadPage, engravingsPage, keyboard, keysPage, latestRelease, markdownPage, notFoundPage, type Plate, type Release } from "./pages"
 
 const root = join(import.meta.dir, "..")
 const out = join(import.meta.dir, "dist")
@@ -34,37 +36,6 @@ const write = (path: string, data: string | Uint8Array) => {
   writeFileSync(join(out, path), data)
 }
 
-// --- the wordmark: the same glyph grid the terminal draws, as pixels ---------------------------
-// Each character cell is 1 unit wide and 2 tall (upper and lower half). In the app, `_` is a
-// shadowed space, `^` a lit upper half over a shadow, `~` a shadow-only upper half; colours run
-// from the theme's primary to its accent across the width, shadows are 28% of the colour.
-const PRIMARY = [0xfa, 0xb2, 0x83] // opencode theme, dark
-const ACCENT = [0x9d, 0x7c, 0xd8]
-const BG = [0x0a, 0x0a, 0x0a]
-const mix = (a: number[], b: number[], t: number) => a.map((x, i) => Math.round(x + (b[i]! - x) * t))
-const css = (c: number[]) => `#${c.map((x) => x.toString(16).padStart(2, "0")).join("")}`
-function wordmark(cellW: number, cellH: number, ground = BG): string {
-  const width = LOGO[0]!.length
-  const rects: string[] = []
-  LOGO.forEach((line, row) => {
-    Array.from(line).forEach((ch, x) => {
-      const fg = css(mix(PRIMARY, ACCENT, x / (width - 1)))
-      // the shadow is the letter's colour faded into the page it sits on
-      const shadow = css(mix(ground, mix(PRIMARY, ACCENT, x / (width - 1)), ground === BG ? 0.28 : 0.35))
-      const top = row * 2
-      const cell = (y: number, color: string) => rects.push(`<rect x="${x * cellW}" y="${y * cellH}" width="${cellW}" height="${cellH}" fill="${color}"/>`)
-      if (ch === "█") (cell(top, fg), cell(top + 1, fg))
-      else if (ch === "▀") cell(top, fg)
-      else if (ch === "▄") cell(top + 1, fg)
-      else if (ch === "^") (cell(top, fg), cell(top + 1, shadow))
-      else if (ch === "_") (cell(top, shadow), cell(top + 1, shadow))
-      else if (ch === "~") cell(top, shadow)
-    })
-  })
-  const w = width * cellW
-  const h = LOGO.length * 2 * cellH
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" shape-rendering="crispEdges" role="img" aria-label="Selah">${rects.join("")}</svg>`
-}
 write("logo.svg", wordmark(4, 4))
 const LOGO_HTML = `<span class="logo-dark">${wordmark(3, 3)}</span><span class="logo-light">${wordmark(3, 3, [0xfd, 0xfc, 0xfc])}</span>`
 // the favicon: the S, the first four columns of the same grid
@@ -246,6 +217,23 @@ const pages: Page[] = [
     }),
     scripts: ["/tour.js"],
   },
+  ...(() => {
+    // the product demo (scripts/product-demo.tsx), when it has been recorded
+    const marks = join(root, "docs/demo/selah-product-demo-chapters.json")
+    if (!existsSync(marks) || !existsSync(join(root, "docs/demo/selah-product-demo.mp4"))) return []
+    // written by the recorder with the film's own length, so the build needs no ffprobe
+    const { duration, chapters } = JSON.parse(readFileSync(marks, "utf8")) as { duration: number; chapters: { name: string; start: number }[] }
+    const minutes = filmLength(duration)
+    return [
+      {
+        path: "/demo",
+        title: "The tour · Selah",
+        description: "Welcome to Selah, your terminal app for studying the Scriptures: every screen and what you can do on it, recorded from the real app.",
+        body: demoPage(chapters, minutes),
+        scripts: ["/demo.js"],
+      },
+    ]
+  })(),
   { path: "/keys", title: "Every key · Selah", description: "Every key in Selah, in plain words, generated from the app's own help.", body: keysPage(KEYS) },
   {
     path: "/engravings",
@@ -299,15 +287,15 @@ for (const p of pages) {
 for (const p of pages) write(p.path === "/" ? "index.html" : `${p.path.slice(1)}.html`, layout(p, LOGO_HTML))
 
 // --- static files -----------------------------------------------------------------------------
-for (const f of ["styles.css", "site.js", "tour.js", "gallery.js"]) copyFileSync(join(import.meta.dir, f), join(out, f))
+for (const f of ["styles.css", "site.js", "tour.js", "gallery.js", "demo.js"]) copyFileSync(join(import.meta.dir, f), join(out, f))
 cpSync(join(import.meta.dir, "media"), join(out, "media"), { recursive: true })
 copyFileSync(join(root, "install.sh"), join(out, "install"))
 copyFileSync(join(root, "install.sh"), join(out, "install.sh"))
 copyFileSync(join(root, "install.ps1"), join(out, "install.ps1"))
-for (const f of ["selah-demo.mp4", "selah-demo.webm", "selah-demo-poster.png"]) {
+for (const f of ["selah-demo.mp4", "selah-demo.webm", "selah-demo-poster.png", "selah-product-demo.mp4", "selah-product-demo.webm", "selah-product-demo-poster.png"]) {
   const src = join(root, "docs", "demo", f)
   if (existsSync(src)) copyFileSync(src, join(out, f))
-  else console.warn(`missing ${src}; run bun scripts/demo.tsx`)
+  else console.warn(`missing ${src}; run bun scripts/${f.startsWith("selah-product-demo") ? "product-demo" : "demo"}.tsx`)
 }
 write("robots.txt", `User-agent: *\nAllow: /\nSitemap: ${ORIGIN}/sitemap.xml\n`)
 write(

@@ -16,7 +16,8 @@ export interface Page {
 }
 
 const NAV = [
-  ["/#tour", "Tour"],
+  ["/demo", "Watch"],
+  ["/#tour", "Try it"],
   ["/engravings", "Engravings"],
   ["/docs", "Docs"],
   ["/changelog", "Changelog"],
@@ -29,7 +30,8 @@ const FOOTER: [string, [string, string][]][] = [
     [
       ["/download", "Download"],
       ["/changelog", "Changelog"],
-      ["/#tour", "Take the tour"],
+      ["/demo", "Watch the tour"],
+      ["/#tour", "Try it on the page"],
     ],
   ],
   [

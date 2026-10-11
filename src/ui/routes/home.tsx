@@ -6,7 +6,7 @@ import { formatMinutes } from "../../data/stats"
 import { Bar, Footer, LeftBar, fit } from "../components/primitives"
 import { Logo } from "../components/logo"
 import { VerseText } from "../components/verse"
-import { openHelp, openPalette, openPlans, openSearch, openTranslations } from "../dialogs"
+import { openHelp, openPalette, openPlans, openSearch, openToday, openTranslations } from "../dialogs"
 import { ease } from "../motion"
 import { useApp } from "../state"
 
@@ -51,17 +51,11 @@ export function Home() {
     openSearch(app, text)
   }
 
-  function openToday() {
-    const p = plan()
-    if (!p) return openPlans(app)
-    const first = p.status.next.chapters[0]
-    if (first) app.openChapter(first)
-  }
 
   app.useKeys((key) => {
     if (key.ctrl && key.name === "p") return openPalette(app), true
     if (key.ctrl && key.name === "s") return app.setRoute("progress"), true
-    if (key.ctrl && key.name === "o") return openToday(), true
+    if (key.ctrl && key.name === "o") return openToday(app), true
     if (key.ctrl && key.name === "r") {
       const p = resume()
       if (p) app.openChapter(p, p.verse)

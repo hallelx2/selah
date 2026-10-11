@@ -5,7 +5,7 @@ import { BOOKS } from "../../data/books"
 import { addDays, daysBetween, monthName, parseDay, prettyDay } from "../../data/dates"
 import { consistency, formatMinutes, heatmap, lastDays, met, verdict } from "../../data/stats"
 import { Bar, Footer, LeftBar, LineBar, ROUNDED, fit } from "../components/primitives"
-import { openGoal, openPalette, openPlans } from "../dialogs"
+import { openGoal, openPalette, openPlans, openToday } from "../dialogs"
 import { ease } from "../motion"
 import { useApp } from "../state"
 
@@ -84,7 +84,9 @@ export function Progress() {
     if (key.name === "space" || key.name === "pagedown") return scroll?.scrollBy(Math.floor(dims().height / 2)), true
     if (key.name === "pageup") return scroll?.scrollBy(-Math.floor(dims().height / 2)), true
     if (key.name === "g" && key.sequence !== "G") return scroll?.scrollTo(0), true
-    if (key.name === "o" || (key.ctrl && key.name === "o")) return openPlans(app), true
+    // ctrl+o is today's reading everywhere; o here chooses the plan
+    if (key.ctrl && key.name === "o") return openToday(app), true
+    if (key.name === "o") return openPlans(app), true
     if (key.name === "e") return openGoal(app), true
     if (key.name === "escape" || key.name === "s") return app.setRoute(app.deps.store.position() ? "reader" : "home"), true
     if (key.name === "q") return app.deps.quit(), true
