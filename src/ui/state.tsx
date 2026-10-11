@@ -191,11 +191,13 @@ function init(deps: Deps) {
    * the keyboard while open, and without this the box underneath stays deaf after it closes.
    */
   function useReturnFocus(focus: () => void, active: () => boolean = () => true) {
+    const free = () => active() && dialogs.length === 0 && !scene()
     createEffect(
-      on(
-        () => active() && dialogs.length === 0 && !scene(),
-        (free: boolean) => free && setTimeout(focus, 0),
-      ),
+      on(free, (isFree: boolean) => {
+        // checked again when it runs: a dialog closed and another opened in the same tick
+        // (palette → Keyboard shortcuts, gallery → scene) must not get the box focused under it
+        if (isFree) setTimeout(() => free() && focus(), 0)
+      }),
     )
   }
 

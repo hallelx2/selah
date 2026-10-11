@@ -55,6 +55,43 @@ describe("home", () => {
   })
 })
 
+describe("never under a dialog", () => {
+  test("palette → Keyboard shortcuts: the home box stays unfocused under Help, and keys do not leak into it", async () => {
+    h = await harness({ width: 120, height: 40 })
+    await h.press("p", { ctrl: true })
+    await h.type("keyboard")
+    await h.press("return") // closes the palette and opens Help in the same tick
+    await wait(20)
+    await h.settle()
+    expect(h.frame()).toContain("Keyboard")
+    await h.type("xyz")
+    await h.press("escape")
+    await wait(20)
+    await h.settle()
+    expect(h.frame()).not.toContain("xyz") // nothing was typed into the box under Help
+    await h.type("ps 23") // and once Help is gone, the box takes the keyboard again
+    await h.press("return")
+    expect(h.frame()).toContain("Psalms 23 · KJV")
+  })
+
+  test("a note being edited takes the keyboard back after a dialog closes", async () => {
+    const { UserStore } = await import("../src/data/user")
+    const store = UserStore.memory()
+    h = await harness({ width: 200, height: 46, store, initial: { route: "reader", book: 43, chapter: 3, verse: 16 } })
+    await h.press("tab")
+    await h.press("e")
+    await wait(20)
+    await h.type("first")
+    await h.press("p", { ctrl: true })
+    await h.press("escape")
+    await wait(20)
+    await h.settle()
+    await h.type(" second")
+    await h.press("escape")
+    expect(store.note({ book: 43, chapter: 3, verse: 16 })?.body).toBe("first second")
+  })
+})
+
 describe("Ask", () => {
   test("after the references dialog is closed with esc, typing in Ask works again", async () => {
     const seen: string[] = []
