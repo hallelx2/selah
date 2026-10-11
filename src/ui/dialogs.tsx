@@ -24,65 +24,147 @@ interface Command {
   title: string
   category: string
   hint?: string
+  /** The everyday words someone types looking for this, besides the title. */
+  words?: string
   run: () => void
 }
 
 export function openPalette(app: App) {
   const commands = (): Command[] => {
     const reading = app.route() === "reader"
+    // Study tools open from anywhere: from home they open the reader where you left off.
+    const study = (tab: "notes" | "commentary" | "words" | "ask") => () => {
+      if (!reading) resume(app)
+      app.setStudyOpen(true)
+      app.setStudyTab(tab)
+      app.setStudyFocused(true)
+    }
+    const verse = () => ({ ...app.position() })
+    const here = () => formatRef({ book: app.position().book, chapter: app.position().chapter, verseStart: app.position().verse })
+    const SETTINGS = "settings preferences options configure"
     const list: Command[] = [
-      { title: "Home", category: "Go", hint: "esc", run: () => app.setRoute("home") },
-      { title: "Continue reading", category: "Go", hint: "ctrl+r", run: () => resume(app) },
-      { title: "Progress and streaks", category: "Go", hint: "s", run: () => app.setRoute("progress") },
-      { title: "Today's reading", category: "Go", hint: "ctrl+o", run: () => openToday(app) },
-      { title: "Go to book or chapter", category: "Go", hint: "o", run: () => openBooks(app) },
-      { title: "Search the Bible", category: "Go", hint: "/", run: () => openSearch(app) },
-      { title: "Bookmarks", category: "Study", hint: "B", run: () => openBookmarks(app) },
-      { title: "Notes", category: "Study", run: () => openNotes(app) },
-      { title: "Reading plan", category: "Tracking", run: () => openPlans(app) },
-      { title: "Daily goal", category: "Tracking", run: () => openGoal(app) },
-      { title: "Theme", category: "Appearance", run: () => openThemes(app) },
-      { title: `Icons: ${app.icons()}`, category: "Appearance", run: () => openIcons(app) },
+      { title: "Home", category: "Go", hint: "esc", words: "start main menu back", run: () => app.setRoute("home") },
+      { title: "Continue reading", category: "Go", hint: "ctrl+r", words: "resume where I left off last", run: () => resume(app) },
+      { title: "Progress and streaks", category: "Go", hint: "s", words: "stats statistics streak history how much", run: () => app.setRoute("progress") },
+      { title: "Today's reading", category: "Go", hint: "ctrl+o", words: "today plan daily", run: () => openToday(app) },
+      { title: "Go to book or chapter", category: "Go", hint: "o", words: "open book chapter jump navigate find book", run: () => openBooks(app) },
+      { title: "Search the Bible", category: "Go", hint: "/", words: "find look up word phrase", run: () => openSearch(app) },
+      { title: "Study notes", category: "Study", hint: "tab", words: "write note journal thoughts", run: study("notes") },
+      {
+        title: "Matthew Henry's commentary",
+        category: "Study",
+        hint: "tab 2",
+        words: "commentary henry explain explanation meaning interpretation",
+        run: study("commentary"),
+      },
+      {
+        title: "Hebrew and Greek words of this verse",
+        category: "Study",
+        hint: "tab 3",
+        words: "greek hebrew original language strongs strong's lexicon dictionary concordance interlinear word meaning",
+        run: study("words"),
+      },
+      {
+        title: "Ask Claude or Codex about this chapter",
+        category: "Study",
+        hint: "tab 4",
+        words: "ask ai chat claude codex question assistant gpt",
+        run: study("ask"),
+      },
+      { title: "Doré gallery", category: "Study", hint: "i", words: "pictures picture art images paintings engravings drawings illustrations scenes", run: () => openGallery(app) },
+      { title: "Bookmarks", category: "Study", hint: "B", words: "saved favourites favorites", run: () => openBookmarks(app) },
+      { title: "All notes", category: "Study", words: "notes journal export", run: () => openNotes(app) },
+      { title: "Reading plan", category: "Tracking", words: "plan schedule through the bible in a year", run: () => openPlans(app) },
+      { title: "Daily goal", category: "Tracking", words: `goal target ${SETTINGS}`, run: () => openGoal(app) },
+      { title: "Theme", category: "Appearance", words: `colors colours look skin ${SETTINGS}`, run: () => openThemes(app) },
+      { title: `Icons: ${app.icons()}`, category: "Appearance", words: `icons symbols boxes question marks ${SETTINGS}`, run: () => openIcons(app) },
       {
         title: `Motion: ${app.config.motion}`,
         category: "Appearance",
         hint: "full / reduced",
+        words: `animation motion ${SETTINGS}`,
         run: () => app.setConfig("motion", app.config.motion === "full" ? "reduced" : "full"),
       },
       {
-        title: `Mode: ${app.config.mode}`,
+        title: `Light or dark: ${app.config.mode}`,
         category: "Appearance",
         hint: "auto / dark / light",
+        words: `dark light mode night ${SETTINGS}`,
         run: () => app.setConfig("mode", app.config.mode === "auto" ? "dark" : app.config.mode === "dark" ? "light" : "auto"),
       },
-      { title: app.config.sidebar ? "Hide sidebar" : "Show sidebar", category: "Appearance", hint: "ctrl+b", run: () => app.setConfig("sidebar", !app.config.sidebar) },
-      { title: "Translations", category: "Library", hint: "t", run: () => openTranslations(app) },
-      { title: "Keyboard shortcuts", category: "Help", hint: "?", run: () => openHelp(app) },
-      { title: "Quit", category: "Help", hint: "q", run: () => app.deps.quit() },
+      {
+        title: "Bigger or smaller text",
+        category: "Appearance",
+        words: `font size zoom larger bigger smaller text ${SETTINGS}`,
+        run: () =>
+          app.toast(
+            "Text size is your terminal's",
+            "Press ctrl and + or - (cmd on a Mac). In the reader, = and - make the column wider or narrower.",
+          ),
+      },
+      { title: app.config.sidebar ? "Hide sidebar" : "Show sidebar", category: "Appearance", hint: "ctrl+b", words: "sidebar books list", run: () => app.setConfig("sidebar", !app.config.sidebar) },
+      {
+        title: "Translations",
+        category: "Library",
+        hint: "t",
+        words: `version bible version translation kjv bsb asv ylt download install ${SETTINGS}`,
+        run: () => openTranslations(app),
+      },
+      { title: "Keyboard shortcuts and help", category: "Help", hint: "?", words: "help keys keyboard how to use tutorial guide controls shortcuts manual", run: () => openHelp(app) },
+      { title: "Quit", category: "Help", hint: "ctrl+c", words: "exit close leave bye stop", run: () => app.deps.quit() },
     ]
     if (reading) {
       list.splice(
         6,
         0,
-        { title: "Next chapter", category: "Reader", hint: "n", run: () => app.next() },
-        { title: "Previous chapter", category: "Reader", hint: "p", run: () => app.prev() },
-        { title: "Mark chapter read", category: "Reader", hint: "m", run: () => app.markRead() },
-        { title: app.parallel() ? "Close parallel view" : "Parallel translation", category: "Reader", hint: "T", run: () => app.toggleParallel() },
-        { title: "Note on this verse", category: "Reader", hint: "a", run: () => openNote(app, { ...app.position() }) },
-        { title: app.focus() ? "Leave focus mode" : "Focus mode", category: "Reader", hint: "z", run: () => app.setFocus(!app.focus()) },
-        { title: "Study notes", category: "Study", hint: "tab", run: () => (app.setStudyOpen(true), app.setStudyTab("notes"), app.setStudyFocused(true)) },
-        { title: "Matthew Henry's commentary", category: "Study", hint: "tab 2", run: () => (app.setStudyOpen(true), app.setStudyTab("commentary"), app.setStudyFocused(true)) },
-        { title: "Doré gallery", category: "Study", hint: "i", run: () => openGallery(app) },
-        { title: "Hebrew and Greek words of this verse", category: "Study", hint: "tab 3", run: () => (app.setStudyOpen(true), app.setStudyTab("words"), app.setStudyFocused(true)) },
-        { title: "Ask about this chapter", category: "Study", hint: "tab 4", run: () => (app.setStudyOpen(true), app.setStudyTab("ask"), app.setStudyFocused(true)) },
-        { title: app.config.prose ? "One verse per line" : "Prose: flowing paragraphs", category: "Reader", hint: "w", run: () => app.setConfig("prose", !app.config.prose) },
+        { title: "Next chapter", category: "Reader", hint: "n", words: "forward", run: () => app.next() },
+        { title: "Previous chapter", category: "Reader", hint: "p", words: "back", run: () => app.prev() },
+        { title: "Mark chapter read", category: "Reader", hint: "m", words: "done finished complete", run: () => app.markRead() },
+        {
+          title: `Highlight ${here()}`,
+          category: "Reader",
+          hint: "h",
+          words: "highlight colour color mark underline",
+          run: () => (app.deps.store.cycleHighlight(verse()), app.bump()),
+        },
+        {
+          title: `Bookmark ${here()}`,
+          category: "Reader",
+          hint: "b",
+          words: "bookmark save favourite favorite star",
+          run: () => {
+            app.toast(app.deps.store.toggleBookmark(verse()) ? `Bookmarked ${here()}` : "Bookmark removed")
+            app.bump()
+          },
+        },
+        {
+          title: `Copy ${here()}`,
+          category: "Reader",
+          hint: "y",
+          words: "copy clipboard share paste",
+          run: () => {
+            const v = app.deps.bible.verses(app.translation(), { book: app.position().book, chapter: app.position().chapter, verseStart: app.position().verse })[0]
+            const ok = !!v && app.deps.copy(`"${plain(v.text)}" (${here()}, ${app.translation()})`)
+            app.toast(ok ? `Copied ${here()}` : "Clipboard not available", ok ? undefined : "Your terminal does not support OSC 52", ok ? "info" : "warning")
+          },
+        },
+        { title: app.parallel() ? "Close parallel view" : "Parallel translation", category: "Reader", hint: "T", words: "side by side compare two", run: () => app.toggleParallel() },
+        { title: "Note on this verse", category: "Reader", hint: "a", words: "write note", run: () => openNote(app, { ...app.position() }) },
+        { title: app.focus() ? "Leave focus mode" : "Focus mode", category: "Reader", hint: "z", words: "distraction free zen", run: () => app.setFocus(!app.focus()) },
+        {
+          title: app.config.prose ? "One verse per line" : "Prose: flowing paragraphs",
+          category: "Reader",
+          hint: "w",
+          words: "paragraph layout",
+          run: () => app.setConfig("prose", !app.config.prose),
+        },
       )
     }
     return list
   }
   const items = (filter: string): SelectItem<() => void>[] => {
     const ref = parseGoTo(filter)
-    const base = commands().map((c, i) => ({ id: `c${i}`, title: c.title, category: c.category, hint: c.hint, value: c.run }))
+    const base = commands().map((c, i) => ({ id: `c${i}`, title: c.title, category: c.category, hint: c.hint, value: c.run, search: c.words }))
     const extra: SelectItem<() => void>[] = []
     if (ref) extra.push({ id: "goto", title: `Go to ${formatRef(ref)}`, hint: "enter", value: () => app.goTo(ref), search: filter })
     if (filter.trim().length > 2 && !ref) extra.push({ id: "search", title: `Search for "${filter.trim()}"`, value: () => openSearch(app, filter.trim()), search: filter })
@@ -98,8 +180,13 @@ export function openPalette(app: App) {
         // References and the search fallback always show; commands are fuzzy-matched.
         const pinned = all.filter((i) => i.id === "goto" || i.id === "search")
         const rest = all.filter((i) => i.id !== "goto" && i.id !== "search")
+        // the title counts most; the everyday words still find it
         const ranked = rest
-          .map((i) => ({ i, m: fuzzyScore(f, i.title) }))
+          .map((i) => {
+            const title = fuzzyScore(f, i.title)
+            const words = i.search ? fuzzyScore(f, i.search) : null
+            return { i, m: title === null && words === null ? null : Math.max(title ?? -Infinity, (words ?? -Infinity) - 2) }
+          })
           .filter((x) => x.m !== null)
           .sort((a, b) => b.m! - a.m!)
           .map((x) => x.i)
@@ -114,7 +201,7 @@ export function openPalette(app: App) {
   ))
 }
 
-import { fuzzy } from "../data/fuzzy"
+import { fuzzy, fuzzyFilter } from "../data/fuzzy"
 const fuzzyScore = (q: string, s: string) => fuzzy(q, s)?.score ?? null
 
 function resume(app: App) {
@@ -294,21 +381,35 @@ export function openBooks(app: App) {
       title="Go to"
       placeholder="Book name, or a reference like rom 8"
       initial={`b${app.position().book}`}
+      customFilter
+      empty="No book by that name. Type a book and chapter, like romans 8 or ps 23."
       items={(f) => {
-        const ref = parseGoTo(f)
-        const books = BOOKS.map((b) => {
+        // "romans 8", "rom 8:28", and what is left of "romans 8" after the reader's shortcut keys
+        // ate its first letters ("mans 8", "hn 3"): a book part matched anywhere in a book's
+        // names, then an optional chapter and verse
+        const m = /^(.*?)\s*(\d+)?\s*(?::\s*(\d+))?\s*$/.exec(f.trim())!
+        const name = m[1]!.trim()
+        const chapter = m[2] ? Number(m[2]) : undefined
+        const verse = m[3] ? Number(m[3]) : undefined
+        const exact = parseGoTo(f)
+        const matched = name ? fuzzyFilter(name, [...BOOKS], (b) => `${b.name} ${b.osis} ${b.aliases.join(" ")}`).map((x) => x.item) : [...BOOKS]
+        const books = matched.map((b) => {
           const p = progress.get(b.id)!
+          const ch = chapter && chapter <= b.chapters ? chapter : undefined
           return {
             id: `b${b.id}`,
-            title: b.name,
+            title: ch ? `${b.name} ${ch}${verse ? `:${verse}` : ""}` : b.name,
             category: `${b.testament === "OT" ? "Old" : "New"} Testament · ${b.group}`,
-            hint: p.read ? `${p.read}/${b.chapters}${p.fraction === 1 ? " ✓" : ""}` : `${b.chapters} ch`,
-            search: `${b.name} ${b.osis} ${b.aliases.join(" ")}`,
+            hint: ch ? "enter" : p.read ? `${p.read}/${b.chapters}${p.fraction === 1 ? " ✓" : ""}` : `${b.chapters} ch`,
             current: b.id === app.position().book,
-            value: { book: b.id } as { book: number; ref?: ReturnType<typeof parseRef> },
+            value: { book: b.id, ref: ch ? { book: b.id, chapter: ch, verseStart: verse, verseEnd: verse } : undefined } as {
+              book: number
+              ref?: ReturnType<typeof parseRef>
+            },
           }
         })
-        if (ref && /\d/.test(f)) return [{ id: "ref", title: `Go to ${formatRef(ref)}`, value: { book: ref.book, ref }, hint: "enter" }, ...books]
+        if (exact && /\d/.test(f) && !books.some((x) => x.value.ref?.book === exact.book && x.value.ref.chapter === exact.chapter))
+          return [{ id: "ref", title: `Go to ${formatRef(exact)}`, value: { book: exact.book, ref: exact }, hint: "enter" }, ...books]
         return books
       }}
       onSelect={(item) => {
