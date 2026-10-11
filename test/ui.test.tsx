@@ -36,7 +36,7 @@ describe("home", () => {
   test("typing a reference and pressing enter opens it", async () => {
     h = await harness()
     await h.type("jn 3:16")
-    expect(h.frame()).toContain("enter go to John 3:16")
+    expect(h.frame()).toContain("press enter to go to John 3:16")
     await h.press("return")
     const f = h.frame()
     expect(f).toContain("John 3 · KJV")
@@ -47,7 +47,7 @@ describe("home", () => {
   test("typing words searches", async () => {
     h = await harness()
     await h.type("living water")
-    expect(h.frame()).toContain('enter search "living water"')
+    expect(h.frame()).toContain('press enter to search for "living water"')
     await h.press("return")
     await wait(150)
     await h.settle()

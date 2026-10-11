@@ -7,7 +7,7 @@ import { importTranslation, removeTranslation } from "../data/importer"
 import { PLANS } from "../data/plans"
 import { parseSearch } from "../data/bible"
 import { baseStrongs } from "../data/concordance"
-import { formatRef, parseRef } from "../data/ref"
+import { formatRef, parseGoTo, parseRef } from "../data/ref"
 import type { Goal } from "../data/stats"
 import { CATALOG } from "../data/translations"
 import type { VerseKey } from "../data/user"
@@ -81,7 +81,7 @@ export function openPalette(app: App) {
     return list
   }
   const items = (filter: string): SelectItem<() => void>[] => {
-    const ref = parseRef(filter)
+    const ref = parseGoTo(filter)
     const base = commands().map((c, i) => ({ id: `c${i}`, title: c.title, category: c.category, hint: c.hint, value: c.run }))
     const extra: SelectItem<() => void>[] = []
     if (ref) extra.push({ id: "goto", title: `Go to ${formatRef(ref)}`, hint: "enter", value: () => app.goTo(ref), search: filter })
@@ -295,7 +295,7 @@ export function openBooks(app: App) {
       placeholder="Book name, or a reference like rom 8"
       initial={`b${app.position().book}`}
       items={(f) => {
-        const ref = parseRef(f)
+        const ref = parseGoTo(f)
         const books = BOOKS.map((b) => {
           const p = progress.get(b.id)!
           return {

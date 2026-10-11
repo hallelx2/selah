@@ -214,9 +214,9 @@ export function AskTab(props: { register: (r: { key: (k: KeyEvent) => boolean; c
 
   const focusInput = () => setTimeout(() => input && !input.isDestroyed && app.studyFocused() && input.focus(), 0)
   createEffect(() => {
-    if (app.studyFocused()) focusInput()
-    else input?.blur()
+    if (!app.studyFocused()) input?.blur()
   })
+  app.useReturnFocus(focusInput, app.studyFocused)
   onCleanup(() => detach("moved"))
 
   const timer = setInterval(() => running() && setElapsed((n) => n + 1), 1000)
