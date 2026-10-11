@@ -76,3 +76,12 @@ export function formatRef(ref: Ref, opts: { short?: boolean } = {}): string {
   }
   return out
 }
+
+/**
+ * What a person types to get somewhere: a reference, optionally after a verb they might reach
+ * for ("resume luke 21", "go to john 3", "open ps 23", "read romans 8").
+ */
+const VERBS = /^\s*(?:resume|continue|go\s+to|goto|go|open|read|show(?:\s+me)?|turn\s+to|jump\s+to|take\s+me\s+to)\s+/i
+export function parseGoTo(input: string): Ref | null {
+  return parseRef(input) ?? (VERBS.test(input) ? parseRef(input.replace(VERBS, "")) : null)
+}

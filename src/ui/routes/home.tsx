@@ -1,7 +1,7 @@
 import { TextAttributes, type InputRenderable } from "@opentui/core"
 import { useTerminalDimensions } from "@opentui/solid"
-import { createMemo, createSignal, For, onMount, Show } from "solid-js"
-import { formatRef, parseRef } from "../../data/ref"
+import { createMemo, createSignal, For, Show } from "solid-js"
+import { formatRef, parseGoTo } from "../../data/ref"
 import { formatMinutes } from "../../data/stats"
 import { Bar, Footer, LeftBar, fit } from "../components/primitives"
 import { Logo } from "../components/logo"
@@ -30,9 +30,9 @@ export function Home() {
   })
   const resume = () => app.deps.store.position()
   const plan = () => app.activePlan()
-  const parsed = createMemo(() => parseRef(value()))
+  const parsed = createMemo(() => parseGoTo(value()))
 
-  onMount(() => setTimeout(() => input && !input.isDestroyed && input.focus(), 1))
+  app.useReturnFocus(() => input && !input.isDestroyed && input.focus())
 
   function submit(v: string) {
     const text = v.trim()
@@ -42,7 +42,7 @@ export function Home() {
       else app.openChapter({ book: 43, chapter: 1 })
       return
     }
-    const ref = parseRef(text)
+    const ref = parseGoTo(text)
     if (ref) return app.goTo(ref)
     openSearch(app, text)
   }
@@ -129,8 +129,8 @@ export function Home() {
                 <span style={{ fg: t().textMuted }}> {app.installed().find((x) => x.id === app.translation())?.name ?? ""}</span>
               </text>
               <text wrapMode="none" fg={t().textMuted}>
-                <Show when={value().trim()} fallback={resume() ? `enter resume ${formatRef(resume()!)}` : "enter open John 1"}>
-                  {parsed() ? `enter go to ${formatRef(parsed()!)}` : `enter search "${value().trim()}"`}
+                <Show when={value().trim()} fallback={resume() ? `press enter to resume ${formatRef(resume()!)}` : "press enter to start at John 1"}>
+                  {parsed() ? `press enter to go to ${formatRef(parsed()!)}` : `press enter to search for "${value().trim()}"`}
                 </Show>
               </text>
             </box>
