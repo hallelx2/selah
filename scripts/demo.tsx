@@ -3,8 +3,10 @@
 //
 //   bun scripts/demo.tsx              (needs rsvg-convert and ffmpeg; Ask needs Claude Code)
 //
-// Nothing in it is mocked. The keys are pressed one by one as a person types them, the clock
-// moves only as frames are captured (so every animation plays as it really does), and the Ask
+// Nothing in it is mocked. The keys are pressed one by one as a person types them, and each frame
+// is paced to the real clock: the app's clock moves a frame, and real time moves the same amount
+// before the frame is taken, so the timers that run on the real clock (toasts leaving, the logo's
+// beam, the Ask counter) keep the same timing in the video as in the app. The Ask
 // answer is the reader's own local Claude Code answering live, through Selah's MCP tools. That
 // one stretch is recorded on the real clock and sped up 3x; the site's caption says so.
 import { mkdirSync, rmSync, statSync } from "node:fs"
@@ -45,11 +47,15 @@ const h: Harness = await harness({
 })
 
 let n = 0
-/** One frame: move the clock a frame, let the app render, write it out. */
+let deadline = Date.now()
+let behind = 0
+/** One frame: move the app's clock a frame, wait until real time has moved as far, write it out. */
 async function frame(step = 1000 / FPS) {
   h.advance(step)
-  await wait(8)
+  deadline += step
+  await wait(Math.max(8, deadline - Date.now()))
   await h.settle()
+  behind = Math.max(behind, Date.now() - deadline)
   const spans = h.spans()
   const bg = spans.lines[0]?.spans[0]?.bg
   const file = join(dir, `${String(n++).padStart(5, "0")}.svg`)
@@ -99,11 +105,11 @@ await key("4", undefined, 1)
 if (agents.length) {
   await type("Why does Jesus say 'born again' to Nicodemus?", 45)
   await h.press("return")
-  // real time from here: one frame every 200ms of real time, played at 15 fps (3x)
+  // one frame every 200ms of real time, played at 15 fps (3x). Only the status line's own
+  // pattern means the run is live: the answer itself may well say "thinking".
   const started = Date.now()
-  const live = () => h.frame().includes("thinking")
+  const live = () => /thinking \d+s · esc stop/.test(h.frame())
   while (Date.now() - started < 120_000) {
-    await wait(200)
     await frame(200)
     if (Date.now() - started > 3_000 && !live()) break
   }
@@ -123,7 +129,7 @@ await key("escape", undefined, 1)
 await key("s", undefined, 4)
 
 h.destroy()
-console.log(`${n} frames`)
+console.log(`${n} frames; the most a frame fell behind real time: ${behind}ms`)
 
 // SVG → PNG (in parallel), then encode
 const svgs = [...new Bun.Glob("*.svg").scanSync(dir)].sort()
